@@ -91,6 +91,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   double _currentSliderValue = 2;
+  String _selectedExercise = 'Select Exercise';
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -116,10 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
-    final double modalHeight =
-        screenHeight * 0.4; // Adjust the percentage as needed
-    final double modalWidth =
-        screenWidth * 0.8; // Adjust the percentage as needed
+    final double modalHeight = screenHeight * 0.4;
+    final double modalWidth = screenWidth * 0.8;
+
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -131,26 +131,76 @@ class _HomeScreenState extends State<HomeScreen> {
               child: StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
                   return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text('Sets: ${_currentSliderValue.toInt()}'),
-                      CupertinoSlider(
-                        value: _currentSliderValue,
-                        min: 2,
-                        max: 5,
-                        divisions: 3,
-                        onChanged: (value) {
-                          // Update the slider value when dragging
-                          setState(() {
-                            _currentSliderValue = value;
-                          });
+                      CupertinoButton(
+                        color: CupertinoColors.activeOrange,
+                        onPressed: () {
+                          _showExerciseList(context, setState);
                         },
+                        child: Text(_selectedExercise),
                       ),
+                      Container(
+                        child: Column(
+                          children: [
+                            Text('Sets: ${_currentSliderValue.toInt()}'),
+                            CupertinoSlider(
+                              value: _currentSliderValue,
+                              min: 2,
+                              max: 5,
+                              divisions: 3,
+                              onChanged: (value) {
+                                // Update the slider value when dragging
+                                setState(() {
+                                  _currentSliderValue = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      CupertinoButton(
+                        color: CupertinoColors.activeBlue,
+                        child: Text('Add'),
+                        onPressed: () {
+                          // Close the modal
+                          Navigator.of(context).pop();
+                        },
+                      )
                     ],
                   );
                 },
               ),
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  // function to open exercise list
+  void _showExerciseList(BuildContext context, StateSetter setState) {
+    final List<String> exercises = [
+      'Bench Press',
+      'Squat',
+      'Deadlift',
+    ];
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200,
+          child: CupertinoPicker(
+            backgroundColor: CupertinoColors.systemGrey6,
+            itemExtent: 32, // Height of each item in the list
+            onSelectedItemChanged: (int index) {
+              setState(() {
+                // Update the selected exercise label
+                _selectedExercise = exercises[index];
+              });
+            },
+            children: exercises.map((exercise) => Text(exercise)).toList(),
           ),
         );
       },
