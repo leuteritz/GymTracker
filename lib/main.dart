@@ -84,7 +84,13 @@ class Foodscreen extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  double _currentSliderValue = 2;
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -96,7 +102,7 @@ class HomeScreen extends StatelessWidget {
           alignment: Alignment.center,
           child: CupertinoButton.filled(
             onPressed: () {
-              showCupertinoModal(context);
+              _showCupertinoModal(context);
             },
             child: Text('Add'),
           ),
@@ -106,35 +112,43 @@ class HomeScreen extends StatelessWidget {
   }
 
   // function to open modal view
-  void showCupertinoModal(BuildContext context) {
+  void _showCupertinoModal(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    final double modalHeight =
+        screenHeight * 0.4; // Adjust the percentage as needed
+    final double modalWidth =
+        screenWidth * 0.8; // Adjust the percentage as needed
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
         return Center(
           child: Container(
-            width: 300,
-            height: 300,
+            width: modalWidth,
+            height: modalHeight,
             child: CupertinoPopupSurface(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 100, // Change the desired width
-                    child: CupertinoTextField(
-                        placeholder: 'Sets',
+              child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Sets: ${_currentSliderValue.toInt()}'),
+                      CupertinoSlider(
+                        value: _currentSliderValue,
+                        min: 2,
+                        max: 5,
+                        divisions: 3,
                         onChanged: (value) {
-                          // Handle text input changes
+                          // Update the slider value when dragging
+                          setState(() {
+                            _currentSliderValue = value;
+                          });
                         },
-                        style: CupertinoTheme.of(context)
-                            .textTheme
-                            .textStyle
-                            .copyWith(
-                              fontSize: 20, // Change the font size
-                            ),
-                        padding: EdgeInsets.all(16),
-                        textAlign: TextAlign.center),
-                  ),
-                ],
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
