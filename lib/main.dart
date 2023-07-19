@@ -92,21 +92,49 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   double _currentSliderValue = 2;
   String _selectedExercise = 'Select Exercise';
+
+  List<Map<String, dynamic>> _exerciseList = [];
+
   @override
   Widget build(BuildContext context) {
+    print(_exerciseList);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text('GymTracker'),
       ),
-      child: Center(
-        child: Align(
-          alignment: Alignment.center,
-          child: CupertinoButton.filled(
-            onPressed: () {
-              _showCupertinoModal(context);
-            },
-            child: Text('Add'),
-          ),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            CupertinoScrollbar(
+              child: CustomScrollView(
+                slivers: [
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final exercise = _exerciseList[index];
+                        return ExerciseLabel(
+                          exercise: exercise['name'],
+                          sets: exercise['sets'],
+                        );
+                      },
+                      childCount: _exerciseList.length,
+                    ),
+                  ),
+                  // Add more Sliver widgets as needed for additional content
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 10,
+              right: 10,
+              child: CupertinoButton(
+                onPressed: () {
+                  _showCupertinoModal(context);
+                },
+                child: Icon(CupertinoIcons.add_circled_solid, size: 60),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -117,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
 
-    final double modalHeight = screenHeight * 0.4;
+    final double modalHeight = screenHeight * 0.3;
     final double modalWidth = screenWidth * 0.8;
 
     showCupertinoModalPopup(
@@ -146,8 +174,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text('Sets: ${_currentSliderValue.toInt()}'),
                             CupertinoSlider(
                               value: _currentSliderValue,
-                              min: 2,
-                              max: 5,
+                              min: 2.0,
+                              max: 5.0,
                               divisions: 3,
                               onChanged: (value) {
                                 // Update the slider value when dragging
@@ -165,6 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPressed: () {
                           // Close the modal
                           Navigator.of(context).pop();
+                          _addExerciseToList();
                         },
                       )
                     ],
@@ -204,6 +233,152 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
+    );
+  }
+
+  // function to add exercise to the list
+  void _addExerciseToList() {
+    setState(() {
+      _exerciseList.add({
+        'name': _selectedExercise,
+        'sets': List.generate(
+          _currentSliderValue.toInt(),
+          (index) => {'weight': 0, 'reps': 0},
+        ),
+      });
+    });
+  }
+}
+
+class ExerciseLabel extends StatefulWidget {
+  final String exercise;
+  final List<Map<String, int>> sets;
+
+  ExerciseLabel({
+    required this.exercise,
+    required this.sets,
+  });
+
+  @override
+  _ExerciseLabelState createState() => _ExerciseLabelState();
+}
+
+class _ExerciseLabelState extends State<ExerciseLabel> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: Column(
+        children: [
+          Text(
+            widget.exercise,
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          // Use ListView with shrinkWrap to fit its content without scrolling
+          ListView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(), // Disable scrolling
+            children: widget.sets.map((set) {
+              return ListItem(
+                index: widget.sets.indexOf(set),
+                weight: set['weight']!,
+                reps: set['reps']!,
+              );
+            }).toList(),
+          ),
+          SizedBox(height: 10),
+          CupertinoButton(
+              color: CupertinoColors.activeGreen,
+              child: Text('Add Set'),
+              onPressed: () {
+                setState(() {
+                  widget.sets.add({'weight': 0, 'reps': 0});
+                });
+              })
+        ],
+      ),
+    );
+  }
+}
+
+class ListItem extends StatefulWidget {
+  int index;
+  int weight;
+  int reps;
+
+  ListItem({
+    required this.index,
+    required this.weight,
+    required this.reps,
+  });
+
+  @override
+  _ListItemState createState() => _ListItemState();
+}
+
+class _ListItemState extends State<ListItem> {
+  TextEditingController weightController = TextEditingController();
+  TextEditingController repsController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    weightController.text = widget.weight == 0 ? '' : widget.weight.toString();
+    repsController.text = widget.reps == 0 ? '' : widget.reps.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Set ${widget.index + 1}:'),
+          SizedBox(width: 10),
+          Expanded(
+            child: CupertinoTextField(
+              keyboardType: TextInputType.number,
+              controller: weightController,
+              onChanged: (value) {
+                setState(() {
+                  widget.weight = int.tryParse(value) ?? 0;
+                });
+              },
+              placeholder: 'Weight',
+              textAlign: TextAlign.center,
+              decoration: BoxDecoration(
+                color: CupertinoColors.activeBlue,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: CupertinoTextField(
+              keyboardType: TextInputType.number,
+              controller: repsController,
+              onChanged: (value) {
+                setState(() {
+                  widget.reps = int.tryParse(value) ?? 0;
+                });
+              },
+              placeholder: 'Reps',
+              textAlign: TextAlign.center,
+              decoration: BoxDecoration(
+                color: CupertinoColors.activeBlue,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          CupertinoButton(
+              child: Icon(CupertinoIcons.minus_circle_fill),
+              onPressed: () {
+                setState(() {});
+              }),
+        ],
+      ),
     );
   }
 }
