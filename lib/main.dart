@@ -4,18 +4,25 @@ void main() {
   runApp(const MyApp());
 }
 
+List<Map<String, dynamic>> _exerciseList = []; // Global exerciseList variable
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     final Color primaryColor = Color.fromARGB(255, 173, 15, 226);
-    return CupertinoApp(
-      title: 'My Gym Tracker App',
-      home: MyHomePage(),
-      theme: CupertinoThemeData(
-        brightness: Brightness.dark,
-        primaryColor: primaryColor,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: CupertinoApp(
+        title: 'My Gym Tracker App',
+        home: MyHomePage(),
+        theme: CupertinoThemeData(
+          brightness: Brightness.dark,
+          primaryColor: primaryColor,
+        ),
       ),
     );
   }
@@ -93,11 +100,9 @@ class _HomeScreenState extends State<HomeScreen> {
   double _currentSliderValue = 2;
   String _selectedExercise = 'Select Exercise';
 
-  List<Map<String, dynamic>> _exerciseList = [];
-
   @override
   Widget build(BuildContext context) {
-    print(_exerciseList);
+    print("Exercise List $_exerciseList");
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text('GymTracker'),
@@ -113,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       (context, index) {
                         final exercise = _exerciseList[index];
                         return ExerciseLabel(
+                          key: Key('exercise_${exercise['name']}_$index'),
                           exercise: exercise['name'],
                           sets: exercise['sets'],
                         );
@@ -255,19 +261,32 @@ class ExerciseLabel extends StatefulWidget {
   final List<Map<String, int>> sets;
 
   ExerciseLabel({
+    required Key key,
     required this.exercise,
     required this.sets,
-  });
+  }) : super(key: key);
 
   @override
   _ExerciseLabelState createState() => _ExerciseLabelState();
 }
 
 class _ExerciseLabelState extends State<ExerciseLabel> {
+  void _removeSetFromGlobalList(int index) {
+    setState(() {
+      widget.sets.removeAt(index);
+      _exerciseList.removeWhere((exercise) =>
+          exercise['name'] == widget.exercise && exercise['sets'] == index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("Exercise Label ${widget.exercise}");
+    print("Exericse set ${widget.sets}");
+    print("Exercise List $_exerciseList");
+
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.only(left: 50, right: 50, top: 20, bottom: 20),
       child: Column(
         children: [
           Text(
@@ -276,16 +295,27 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
           ),
           SizedBox(height: 10),
           // Use ListView with shrinkWrap to fit its content without scrolling
-          ListView(
+          ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(), // Disable scrolling
-            children: widget.sets.map((set) {
-              return ListItem(
-                index: widget.sets.indexOf(set),
-                weight: set['weight']!,
-                reps: set['reps']!,
+            itemCount: widget.sets.length,
+            itemBuilder: (context, index) {
+              final set = widget.sets[index];
+              return Dismissible(
+                key: UniqueKey(),
+                onDismissed: (direction) {
+                  _removeSetFromGlobalList(index);
+                },
+                background: Container(
+                  color: CupertinoColors.systemRed,
+                ),
+                child: ListItem(
+                  index: index,
+                  weight: set['weight']!,
+                  reps: set['reps']!,
+                ),
               );
-            }).toList(),
+            },
           ),
           SizedBox(height: 10),
           CupertinoButton(
@@ -321,6 +351,18 @@ class _ListItemState extends State<ListItem> {
   TextEditingController weightController = TextEditingController();
   TextEditingController repsController = TextEditingController();
 
+  void updateWeight(String value) {
+    setState(() {
+      widget.weight = int.tryParse(value) ?? 0;
+    });
+  }
+
+  void updateReps(String value) {
+    setState(() {
+      widget.reps = int.tryParse(value) ?? 0;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -331,7 +373,7 @@ class _ListItemState extends State<ListItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -341,15 +383,11 @@ class _ListItemState extends State<ListItem> {
             child: CupertinoTextField(
               keyboardType: TextInputType.number,
               controller: weightController,
-              onChanged: (value) {
-                setState(() {
-                  widget.weight = int.tryParse(value) ?? 0;
-                });
-              },
+              onChanged: updateWeight,
               placeholder: 'Weight',
               textAlign: TextAlign.center,
               decoration: BoxDecoration(
-                color: CupertinoColors.activeBlue,
+                color: CupertinoColors.systemBrown,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -359,24 +397,15 @@ class _ListItemState extends State<ListItem> {
             child: CupertinoTextField(
               keyboardType: TextInputType.number,
               controller: repsController,
-              onChanged: (value) {
-                setState(() {
-                  widget.reps = int.tryParse(value) ?? 0;
-                });
-              },
+              onChanged: updateReps,
               placeholder: 'Reps',
               textAlign: TextAlign.center,
               decoration: BoxDecoration(
-                color: CupertinoColors.activeBlue,
+                color: CupertinoColors.systemBrown,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
           ),
-          CupertinoButton(
-              child: Icon(CupertinoIcons.minus_circle_fill),
-              onPressed: () {
-                setState(() {});
-              }),
         ],
       ),
     );
