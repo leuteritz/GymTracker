@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:async';
 
 void main() {
   runApp(const MyApp());
@@ -99,13 +100,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   double _currentSliderValue = 2;
   String _selectedExercise = 'Select Exercise';
+  String _timerValue = '00:00';
+  Timer? _timer;
+  int _seconds = 0;
 
   @override
   Widget build(BuildContext context) {
     print("Exercise List $_exerciseList");
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text('GymTracker'),
+        middle: Text(_timerValue, style: TextStyle(fontSize: 24)),
       ),
       child: SafeArea(
         child: Stack(
@@ -118,7 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       (context, index) {
                         final exercise = _exerciseList[index];
                         return ExerciseLabel(
-                          key: Key('exercise_${exercise['name']}_$index'),
                           exercise: exercise['name'],
                           sets: exercise['sets'],
                         );
@@ -136,8 +139,20 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CupertinoButton(
                 onPressed: () {
                   _showCupertinoModal(context);
+                  _startTimer();
                 },
                 child: Icon(CupertinoIcons.add_circled_solid, size: 60),
+              ),
+            ),
+            Positioned(
+              bottom: 10,
+              left: 10,
+              child: CupertinoButton(
+                onPressed: () {
+                  _stopTimer();
+                },
+                child: Icon(CupertinoIcons.stop_circle,
+                    size: 60, color: CupertinoColors.systemRed),
               ),
             ),
           ],
@@ -254,6 +269,30 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     });
   }
+
+  // Start the timer that runs every second
+  void _startTimer() {
+    _timer?.cancel(); // Cancel the existing timer if any
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _seconds++;
+        _timerValue = _formatTimerValue(_seconds);
+      });
+    });
+  }
+
+  void _stopTimer() {
+    _timer?.cancel();
+  }
+
+  // Format the timer value as "mm:ss" string
+  String _formatTimerValue(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    String formattedMinutes = minutes.toString().padLeft(2, '0');
+    String formattedSeconds = remainingSeconds.toString().padLeft(2, '0');
+    return '$formattedMinutes:$formattedSeconds';
+  }
 }
 
 class ExerciseLabel extends StatefulWidget {
@@ -261,10 +300,9 @@ class ExerciseLabel extends StatefulWidget {
   final List<Map<String, int>> sets;
 
   ExerciseLabel({
-    required Key key,
     required this.exercise,
     required this.sets,
-  }) : super(key: key);
+  });
 
   @override
   _ExerciseLabelState createState() => _ExerciseLabelState();
@@ -302,7 +340,9 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
             itemBuilder: (context, index) {
               final set = widget.sets[index];
               return Dismissible(
-                key: UniqueKey(),
+                key: Key('exercise_${widget.exercise}_set_${widget.sets}}'),
+                direction: DismissDirection
+                    .startToEnd, // Disable dismiss in this direction
                 onDismissed: (direction) {
                   _removeSetFromGlobalList(index);
                 },
@@ -351,25 +391,6 @@ class _ListItemState extends State<ListItem> {
   TextEditingController weightController = TextEditingController();
   TextEditingController repsController = TextEditingController();
 
-  void updateWeight(String value) {
-    setState(() {
-      widget.weight = int.tryParse(value) ?? 0;
-    });
-  }
-
-  void updateReps(String value) {
-    setState(() {
-      widget.reps = int.tryParse(value) ?? 0;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    weightController.text = widget.weight == 0 ? '' : widget.weight.toString();
-    repsController.text = widget.reps == 0 ? '' : widget.reps.toString();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -383,7 +404,6 @@ class _ListItemState extends State<ListItem> {
             child: CupertinoTextField(
               keyboardType: TextInputType.number,
               controller: weightController,
-              onChanged: updateWeight,
               placeholder: 'Weight',
               textAlign: TextAlign.center,
               decoration: BoxDecoration(
@@ -397,7 +417,6 @@ class _ListItemState extends State<ListItem> {
             child: CupertinoTextField(
               keyboardType: TextInputType.number,
               controller: repsController,
-              onChanged: updateReps,
               placeholder: 'Reps',
               textAlign: TextAlign.center,
               decoration: BoxDecoration(
