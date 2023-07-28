@@ -5,7 +5,7 @@ void main() {
   runApp(const MyApp());
 }
 
-List<Map<String, dynamic>> _exerciseList = []; // Global exerciseList variable
+List<Map<String, dynamic>> _exerciseList = [];
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
           case 0:
             return Foodscreen();
           case 1:
-            return HomeScreen();
+            return HomeScreen(); // Pass the _key to the HomeScreen widget
           case 2:
             return SettingsScreen();
           default:
@@ -92,25 +92,82 @@ class Foodscreen extends StatelessWidget {
   }
 }
 
+class CustomNavigationBar extends StatefulWidget
+    implements ObstructingPreferredSizeWidget {
+  const CustomNavigationBar({Key? key}) : super(key: key); // Add Key parameter
+
+  @override
+  _CustomNavigationBarState createState() => _CustomNavigationBarState();
+
+  @override
+  bool shouldFullyObstruct(BuildContext context) {
+    // Return true if you want the custom navigation bar to fully obstruct content.
+    // Return false if you want the content to be visible behind the custom navigation bar.
+    return false;
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(50);
+}
+
+class _CustomNavigationBarState extends State<CustomNavigationBar> {
+  Timer? _timer;
+  int _seconds = 0;
+  String _timerValue = '00:00';
+
+  void _updateTimerValue() {
+    int minutes = _seconds ~/ 60;
+    int remainingSeconds = _seconds % 60;
+    String formattedMinutes = minutes.toString().padLeft(2, '0');
+    String formattedSeconds = remainingSeconds.toString().padLeft(2, '0');
+    setState(() {
+      _timerValue = '$formattedMinutes:$formattedSeconds';
+    });
+  }
+
+  // Start the timer that runs every second
+  void _startTimer() {
+    print("Timer started");
+    _timer?.cancel(); // Cancel any previous timer
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _seconds++;
+        _updateTimerValue();
+      });
+    });
+  }
+
+  void _stopTimer() {
+    _timer?.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoNavigationBar(
+      middle: Text(_timerValue, style: TextStyle(fontSize: 24)),
+    );
+  }
+}
+
 class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  GlobalKey<_CustomNavigationBarState> _key =
+      GlobalKey<_CustomNavigationBarState>();
+  // declaration of the key
   double _currentSliderValue = 2;
   String _selectedExercise = 'Select Exercise';
-  String _timerValue = '00:00';
-  Timer? _timer;
-  int _seconds = 0;
+
+  bool _isAddButtonPressed = false;
 
   @override
   Widget build(BuildContext context) {
     print("Exercise List $_exerciseList");
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(_timerValue, style: TextStyle(fontSize: 24)),
-      ),
+      navigationBar: CustomNavigationBar(key: _key),
       child: SafeArea(
         child: Stack(
           children: [
@@ -134,25 +191,32 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Positioned(
-              bottom: 10,
-              right: 10,
+              bottom: 5,
+              right: 5,
               child: CupertinoButton(
                 onPressed: () {
                   _showCupertinoModal(context);
-                  _startTimer();
+                  _key.currentState?._startTimer();
+                  setState(() {
+                    _isAddButtonPressed = true; // Show "Stop" button
+                  });
                 },
-                child: Icon(CupertinoIcons.add_circled_solid, size: 60),
+                child: Icon(CupertinoIcons.add_circled_solid,
+                    size: 60, color: CupertinoColors.systemGreen),
               ),
             ),
             Positioned(
-              bottom: 10,
-              left: 10,
-              child: CupertinoButton(
-                onPressed: () {
-                  _stopTimer();
-                },
-                child: Icon(CupertinoIcons.stop_circle,
-                    size: 60, color: CupertinoColors.systemRed),
+              bottom: 5,
+              left: 5,
+              child: Visibility(
+                visible: _isAddButtonPressed,
+                child: CupertinoButton(
+                  onPressed: () {
+                    _key.currentState?._stopTimer();
+                  },
+                  child: Icon(CupertinoIcons.stop_circle_fill,
+                      size: 60, color: CupertinoColors.systemRed),
+                ),
               ),
             ),
           ],
@@ -269,30 +333,6 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     });
   }
-
-  // Start the timer that runs every second
-  void _startTimer() {
-    _timer?.cancel(); // Cancel the existing timer if any
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _seconds++;
-        _timerValue = _formatTimerValue(_seconds);
-      });
-    });
-  }
-
-  void _stopTimer() {
-    _timer?.cancel();
-  }
-
-  // Format the timer value as "mm:ss" string
-  String _formatTimerValue(int seconds) {
-    int minutes = seconds ~/ 60;
-    int remainingSeconds = seconds % 60;
-    String formattedMinutes = minutes.toString().padLeft(2, '0');
-    String formattedSeconds = remainingSeconds.toString().padLeft(2, '0');
-    return '$formattedMinutes:$formattedSeconds';
-  }
 }
 
 class ExerciseLabel extends StatefulWidget {
@@ -319,8 +359,6 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
 
   @override
   Widget build(BuildContext context) {
-    print("Exercise Label ${widget.exercise}");
-    print("Exericse set ${widget.sets}");
     print("Exercise List $_exerciseList");
 
     return Container(
@@ -329,7 +367,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
         children: [
           Text(
             widget.exercise,
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
           // Use ListView with shrinkWrap to fit its content without scrolling
@@ -347,20 +385,26 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
                   _removeSetFromGlobalList(index);
                 },
                 background: Container(
+                  child: Icon(
+                    CupertinoIcons.delete,
+                    size: 35,
+                    color: CupertinoColors.white,
+                  ),
                   color: CupertinoColors.systemRed,
                 ),
                 child: ListItem(
                   index: index,
                   weight: set['weight']!,
                   reps: set['reps']!,
+                  name: widget.exercise,
                 ),
               );
             },
           ),
           SizedBox(height: 10),
-          CupertinoButton(
-              color: CupertinoColors.activeGreen,
-              child: Text('Add Set'),
+          CupertinoButton.filled(
+              child: Text('Add Set',
+                  style: TextStyle(color: CupertinoColors.white)),
               onPressed: () {
                 setState(() {
                   widget.sets.add({'weight': 0, 'reps': 0});
@@ -376,11 +420,13 @@ class ListItem extends StatefulWidget {
   int index;
   int weight;
   int reps;
+  String name;
 
   ListItem({
     required this.index,
     required this.weight,
     required this.reps,
+    required this.name,
   });
 
   @override
@@ -392,7 +438,17 @@ class _ListItemState extends State<ListItem> {
   TextEditingController repsController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    weightController.text = widget.weight == 0 ? '' : widget.weight.toString();
+    repsController.text = widget.reps == 0 ? '' : widget.reps.toString();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print("weight: ${widget.weight}");
+    print("reps: ${widget.reps}");
+
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -404,6 +460,19 @@ class _ListItemState extends State<ListItem> {
             child: CupertinoTextField(
               keyboardType: TextInputType.number,
               controller: weightController,
+              onChanged: (value) {
+                setState(() {
+                  // Update the weight value when the text field changes
+                  widget.weight = int.parse(value);
+                  // Update the weight value in the global exercise list
+                  _updateSet(
+                      _exerciseList.indexWhere(
+                          (exercise) => exercise['name'] == widget.name),
+                      widget.index,
+                      widget.weight,
+                      widget.reps);
+                });
+              },
               placeholder: 'Weight',
               textAlign: TextAlign.center,
               decoration: BoxDecoration(
@@ -417,6 +486,19 @@ class _ListItemState extends State<ListItem> {
             child: CupertinoTextField(
               keyboardType: TextInputType.number,
               controller: repsController,
+              onChanged: (value) {
+                setState(() {
+                  // Update the reps value when the text field changes
+                  widget.reps = int.parse(value);
+                  // Update the reps value in the global exercise list
+                  _updateSet(
+                      _exerciseList.indexWhere(
+                          (exercise) => exercise['name'] == widget.name),
+                      widget.index,
+                      widget.weight,
+                      widget.reps);
+                });
+              },
               placeholder: 'Reps',
               textAlign: TextAlign.center,
               decoration: BoxDecoration(
@@ -428,6 +510,13 @@ class _ListItemState extends State<ListItem> {
         ],
       ),
     );
+  }
+
+  void _updateSet(int exerciseIndex, int setIndex, int weight, int reps) {
+    setState(() {
+      _exerciseList[exerciseIndex]['sets'][setIndex]['weight'] = weight;
+      _exerciseList[exerciseIndex]['sets'][setIndex]['reps'] = reps;
+    });
   }
 }
 
