@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-
 import 'dart:async';
 
 void main() {
@@ -73,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
           case 1:
             return HomeScreen(); // Pass the _key to the HomeScreen widget
           case 2:
-            return SettingsScreen();
+            return HistoryScreen();
           default:
             return HomeScreen();
         }
@@ -166,7 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("Exercise List $_exerciseList");
     return CupertinoPageScaffold(
       navigationBar: CustomNavigationBar(key: _key),
       child: SafeArea(
@@ -201,6 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   _showCupertinoModal(context);
                   _key.currentState?._startTimer();
+
                   setState(() {
                     _isAddButtonPressed = true; // Show "Stop" button
                   });
@@ -219,6 +218,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     _key.currentState?._stopTimer();
                   },
                   child: Icon(CupertinoIcons.stop_circle_fill,
+                      size: 60, color: CupertinoColors.systemRed),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 150,
+              child: Visibility(
+                visible: _isAddButtonPressed,
+                child: CupertinoButton(
+                  onPressed: () {},
+                  child: Icon(CupertinoIcons.device_laptop,
                       size: 60, color: CupertinoColors.systemRed),
                 ),
               ),
@@ -327,9 +338,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // function to add exercise to the list
   void _addExerciseToList() {
+    // Get the current date
+    DateTime currentDate = DateTime.now();
+
+    // Format the date as dd.mm.yyyy
+    String formattedDate =
+        "${currentDate.day.toString().padLeft(2, '0')}.${currentDate.month.toString().padLeft(2, '0')}.${currentDate.year.toString()}";
+
     setState(() {
       _exerciseList.add({
         'name': _selectedExercise,
+        'date': formattedDate, // Add the formatted date to the exercise entry
         'sets': List.generate(
           _currentSliderValue.toInt(),
           (index) => {'weight': 0, 'reps': 0},
@@ -487,6 +506,7 @@ class _ListItemState extends State<ListItem> {
   Widget build(BuildContext context) {
     print("weight: ${widget.weight}");
     print("reps: ${widget.reps}");
+    print("Exercise List $_exerciseList");
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10),
@@ -559,12 +579,22 @@ class _ListItemState extends State<ListItem> {
   }
 }
 
-class SettingsScreen extends StatelessWidget {
+class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      child: Center(
-        child: Text('Settings Screen'),
+      navigationBar: CupertinoNavigationBar(
+        middle: SizedBox(
+          width: 200,
+          child: CupertinoSearchTextField(
+            placeholder: 'Workout durchsuchen',
+          ),
+        ),
+      ),
+      child: SafeArea(
+        child: Center(
+          child: Text('History'),
+        ),
       ),
     );
   }
