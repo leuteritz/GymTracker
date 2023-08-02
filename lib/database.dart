@@ -99,4 +99,39 @@ class DatabaseHelper {
     int totalWeight = maps[0]['total_weight'] ?? 0;
     return totalWeight;
   }
+
+  Future<void> deleteDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final databasePath = join(dbPath, 'gym.db');
+    await databaseFactory
+        .deleteDatabase(databasePath); // Now delete the database file.
+
+    // After deleting, set _db to null so that it can be re-initialized if needed.
+    _db = null;
+  }
+
+  // Add this function to the DatabaseHelper class
+  Future<List<Map<String, dynamic>>> getExercisesByDate(String date) async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db
+        .rawQuery('SELECT DISTINCT name FROM exercise WHERE date = "$date"');
+  }
+
+  // Function to get the amount of sets for an exercise on a specific date
+  Future<int> getSets(String date, String name) async {
+    final db = await this.db;
+    if (db == null) return 0;
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT MAX(sets) AS total_sets
+      FROM exercise 
+      WHERE date = "$date" AND name = "$name"
+    ''');
+
+    // Extract the total sets from the query result
+    int totalSets = maps[0]['total_sets'] ?? 0;
+    return totalSets;
+  }
 }

@@ -38,21 +38,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 1;
-  List<String> workoutDatesList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadWorkoutDates();
-  }
-
-  Future<void> _loadWorkoutDates() async {
-    List<String> dates = await DatabaseHelper().getDates();
-    setState(() {
-      workoutDatesList = dates;
-    });
-    print(workoutDatesList);
-  }
 
   void _onTabSelected(int index) {
     setState(() {
@@ -89,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
           case 1:
             return HomeScreen(); // Pass the _key to the HomeScreen widget
           case 2:
-            return HistoryScreen(workoutDates: workoutDatesList);
+            return HistoryScreen();
 
           default:
             return HomeScreen();
@@ -260,6 +245,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Icon(CupertinoIcons.stop_circle_fill,
                       size: 60, color: CupertinoColors.systemRed),
                 ),
+              ),
+            ),
+            Positioned(
+              bottom: 100,
+              right: 20,
+              child: CupertinoButton(
+                onPressed: () {
+                  DatabaseHelper().deleteDatabase();
+                },
+                child: Icon(CupertinoIcons.delete_left_fill,
+                    size: 60, color: CupertinoColors.systemRed),
               ),
             ),
           ],
@@ -605,13 +601,26 @@ class _ListItemState extends State<ListItem> {
   }
 }
 
-class HistoryScreen extends StatelessWidget {
-  final List<String> workoutDates; // Add a list of workout dates
+class HistoryScreen extends StatefulWidget {
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
 
-  HistoryScreen({required this.workoutDates});
+class _HistoryScreenState extends State<HistoryScreen> {
+  List<String> workoutDatesList = [];
+
+  Future<void> _loadWorkoutDates() async {
+    List<String> dates = await DatabaseHelper().getDates();
+    setState(() {
+      workoutDatesList = dates;
+    });
+    print(workoutDatesList);
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Load the workout dates from the database
+    _loadWorkoutDates();
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: SizedBox(
@@ -628,10 +637,10 @@ class HistoryScreen extends StatelessWidget {
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final date = workoutDates[index];
+                    final date = workoutDatesList[index];
                     return WorkoutDateItem(date: date);
                   },
-                  childCount: workoutDates.length,
+                  childCount: workoutDatesList.length,
                 ),
               ),
             ],
@@ -656,6 +665,7 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
   String dayOfWeek = '';
   String _duration = '';
   int _totalWeight = 0;
+  List<Map<String, dynamic>> _exercises = [];
 
   @override
   void initState() {
@@ -664,6 +674,7 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
     dayOfWeek = getDayOfWeek(myDate);
     _getDuration();
     _getTotalWeight();
+    _getExercises();
   }
 
   Future<void> _getDuration() async {
@@ -677,6 +688,14 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
     int totalWeight = await DatabaseHelper().getTotalWeight(widget.date);
     setState(() {
       _totalWeight = totalWeight;
+    });
+  }
+
+  Future<void> _getExercises() async {
+    List<Map<String, dynamic>> exercises =
+        await DatabaseHelper().getExercisesByDate(widget.date);
+    setState(() {
+      _exercises = exercises;
     });
   }
 
@@ -737,6 +756,24 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
               )
             ],
           ),
+          SizedBox(height: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(), // Disable scrolling
+                itemCount: _exercises.length,
+                itemBuilder: (context, index) {
+                  final exercise = _exercises[index];
+                  return ExerciseListItem(
+                    exerciseName: exercise['name'],
+                    date: widget.date,
+                  );
+                },
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -767,5 +804,49 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
 
     // Construct a DateTime object from the components
     return DateTime(year, month, day);
+  }
+}
+
+class ExerciseListItem extends StatefulWidget {
+  final String exerciseName;
+  final String date;
+
+  ExerciseListItem({required this.exerciseName, required this.date});
+
+  @override
+  State<ExerciseListItem> createState() => _ExerciseListItemState();
+}
+
+class _ExerciseListItemState extends State<ExerciseListItem> {
+  int _set = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _getSets();
+  }
+
+  Future<void> _getSets() async {
+    int set = await DatabaseHelper().getSets(widget.date, widget.exerciseName);
+    setState(() {
+      _set = set;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            '$_set x ${widget.exerciseName}', // Display sets before exercise name
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+        ),
+        SizedBox(height: 5),
+      ],
+    );
   }
 }
