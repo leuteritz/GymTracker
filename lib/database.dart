@@ -1,6 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'dart:convert';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
@@ -30,7 +29,8 @@ class DatabaseHelper {
       sets INTEGER,
       weight INTEGER,
       reps INTEGER,
-      date TEXT
+      date TEXT,
+      duration TEXT
     )
   ''');
   }
@@ -42,6 +42,7 @@ class DatabaseHelper {
     required int weight,
     required int reps,
     required String date,
+    required String duration,
   }) async {
     final db = await this.db;
     if (db == null) return;
@@ -54,6 +55,7 @@ class DatabaseHelper {
         'weight': weight,
         'reps': reps,
         'date': date,
+        'duration': duration,
       },
     );
   }
@@ -68,5 +70,33 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) {
       return maps[i]['date'];
     });
+  }
+
+  // Funtcion to get duration of a spefic workout date
+  Future<String> getDuration(String date) async {
+    final db = await this.db;
+    if (db == null) return '';
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+        'SELECT DISTINCT duration FROM exercise WHERE date = "$date"');
+
+    return maps[0]
+        ['duration']; // Return an empty string if no results are found.
+  }
+
+  // Function to calculate the total weight for a specific day
+  Future<int> getTotalWeight(String date) async {
+    final db = await this.db;
+    if (db == null) return 0;
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT SUM(weight) AS total_weight 
+      FROM exercise 
+      WHERE date = "$date"
+    ''');
+
+    // Extract the total weight from the query result
+    int totalWeight = maps[0]['total_weight'] ?? 0;
+    return totalWeight;
   }
 }

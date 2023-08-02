@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
 import 'database.dart';
-import 'dart:convert';
 
 // TODO: add a checker to see if the exercise already exists
 void main() {
@@ -133,6 +132,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   Timer? _timer;
   int _seconds = 0;
   String _timerValue = '00:00';
+  String _duration = '';
 
   void _updateTimerValue() {
     int minutes = _seconds ~/ 60;
@@ -158,6 +158,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   void _stopTimer() {
     _timer?.cancel();
 
+    _duration = _timerValue;
+
     // insert the exercise into the database
     for (var exercise in _exerciseList) {
       String name = exercise['name'];
@@ -173,6 +175,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
           weight: weight,
           reps: reps,
           date: date,
+          duration: _duration,
         );
       }
     }
@@ -639,29 +642,102 @@ class HistoryScreen extends StatelessWidget {
   }
 }
 
-class WorkoutDateItem extends StatelessWidget {
+class WorkoutDateItem extends StatefulWidget {
   String date;
 
   WorkoutDateItem({required this.date});
 
   @override
+  State<WorkoutDateItem> createState() => _WorkoutDateItemState();
+}
+
+class _WorkoutDateItemState extends State<WorkoutDateItem> {
+  DateTime myDate = DateTime.now();
+  String dayOfWeek = '';
+  String _duration = '';
+  int _totalWeight = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    myDate = _parseDate(widget.date);
+    dayOfWeek = getDayOfWeek(myDate);
+    _getDuration();
+    _getTotalWeight();
+  }
+
+  Future<void> _getDuration() async {
+    String duration = await DatabaseHelper().getDuration(widget.date);
+    setState(() {
+      _duration = duration;
+    });
+  }
+
+  Future<void> _getTotalWeight() async {
+    int totalWeight = await DatabaseHelper().getTotalWeight(widget.date);
+    setState(() {
+      _totalWeight = totalWeight;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    DateTime myDate = _parseDate(date);
-    // days = getDayOfWeek(myDate);
-    print(date);
-    print(myDate);
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
       decoration: BoxDecoration(
         color: CupertinoColors.systemBrown,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: Text(
-          date,
-          style: TextStyle(fontSize: 25),
-        ),
+      padding: EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                dayOfWeek,
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                widget.date,
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                child: Row(children: [
+                  Icon(
+                    CupertinoIcons.time,
+                    color: CupertinoColors.white,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    _duration,
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ]),
+              ),
+              Container(
+                child: Row(children: [
+                  Icon(
+                    CupertinoIcons.sum,
+                    color: CupertinoColors.white,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    _totalWeight.toString() + ' kg',
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ]),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -677,8 +753,7 @@ class WorkoutDateItem extends StatelessWidget {
       'Sunday'
     ];
 
-    int dayIndex = date.weekday -
-        1; // Weekdays start from 1 (Monday) to 7 (Sunday), so subtract 1 to get the correct index in the daysOfWeek list.
+    int dayIndex = date.weekday - 1;
 
     return daysOfWeek[dayIndex];
   }
