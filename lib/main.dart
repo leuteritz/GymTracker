@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
+import 'database.dart';
+import 'dart:convert';
 
+// TODO: add a checker to see if the exercise already exists
 void main() {
   runApp(const MyApp());
 }
@@ -36,6 +39,21 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 1;
+  List<String> workoutDatesList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWorkoutDates();
+  }
+
+  Future<void> _loadWorkoutDates() async {
+    List<String> dates = await DatabaseHelper().getDates();
+    setState(() {
+      workoutDatesList = dates;
+    });
+    print(workoutDatesList);
+  }
 
   void _onTabSelected(int index) {
     setState(() {
@@ -72,7 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
           case 1:
             return HomeScreen(); // Pass the _key to the HomeScreen widget
           case 2:
-            return HistoryScreen();
+            return HistoryScreen(workoutDates: workoutDatesList);
+
           default:
             return HomeScreen();
         }
@@ -127,7 +146,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
 
   // Start the timer that runs every second
   void _startTimer() {
-    print("Timer started");
     _timer?.cancel(); // Cancel any previous timer
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
@@ -139,6 +157,25 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
 
   void _stopTimer() {
     _timer?.cancel();
+
+    // insert the exercise into the database
+    for (var exercise in _exerciseList) {
+      String name = exercise['name'];
+      String date = exercise['date'];
+      List<Map<String, int>> sets = exercise['sets'];
+      for (var set in sets) {
+        int reps = set['reps']!;
+        int weight = set['weight']!;
+
+        DatabaseHelper().insertExercise(
+          name: name,
+          sets: sets.length,
+          weight: weight,
+          reps: reps,
+          date: date,
+        );
+      }
+    }
   }
 
   @override
@@ -218,18 +255,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     _key.currentState?._stopTimer();
                   },
                   child: Icon(CupertinoIcons.stop_circle_fill,
-                      size: 60, color: CupertinoColors.systemRed),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 150,
-              child: Visibility(
-                visible: _isAddButtonPressed,
-                child: CupertinoButton(
-                  onPressed: () {},
-                  child: Icon(CupertinoIcons.device_laptop,
                       size: 60, color: CupertinoColors.systemRed),
                 ),
               ),
@@ -504,8 +529,6 @@ class _ListItemState extends State<ListItem> {
 
   @override
   Widget build(BuildContext context) {
-    print("weight: ${widget.weight}");
-    print("reps: ${widget.reps}");
     print("Exercise List $_exerciseList");
 
     return Padding(
@@ -580,22 +603,94 @@ class _ListItemState extends State<ListItem> {
 }
 
 class HistoryScreen extends StatelessWidget {
+  final List<String> workoutDates; // Add a list of workout dates
+
+  HistoryScreen({required this.workoutDates});
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: SizedBox(
-          width: 200,
+          width: 150,
           child: CupertinoSearchTextField(
             placeholder: 'Workout durchsuchen',
           ),
         ),
       ),
       child: SafeArea(
-        child: Center(
-          child: Text('History'),
+        child: CupertinoScrollbar(
+          child: CustomScrollView(
+            slivers: [
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final date = workoutDates[index];
+                    return WorkoutDateItem(date: date);
+                  },
+                  childCount: workoutDates.length,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+}
+
+class WorkoutDateItem extends StatelessWidget {
+  String date;
+
+  WorkoutDateItem({required this.date});
+
+  @override
+  Widget build(BuildContext context) {
+    DateTime myDate = _parseDate(date);
+    // days = getDayOfWeek(myDate);
+    print(date);
+    print(myDate);
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      decoration: BoxDecoration(
+        color: CupertinoColors.systemBrown,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: Text(
+          date,
+          style: TextStyle(fontSize: 25),
+        ),
+      ),
+    );
+  }
+
+  String getDayOfWeek(DateTime date) {
+    List<String> daysOfWeek = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+
+    int dayIndex = date.weekday -
+        1; // Weekdays start from 1 (Monday) to 7 (Sunday), so subtract 1 to get the correct index in the daysOfWeek list.
+
+    return daysOfWeek[dayIndex];
+  }
+
+  DateTime _parseDate(String dateStr) {
+    // Split the date string into day, month, and year components
+    List<String> dateComponents = dateStr.split('.');
+    int day = int.parse(dateComponents[0]);
+    int month = int.parse(dateComponents[1]);
+    int year = int.parse(dateComponents[2]);
+
+    // Construct a DateTime object from the components
+    return DateTime(year, month, day);
   }
 }
