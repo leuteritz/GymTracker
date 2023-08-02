@@ -701,80 +701,93 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-      decoration: BoxDecoration(
-        color: CupertinoColors.systemBrown,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                dayOfWeek,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                widget.date,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-            ],
+    return GestureDetector(
+      onTap: () {
+        // Navigate to the WorkoutDetailPage when the item is pressed
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) => WorkoutDetailPage(
+              date: widget.date,
+            ),
           ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                child: Row(children: [
-                  Icon(
-                    CupertinoIcons.time,
-                    color: CupertinoColors.white,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    _duration,
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ]),
-              ),
-              Container(
-                child: Row(children: [
-                  Icon(
-                    CupertinoIcons.sum,
-                    color: CupertinoColors.white,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    _totalWeight.toString() + ' kg',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ]),
-              )
-            ],
-          ),
-          SizedBox(height: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(), // Disable scrolling
-                itemCount: _exercises.length,
-                itemBuilder: (context, index) {
-                  final exercise = _exercises[index];
-                  return ExerciseListItem(
-                    exerciseName: exercise['name'],
-                    date: widget.date,
-                  );
-                },
-              ),
-            ],
-          ),
-        ],
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        decoration: BoxDecoration(
+          color: CupertinoColors.systemBrown,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  dayOfWeek,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  widget.date,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  child: Row(children: [
+                    Icon(
+                      CupertinoIcons.time,
+                      color: CupertinoColors.white,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      _duration,
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  ]),
+                ),
+                Container(
+                  child: Row(children: [
+                    Icon(
+                      CupertinoIcons.sum,
+                      color: CupertinoColors.white,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      _totalWeight.toString() + ' kg',
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  ]),
+                )
+              ],
+            ),
+            SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(), // Disable scrolling
+                  itemCount: _exercises.length,
+                  itemBuilder: (context, index) {
+                    final exercise = _exercises[index];
+                    return ExerciseListItem(
+                      exerciseName: exercise['name'],
+                      date: widget.date,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -847,6 +860,70 @@ class _ExerciseListItemState extends State<ExerciseListItem> {
         ),
         SizedBox(height: 5),
       ],
+    );
+  }
+}
+
+class WorkoutDetailPage extends StatefulWidget {
+  final String date;
+
+  WorkoutDetailPage({required this.date});
+
+  @override
+  State<WorkoutDetailPage> createState() => _WorkoutDetailPageState();
+}
+
+class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
+  int _selectedIndex =
+      0; // The initial selected index for the segmented control
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(widget.date),
+      ),
+      child: SafeArea(
+        child: Column(
+          children: [
+            CupertinoSegmentedControl(
+              padding: EdgeInsets.all(20),
+              children: {
+                0: Padding(
+                  padding: EdgeInsets.all(10), // Add the desired padding here
+                  child: Text('Exercises'),
+                ),
+                1: Padding(
+                  padding: EdgeInsets.all(10), // Add the desired padding here
+                  child: Text('Stats'),
+                ),
+              },
+              onValueChanged: (int index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              groupValue: _selectedIndex,
+            ),
+            SizedBox(height: 20),
+            _selectedIndex == 0 ? _buildExerciseList() : _buildStats(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExerciseList() {
+    // You can implement the exercise list view here
+    return Center(
+      child: Text('Exercise List'),
+    );
+  }
+
+  Widget _buildStats() {
+    // You can implement the statistics view here
+    return Center(
+      child: Text('Statistics'),
     );
   }
 }
