@@ -134,4 +134,13 @@ class DatabaseHelper {
     int totalSets = maps[0]['total_sets'] ?? 0;
     return totalSets;
   }
+
+  // Function to get all exercises for a specific workout date
+  Future<List<Map<String, dynamic>>> getAllInformationByDate(
+      String date) async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('SELECT * FROM exercise WHERE date = "$date"');
+  }
 }

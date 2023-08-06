@@ -164,12 +164,20 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
         );
       }
     }
+    DatabaseHelper().insertExercise(
+      name: "nam",
+      sets: 3,
+      weight: 4,
+      reps: 5,
+      date: "15.09.2021",
+      duration: _duration,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoNavigationBar(
-      middle: Text(_timerValue, style: TextStyle(fontSize: 24)),
+      middle: Text(_timerValue, style: TextStyle(fontSize: 20)),
     );
   }
 }
@@ -423,7 +431,12 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
     print("Exercise List $_exerciseList");
 
     return Container(
-      padding: EdgeInsets.only(left: 50, right: 50, top: 20, bottom: 20),
+      padding: EdgeInsets.all(20),
+      margin: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Color.fromARGB(255, 60, 60, 60),
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Stack(
         children: [
           Column(
@@ -434,6 +447,44 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
+              Row(children: [
+                Container(
+                    width: 70,
+                    child: Center(
+                        child: Text('Set', style: TextStyle(fontSize: 17)))),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10), // Adjust the padding as needed
+                    child: Center(
+                      child: Text(
+                        'Weight (kg)',
+                        style: TextStyle(fontSize: 17),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20), // Adjust the padding as needed
+                    child: Center(
+                      child: Text(
+                        'Reps',
+                        style: TextStyle(fontSize: 17),
+                      ),
+                    ),
+                  ),
+                ),
+              ]),
+              SizedBox(height: 10),
+              Container(
+                height: 2,
+                decoration: BoxDecoration(
+                  color: CupertinoColors.white,
+                  borderRadius: BorderRadius.circular(1),
+                ),
+              ),
               // Use ListView with shrinkWrap to fit its content without scrolling
               ListView.builder(
                 shrinkWrap: true,
@@ -468,7 +519,8 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
               SizedBox(height: 10),
               CupertinoButton.filled(
                   child: Text('Add Set',
-                      style: TextStyle(color: CupertinoColors.white)),
+                      style: TextStyle(
+                          color: CupertinoColors.white, fontSize: 17)),
                   onPressed: () {
                     setState(() {
                       widget.sets.add({'weight': 0, 'reps': 0});
@@ -533,58 +585,73 @@ class _ListItemState extends State<ListItem> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Set ${widget.index + 1}:'),
-          SizedBox(width: 10),
+          Container(
+              width: 70,
+              child: Center(
+                child:
+                    Text('${widget.index + 1}', style: TextStyle(fontSize: 17)),
+              )),
           Expanded(
-            child: CupertinoTextField(
-              keyboardType: TextInputType.number,
-              controller: weightController,
-              onChanged: (value) {
-                setState(() {
-                  // Update the weight value when the text field changes
-                  widget.weight = int.parse(value);
-                  // Update the weight value in the global exercise list
-                  _updateSet(
-                      _exerciseList.indexWhere(
-                          (exercise) => exercise['name'] == widget.name),
-                      widget.index,
-                      widget.weight,
-                      widget.reps);
-                });
-              },
-              placeholder: 'Weight',
-              textAlign: TextAlign.center,
-              decoration: BoxDecoration(
-                color: CupertinoColors.systemBrown,
-                borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20), // Adjust the padding as needed
+              child: CupertinoTextField(
+                keyboardType: TextInputType.number,
+                controller: weightController,
+                onChanged: (value) {
+                  setState(() {
+                    // Update the weight value when the text field changes
+                    widget.weight = int.parse(value);
+                    // Update the weight value in the global exercise list
+                    _updateSet(
+                        _exerciseList.indexWhere(
+                            (exercise) => exercise['name'] == widget.name),
+                        widget.index,
+                        widget.weight,
+                        widget.reps);
+                  });
+                },
+                placeholder: 'Weight',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: CupertinoColors.black, fontSize: 17),
+                placeholderStyle:
+                    TextStyle(color: CupertinoColors.lightBackgroundGray),
+                decoration: BoxDecoration(
+                  color: CupertinoColors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ),
-          SizedBox(width: 10),
           Expanded(
-            child: CupertinoTextField(
-              keyboardType: TextInputType.number,
-              controller: repsController,
-              onChanged: (value) {
-                setState(() {
-                  // Update the reps value when the text field changes
-                  widget.reps = int.parse(value);
-                  // Update the reps value in the global exercise list
-                  _updateSet(
-                      _exerciseList.indexWhere(
-                          (exercise) => exercise['name'] == widget.name),
-                      widget.index,
-                      widget.weight,
-                      widget.reps);
-                });
-              },
-              placeholder: 'Reps',
-              textAlign: TextAlign.center,
-              decoration: BoxDecoration(
-                color: CupertinoColors.systemBrown,
-                borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: CupertinoTextField(
+                keyboardType: TextInputType.number,
+                controller: repsController,
+                onChanged: (value) {
+                  setState(() {
+                    // Update the reps value when the text field changes
+                    widget.reps = int.parse(value);
+                    // Update the reps value in the global exercise list
+                    _updateSet(
+                        _exerciseList.indexWhere(
+                            (exercise) => exercise['name'] == widget.name),
+                        widget.index,
+                        widget.weight,
+                        widget.reps);
+                  });
+                },
+                placeholder: 'Reps',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: CupertinoColors.black, fontSize: 17),
+                placeholderStyle:
+                    TextStyle(color: CupertinoColors.lightBackgroundGray),
+                decoration: BoxDecoration(
+                  color: CupertinoColors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ),
@@ -608,25 +675,40 @@ class HistoryScreen extends StatefulWidget {
 
 class _HistoryScreenState extends State<HistoryScreen> {
   List<String> workoutDatesList = [];
+  List<String> filteredWorkoutDatesList = [];
 
-  Future<void> _loadWorkoutDates() async {
+  @override
+  void initState() {
+    super.initState();
+    _loadWorkoutDates();
+  }
+
+  void _loadWorkoutDates() async {
     List<String> dates = await DatabaseHelper().getDates();
     setState(() {
       workoutDatesList = dates;
+      filteredWorkoutDatesList = dates;
     });
-    print(workoutDatesList);
+  }
+
+  void _searchWorkoutDates(String searchText) {
+    // If there is a search text, filter the workout dates accordingly
+    setState(() {
+      filteredWorkoutDatesList = workoutDatesList
+          .where((date) => date.startsWith(searchText))
+          .toList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Load the workout dates from the database
-    _loadWorkoutDates();
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: SizedBox(
           width: 150,
           child: CupertinoSearchTextField(
             placeholder: 'Workout durchsuchen',
+            onChanged: _searchWorkoutDates,
           ),
         ),
       ),
@@ -637,10 +719,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final date = workoutDatesList[index];
+                    final date = filteredWorkoutDatesList[index];
                     return WorkoutDateItem(date: date);
                   },
-                  childCount: workoutDatesList.length,
+                  childCount: filteredWorkoutDatesList.length,
                 ),
               ),
             ],
@@ -714,9 +796,9 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
         );
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        margin: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: CupertinoColors.systemBrown,
+          color: Color.fromARGB(255, 60, 60, 60),
           borderRadius: BorderRadius.circular(8),
         ),
         padding: EdgeInsets.all(20),
@@ -749,7 +831,7 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
                     SizedBox(width: 10),
                     Text(
                       _duration,
-                      style: TextStyle(fontSize: 15),
+                      style: TextStyle(fontSize: 17),
                     ),
                   ]),
                 ),
@@ -762,7 +844,7 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
                     SizedBox(width: 10),
                     Text(
                       _totalWeight.toString() + ' kg',
-                      style: TextStyle(fontSize: 15),
+                      style: TextStyle(fontSize: 17),
                     ),
                   ]),
                 )
@@ -852,10 +934,10 @@ class _ExerciseListItemState extends State<ExerciseListItem> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 35),
           child: Text(
             '$_set x ${widget.exerciseName}', // Display sets before exercise name
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
         ),
         SizedBox(height: 5),
@@ -874,11 +956,36 @@ class WorkoutDetailPage extends StatefulWidget {
 }
 
 class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
-  int _selectedIndex =
-      0; // The initial selected index for the segmented control
+  int _selectedIndex = 0;
+  List<Map<String, dynamic>> _exercises = [];
+  List<Map<String, dynamic>> exercisesForSelectedDate = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getExercises();
+    _getExercisesForDate(widget.date);
+  }
+
+  Future<void> _getExercises() async {
+    List<Map<String, dynamic>> exercises =
+        await DatabaseHelper().getExercisesByDate(widget.date);
+    setState(() {
+      _exercises = exercises;
+    });
+  }
+
+  void _getExercisesForDate(String date) async {
+    List<Map<String, dynamic>> exercises =
+        await DatabaseHelper().getAllInformationByDate(date);
+    setState(() {
+      exercisesForSelectedDate = exercises;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(exercisesForSelectedDate);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(widget.date),
@@ -886,24 +993,27 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
       child: SafeArea(
         child: Column(
           children: [
-            CupertinoSegmentedControl(
-              padding: EdgeInsets.all(20),
-              children: {
-                0: Padding(
-                  padding: EdgeInsets.all(10), // Add the desired padding here
-                  child: Text('Exercises'),
-                ),
-                1: Padding(
-                  padding: EdgeInsets.all(10), // Add the desired padding here
-                  child: Text('Stats'),
-                ),
-              },
-              onValueChanged: (int index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              groupValue: _selectedIndex,
+            Container(
+              width: MediaQuery.of(context).size.width,
+              child: CupertinoSegmentedControl(
+                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+                children: {
+                  0: Padding(
+                    padding: EdgeInsets.all(10), // Add the desired padding here
+                    child: Text('Exercises'),
+                  ),
+                  1: Padding(
+                    padding: EdgeInsets.all(10), // Add the desired padding here
+                    child: Text('Stats'),
+                  ),
+                },
+                onValueChanged: (int index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                groupValue: _selectedIndex,
+              ),
             ),
             SizedBox(height: 20),
             _selectedIndex == 0 ? _buildExerciseList() : _buildStats(),
@@ -914,14 +1024,26 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
   }
 
   Widget _buildExerciseList() {
-    // You can implement the exercise list view here
-    return Center(
-      child: Text('Exercise List'),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(), // Disable scrolling
+          itemCount: _exercises.length,
+          itemBuilder: (context, index) {
+            final exercise = _exercises[index];
+            return ExerciseListItem(
+              exerciseName: exercise['name'],
+              date: widget.date,
+            );
+          },
+        ),
+      ],
     );
   }
 
   Widget _buildStats() {
-    // You can implement the statistics view here
     return Center(
       child: Text('Statistics'),
     );
