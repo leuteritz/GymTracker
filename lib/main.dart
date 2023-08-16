@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
 import 'database.dart';
@@ -957,34 +959,52 @@ class WorkoutDetailPage extends StatefulWidget {
 
 class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
   int _selectedIndex = 0;
-  List<Map<String, dynamic>> _exercises = [];
   List<Map<String, dynamic>> exercisesForSelectedDate = [];
+  List<Map<String, dynamic>> transformedExercises = []; // Declare it here
 
   @override
   void initState() {
     super.initState();
-    _getExercises();
     _getExercisesForDate(widget.date);
-  }
-
-  Future<void> _getExercises() async {
-    List<Map<String, dynamic>> exercises =
-        await DatabaseHelper().getExercisesByDate(widget.date);
-    setState(() {
-      _exercises = exercises;
-    });
   }
 
   void _getExercisesForDate(String date) async {
     List<Map<String, dynamic>> exercises =
         await DatabaseHelper().getAllInformationByDate(date);
+    exercisesForSelectedDate = exercises;
     setState(() {
-      exercisesForSelectedDate = exercises;
+      transformedExercises = transformExercisesFormat(); // Update here
     });
+  }
+
+  List<Map<String, dynamic>> transformExercisesFormat() {
+    Map<String, Map<String, dynamic>> exerciseMap = {};
+
+    for (var exercise in exercisesForSelectedDate) {
+      String name = exercise['name']!;
+      String exerciseDate = exercise['date']!;
+      String key = '$name-$exerciseDate';
+
+      if (!exerciseMap.containsKey(key)) {
+        exerciseMap[key] = {
+          'name': name,
+          'date': exerciseDate,
+          'sets': [],
+        };
+      }
+
+      exerciseMap[key]!['sets'].add({
+        'weight': exercise['weight']!,
+        'reps': exercise['reps']!,
+      });
+    }
+
+    return exerciseMap.values.toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    print(transformedExercises);
     print(exercisesForSelectedDate);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -1026,20 +1046,47 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
   Widget _buildExerciseList() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ListView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(), // Disable scrolling
-          itemCount: _exercises.length,
-          itemBuilder: (context, index) {
-            final exercise = _exercises[index];
-            return ExerciseListItem(
-              exerciseName: exercise['name'],
-              date: widget.date,
-            );
-          },
-        ),
-      ],
+      children: transformedExercises.map<Widget>((exercise) {
+        // Extract exercise information
+        String exerciseName = exercise['name'];
+        List<Map<String, dynamic>> sets =
+            List<Map<String, dynamic>>.from(exercise['sets']);
+
+        // Generate set rows
+        List<Widget> setRows = [];
+        for (int i = 0; i < sets.length; i++) {
+          Map<String, dynamic> set = sets[i];
+          int setNumber = i + 1;
+          int weight = set['weight'];
+          int reps = set['reps'];
+
+          setRows.add(
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                'Set $setNumber: Weight: $weight Reps: $reps',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          );
+        }
+
+        // Combine exercise name and set rows
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                exerciseName,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ...setRows, // Spread set rows using the spread operator
+            SizedBox(height: 8), // Add spacing between exercises
+          ],
+        );
+      }).toList(),
     );
   }
 
