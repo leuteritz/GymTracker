@@ -4,6 +4,139 @@ import 'database.dart';
 import 'dart:async';
 import 'exerciselabel.dart';
 
+class BreakTimer extends StatefulWidget {
+  @override
+  State<BreakTimer> createState() => _BreakTimerState();
+}
+
+class _BreakTimerState extends State<BreakTimer> {
+  Timer? _timer;
+  int _seconds = 0;
+  String _timerValue = 'Pause';
+
+  void _updateTimerValue() {
+    int minutes = _seconds ~/ 60;
+    int remainingSeconds = _seconds % 60;
+    String formattedMinutes = minutes.toString().padLeft(2, '0');
+    String formattedSeconds = remainingSeconds.toString().padLeft(2, '0');
+    setState(() {
+      _timerValue = '$formattedMinutes:$formattedSeconds';
+    });
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_seconds > 0) {
+        setState(() {
+          _seconds--;
+          _updateTimerValue();
+        });
+      } else {
+        _timer?.cancel();
+        _showBreakTimerEndModal(context);
+      }
+    });
+  }
+
+  void _stopTimer() {
+    _timer?.cancel();
+  }
+
+  // Function to open the modal view
+  void _showBreakTimerModal(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200,
+          child: CupertinoPicker(
+            backgroundColor: CupertinoColors.systemBackground,
+            itemExtent: 32,
+            children: [
+              Text('1 min'),
+              Text('2 min'),
+              Text('3 min'),
+              Text('4 min'),
+              Text('5 min'),
+            ],
+            onSelectedItemChanged: (index) {
+              setState(() {
+                _seconds = (index + 1) * 60;
+                _startTimer();
+                _updateTimerValue();
+              });
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  void _showBreakTimerEndModal(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.2,
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: CupertinoPopupSurface(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Pause ended!',
+                    style:
+                        TextStyle(fontSize: 20, color: CupertinoColors.white),
+                  ),
+                  SizedBox(height: 20),
+                  CupertinoButton.filled(
+                    child: Text('OK',
+                        style: TextStyle(color: CupertinoColors.white)),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        _showBreakTimerModal(context);
+        _stopTimer();
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width / 4,
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Icon(
+                CupertinoIcons.pause_rectangle_fill,
+                size: 25,
+              ),
+              // Add some spacing between the icon and text
+              Text(
+                _timerValue,
+                style: TextStyle(fontSize: 20),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _CustomNavigationBarState extends State<CustomNavigationBar> {
   Timer? _timer;
   int _seconds = 0;
@@ -68,7 +201,32 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return CupertinoNavigationBar(
-      middle: Text(_timerValue, style: TextStyle(fontSize: 20)),
+      middle: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          BreakTimer(),
+          // Add some spacing between the break timer and text
+          Container(
+            width: MediaQuery.of(context).size.width / 4,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Icon(
+                  CupertinoIcons.stopwatch_fill,
+                  size: 25,
+                ),
+                Text(
+                  _timerValue,
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width / 4,
+          )
+        ],
+      ),
     );
   }
 }
