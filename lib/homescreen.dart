@@ -75,9 +75,6 @@ class _BreakTimerState extends State<BreakTimer> {
           _seconds--;
           _updateTimerValue();
           _spinnerAngle = (360 - (_tempseconds / _timeselected * 360)).round();
-
-          print(
-              "_seconds: $_seconds, _spinnerAngle: $_spinnerAngle, _timeselected: $_timeselected, _tempseconds: $_tempseconds, _seconds: $_seconds");
         });
       } else {
         _timer?.cancel();

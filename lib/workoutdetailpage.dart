@@ -134,7 +134,6 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
         Padding(
           padding:
               EdgeInsets.symmetric(horizontal: 10), // Add horizontal padding
-
           child: Container(
             padding: EdgeInsets.all(10),
             margin: EdgeInsets.all(10),
@@ -197,41 +196,30 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20), // Adjust the padding as needed
-                          child: Center(
-                            child: Text(
-                              '$setNumber',
-                              style: TextStyle(fontSize: 17),
-                            ),
+                        // Adjust the padding as needed
+                        child: Center(
+                          child: Text(
+                            '$setNumber',
+                            style: TextStyle(fontSize: 17),
                           ),
                         ),
                       ),
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20), // Adjust the padding as needed
-                          child: Center(
-                            child: Text(
-                              '$weight',
-                              style: TextStyle(fontSize: 17),
-                            ),
+                        child: Center(
+                          child: Text(
+                            '$weight',
+                            style: TextStyle(fontSize: 17),
                           ),
                         ),
                       ),
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20), // Adjust the padding as needed
-                          child: Center(
-                            child: Text(
-                              '$reps',
-                              style: TextStyle(fontSize: 17),
-                            ),
+                        // Adjust the padding as needed
+                        child: Center(
+                          child: Text(
+                            '$reps',
+                            style: TextStyle(fontSize: 17),
                           ),
                         ),
                       ),
@@ -249,7 +237,8 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.symmetric(
+                        vertical: 10), // Add horizontal padding
                     child: Center(
                       child: Text(
                         exerciseName,
@@ -261,52 +250,32 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          20), // Adjust the padding as needed
-                                  child: Center(
-                                    child: Text(
-                                      'Set',
-                                      style: TextStyle(fontSize: 17),
-                                    ),
-                                  ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  'Set',
+                                  style: TextStyle(fontSize: 17),
                                 ),
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          20), // Adjust the padding as needed
-                                  child: Center(
-                                    child: Text(
-                                      'Weight(kg)',
-                                      style: TextStyle(fontSize: 17),
-                                    ),
-                                  ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                'Weight (kg)',
+                                style: TextStyle(fontSize: 17),
+                              ),
+                            ),
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  'Reps',
+                                  style: TextStyle(fontSize: 17),
                                 ),
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal:
-                                          20), // Adjust the padding as needed
-                                  child: Center(
-                                    child: Text(
-                                      'Reps',
-                                      style: TextStyle(fontSize: 17),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ]),
-                      ),
+                            ),
+                          ]),
                       SizedBox(height: 10),
                       Container(
                         height: 2,
