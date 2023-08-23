@@ -66,7 +66,9 @@ class DatabaseHelper {
     if (db == null) return [];
 
     final List<Map<String, dynamic>> maps =
-        await db.rawQuery('SELECT DISTINCT date FROM exercise');
+        await db.rawQuery('''SELECT DISTINCT date
+    FROM exercise
+    ORDER BY SUBSTR(date, 7, 4) DESC, SUBSTR(date, 4, 2) DESC, SUBSTR(date, 1, 2) DESC''');
     return List.generate(maps.length, (i) {
       return maps[i]['date'];
     });

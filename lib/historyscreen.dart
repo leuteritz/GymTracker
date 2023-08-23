@@ -10,23 +10,35 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class HistoryScreenState extends State<HistoryScreen> {
-  List<String> workoutDatesList = [];
   List<String> filteredWorkoutDatesList = [];
+  List<String> _dates = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadWorkoutDates();
+  }
 
   void loadWorkoutDates() async {
     List<String> dates = await DatabaseHelper().getDates();
+
     setState(() {
-      workoutDatesList = dates;
+      _dates = dates;
       filteredWorkoutDatesList = dates;
     });
   }
 
   void _searchWorkoutDates(String searchText) {
-    setState(() {
-      filteredWorkoutDatesList = workoutDatesList
-          .where((date) => date.startsWith(searchText))
-          .toList();
-    });
+    if (searchText.isEmpty) {
+      setState(() {
+        filteredWorkoutDatesList = _dates; // Reset to original list
+      });
+    } else {
+      setState(() {
+        filteredWorkoutDatesList =
+            _dates.where((date) => date.startsWith(searchText)).toList();
+      });
+    }
   }
 
   @override

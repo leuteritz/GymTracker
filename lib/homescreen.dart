@@ -200,6 +200,42 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       date: "15.09.2021",
       duration: _duration,
     );
+
+    DatabaseHelper().insertExercise(
+      name: "nam",
+      sets: 3,
+      weight: 4,
+      reps: 5,
+      date: "24.09.2021",
+      duration: _duration,
+    );
+
+    DatabaseHelper().insertExercise(
+      name: "nam",
+      sets: 3,
+      weight: 4,
+      reps: 5,
+      date: "27.09.2024",
+      duration: _duration,
+    );
+
+    DatabaseHelper().insertExercise(
+      name: "nam",
+      sets: 3,
+      weight: 4,
+      reps: 5,
+      date: "31.01.2032",
+      duration: _duration,
+    );
+
+    DatabaseHelper().insertExercise(
+      name: "nam",
+      sets: 3,
+      weight: 4,
+      reps: 5,
+      date: "27.09.2024",
+      duration: _duration,
+    );
   }
 
   @override
