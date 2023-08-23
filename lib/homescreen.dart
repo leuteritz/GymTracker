@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'constants.dart';
 import 'database.dart';
 import 'dart:async';
@@ -11,12 +12,12 @@ class BreakTimer extends StatefulWidget {
 
 class _BreakTimerState extends State<BreakTimer> {
   Timer? _timer;
-  int _seconds = 0;
+  double _seconds = 0;
   String _timerValue = 'Pause';
 
   void _updateTimerValue() {
     int minutes = _seconds ~/ 60;
-    int remainingSeconds = _seconds % 60;
+    int remainingSeconds = (_seconds % 60).round();
     String formattedMinutes = minutes.toString().padLeft(2, '0');
     String formattedSeconds = remainingSeconds.toString().padLeft(2, '0');
     setState(() {
@@ -35,6 +36,12 @@ class _BreakTimerState extends State<BreakTimer> {
       } else {
         _timer?.cancel();
         _showBreakTimerEndModal(context);
+        Timer.periodic(Duration(seconds: 1), (timer) {
+          SystemSound.play(SystemSoundType.click);
+          if (timer.tick == 3) {
+            timer.cancel();
+          }
+        });
       }
     });
   }
@@ -53,16 +60,13 @@ class _BreakTimerState extends State<BreakTimer> {
           child: CupertinoPicker(
             backgroundColor: CupertinoColors.systemBackground,
             itemExtent: 32,
-            children: [
-              Text('1 min'),
-              Text('2 min'),
-              Text('3 min'),
-              Text('4 min'),
-              Text('5 min'),
-            ],
+            children: List<Widget>.generate(8, (index) {
+              String timeValue = '${index / 2 + 0.5} min';
+              return Text(timeValue);
+            }),
             onSelectedItemChanged: (index) {
               setState(() {
-                _seconds = (index + 1) * 60;
+                _seconds = (index + 1) * 60 * 0.5;
                 _startTimer();
                 _updateTimerValue();
               });

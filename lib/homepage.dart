@@ -9,6 +9,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
+
   int _selectedIndex = 1;
 
   void _onTabSelected(int index) {
@@ -44,14 +46,20 @@ class _MyHomePageState extends State<MyHomePage> {
           case 0:
             return Foodscreen();
           case 1:
-            return HomeScreen(); // Pass the _key to the HomeScreen widget
+            return HomeScreen();
           case 2:
-            return HistoryScreen();
-
+            load(); // Call the load function here
+            return HistoryScreen(
+              key: _historyKey,
+            );
           default:
             return HomeScreen();
         }
       },
     );
+  }
+
+  void load() {
+    _historyKey.currentState?.loadWorkoutDates();
   }
 }

@@ -3,21 +3,17 @@ import 'database.dart';
 import 'workoutdateitem.dart';
 
 class HistoryScreen extends StatefulWidget {
+  HistoryScreen({Key? key}) : super(key: key);
+
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  State<HistoryScreen> createState() => HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
+class HistoryScreenState extends State<HistoryScreen> {
   List<String> workoutDatesList = [];
   List<String> filteredWorkoutDatesList = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _loadWorkoutDates();
-  }
-
-  void _loadWorkoutDates() async {
+  void loadWorkoutDates() async {
     List<String> dates = await DatabaseHelper().getDates();
     setState(() {
       workoutDatesList = dates;
@@ -26,7 +22,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _searchWorkoutDates(String searchText) {
-    // If there is a search text, filter the workout dates accordingly
     setState(() {
       filteredWorkoutDatesList = workoutDatesList
           .where((date) => date.startsWith(searchText))
