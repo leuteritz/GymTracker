@@ -4,6 +4,42 @@ import 'constants.dart';
 import 'database.dart';
 import 'dart:async';
 import 'exerciselabel.dart';
+import 'dart:math' as math;
+
+class _SpinnerPainter extends CustomPainter {
+  final int angle;
+
+  _SpinnerPainter(this.angle);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color =
+          Color.fromARGB(255, 173, 15, 226) // Set the color of the spinner
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    double startAngle = math.pi * 1.5; // 270 degrees in radians
+    double sweepAngle = angle * (math.pi / 180);
+
+    canvas.drawArc(
+      Rect.fromCircle(
+        center: Offset(size.width / 2, size.height / 2),
+        radius: size.width / 2,
+      ),
+      startAngle, // Start angle (top)
+      sweepAngle, // Sweep angle
+      false,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
 
 class BreakTimer extends StatefulWidget {
   @override
@@ -14,6 +50,9 @@ class _BreakTimerState extends State<BreakTimer> {
   Timer? _timer;
   double _seconds = 0;
   String _timerValue = 'Pause';
+  int _spinnerAngle = 0;
+  double _timeselected = 0;
+  int _tempseconds = 0;
 
   void _updateTimerValue() {
     int minutes = _seconds ~/ 60;
@@ -30,8 +69,15 @@ class _BreakTimerState extends State<BreakTimer> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_seconds > 0) {
         setState(() {
+          if (_seconds != 0) {
+            _tempseconds++;
+          }
           _seconds--;
           _updateTimerValue();
+          _spinnerAngle = (360 - (_tempseconds / _timeselected * 360)).round();
+
+          print(
+              "_seconds: $_seconds, _spinnerAngle: $_spinnerAngle, _timeselected: $_timeselected, _tempseconds: $_tempseconds, _seconds: $_seconds");
         });
       } else {
         _timer?.cancel();
@@ -42,6 +88,9 @@ class _BreakTimerState extends State<BreakTimer> {
             timer.cancel();
           }
         });
+        _spinnerAngle = 0;
+        _tempseconds = 0;
+        _timerValue = 'Pause';
       }
     });
   }
@@ -51,7 +100,7 @@ class _BreakTimerState extends State<BreakTimer> {
   }
 
   // Function to open the modal view
-  void _showBreakTimerModal(BuildContext context) {
+  void _showBreakTimerModal(BuildContext context, StateSetter setState) {
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -66,6 +115,7 @@ class _BreakTimerState extends State<BreakTimer> {
             }),
             onSelectedItemChanged: (index) {
               setState(() {
+                _timeselected = (index / 2 + 0.5) * 60;
                 _seconds = (index + 1) * 60 * 0.5;
                 _startTimer();
                 _updateTimerValue();
@@ -115,7 +165,7 @@ class _BreakTimerState extends State<BreakTimer> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        _showBreakTimerModal(context);
+        _showBreakTimerModal(context, setState);
         _stopTimer();
       },
       child: Container(
@@ -124,11 +174,13 @@ class _BreakTimerState extends State<BreakTimer> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Icon(
-                CupertinoIcons.pause_rectangle_fill,
-                size: 25,
+              // Add the CustomPaint widget for the spinner
+              CustomPaint(
+                size: Size(25, 25),
+                painter: _SpinnerPainter(_spinnerAngle),
               ),
-              // Add some spacing between the icon and text
+              SizedBox(height: 5),
+              // Text widget to display the timer value
               Text(
                 _timerValue,
                 style: TextStyle(fontSize: 20),
@@ -198,42 +250,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       weight: 4,
       reps: 5,
       date: "15.09.2021",
-      duration: _duration,
-    );
-
-    DatabaseHelper().insertExercise(
-      name: "nam",
-      sets: 3,
-      weight: 4,
-      reps: 5,
-      date: "24.09.2021",
-      duration: _duration,
-    );
-
-    DatabaseHelper().insertExercise(
-      name: "nam",
-      sets: 3,
-      weight: 4,
-      reps: 5,
-      date: "27.09.2024",
-      duration: _duration,
-    );
-
-    DatabaseHelper().insertExercise(
-      name: "nam",
-      sets: 3,
-      weight: 4,
-      reps: 5,
-      date: "31.01.2032",
-      duration: _duration,
-    );
-
-    DatabaseHelper().insertExercise(
-      name: "nam",
-      sets: 3,
-      weight: 4,
-      reps: 5,
-      date: "27.09.2024",
       duration: _duration,
     );
   }
