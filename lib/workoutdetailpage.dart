@@ -92,33 +92,37 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
         middle: Text(widget.date),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              child: CupertinoSegmentedControl(
-                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
-                children: {
-                  0: Padding(
-                    padding: EdgeInsets.all(10), // Add the desired padding here
-                    child: Text('Exercises'),
-                  ),
-                  1: Padding(
-                    padding: EdgeInsets.all(10), // Add the desired padding here
-                    child: Text('Stats'),
-                  ),
-                },
-                onValueChanged: (int index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
-                groupValue: _selectedIndex,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: CupertinoSegmentedControl(
+                  padding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+                  children: {
+                    0: Padding(
+                      padding:
+                          EdgeInsets.all(10), // Add the desired padding here
+                      child: Text('Exercises'),
+                    ),
+                    1: Padding(
+                      padding:
+                          EdgeInsets.all(10), // Add the desired padding here
+                      child: Text('Stats'),
+                    ),
+                  },
+                  onValueChanged: (int index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                  groupValue: _selectedIndex,
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            _selectedIndex == 0 ? _buildExerciseList() : _buildStats(),
-          ],
+              SizedBox(height: 20),
+              _selectedIndex == 0 ? _buildExerciseList() : _buildStats(),
+            ],
+          ),
         ),
       ),
     );
@@ -129,40 +133,47 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
       children: [
         Padding(
           padding:
-              EdgeInsets.symmetric(horizontal: 50), // Add horizontal padding
+              EdgeInsets.symmetric(horizontal: 10), // Add horizontal padding
 
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                child: Row(children: [
-                  Icon(
-                    CupertinoIcons.time,
-                    color: CupertinoColors.white,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    _duration,
-                    style: TextStyle(
-                      fontSize: 17,
+          child: Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                color: Color.fromARGB(255, 60, 60, 60),
+                borderRadius: BorderRadius.circular(8)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  child: Row(children: [
+                    Icon(
+                      CupertinoIcons.time,
+                      color: CupertinoColors.white,
                     ),
-                  ),
-                ]),
-              ),
-              Container(
-                child: Row(children: [
-                  Icon(
-                    CupertinoIcons.sum,
-                    color: CupertinoColors.white,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    _totalWeight.toString() + ' kg',
-                    style: TextStyle(fontSize: 17),
-                  ),
-                ]),
-              )
-            ],
+                    SizedBox(width: 10),
+                    Text(
+                      _duration,
+                      style: TextStyle(
+                        fontSize: 17,
+                      ),
+                    ),
+                  ]),
+                ),
+                Container(
+                  child: Row(children: [
+                    Icon(
+                      CupertinoIcons.sum,
+                      color: CupertinoColors.white,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      _totalWeight.toString() + ' kg',
+                      style: TextStyle(fontSize: 17),
+                    ),
+                  ]),
+                )
+              ],
+            ),
           ),
         ),
         SizedBox(height: 16),
@@ -184,34 +195,132 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
 
               setRows.add(
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4),
-                  child: Text(
-                    'Set $setNumber: Weight: $weight Reps: $reps',
-                    style: TextStyle(fontSize: 16),
+                  padding: const EdgeInsets.all(4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20), // Adjust the padding as needed
+                          child: Center(
+                            child: Text(
+                              '$setNumber',
+                              style: TextStyle(fontSize: 17),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20), // Adjust the padding as needed
+                          child: Center(
+                            child: Text(
+                              '$weight',
+                              style: TextStyle(fontSize: 17),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20), // Adjust the padding as needed
+                          child: Center(
+                            child: Text(
+                              '$reps',
+                              style: TextStyle(fontSize: 17),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
             }
-            return Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Center(
-                    child: Text(
-                      exerciseName,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            return Container(
+              padding: EdgeInsets.all(20),
+              margin: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 60, 60, 60),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Center(
+                      child: Text(
+                        exerciseName,
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ...setRows, // Spread set rows using the spread operator
-                    SizedBox(height: 8), // Add spacing between exercises
-                  ],
-                ),
-              ],
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          20), // Adjust the padding as needed
+                                  child: Center(
+                                    child: Text(
+                                      'Set',
+                                      style: TextStyle(fontSize: 17),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          20), // Adjust the padding as needed
+                                  child: Center(
+                                    child: Text(
+                                      'Weight(kg)',
+                                      style: TextStyle(fontSize: 17),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          20), // Adjust the padding as needed
+                                  child: Center(
+                                    child: Text(
+                                      'Reps',
+                                      style: TextStyle(fontSize: 17),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        height: 2,
+                        decoration: BoxDecoration(
+                          color: CupertinoColors.white,
+                          borderRadius: BorderRadius.circular(1),
+                        ),
+                      ),
+                      ...setRows, // Spread set rows using the spread operator
+                      SizedBox(height: 8), // Add spacing between exercises
+                    ],
+                  ),
+                ],
+              ),
             );
           }).toList(),
         ),
