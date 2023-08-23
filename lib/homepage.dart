@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'foodscreen.dart';
+import 'exercisescreen.dart';
 import 'homescreen.dart';
 import 'historyscreen.dart';
 
@@ -26,8 +26,8 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: CupertinoColors.systemGrey6,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.heart),
-            label: 'Home',
+            icon: Icon(CupertinoIcons.list_bullet),
+            label: 'Exercise',
           ),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.home),
@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
       tabBuilder: (context, index) {
         switch (index) {
           case 0:
-            return Foodscreen();
+            return ExerciseScreen();
           case 1:
             return HomeScreen();
           case 2:

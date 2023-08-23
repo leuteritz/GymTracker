@@ -169,18 +169,17 @@ class _BreakTimerState extends State<BreakTimer> {
         width: MediaQuery.of(context).size.width / 4,
         child: Center(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Add the CustomPaint widget for the spinner
               CustomPaint(
                 size: Size(25, 25),
                 painter: _SpinnerPainter(_spinnerAngle),
               ),
-              SizedBox(height: 5),
               // Text widget to display the timer value
               Text(
                 _timerValue,
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -255,7 +254,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   Widget build(BuildContext context) {
     return CupertinoNavigationBar(
       middle: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           BreakTimer(),
           // Add some spacing between the break timer and text
@@ -270,14 +269,18 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
                 ),
                 Text(
                   _timerValue,
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
           Container(
             width: MediaQuery.of(context).size.width / 4,
-          )
+            child: Icon(
+              CupertinoIcons.gear,
+              size: 25,
+            ),
+          ),
         ],
       ),
     );
