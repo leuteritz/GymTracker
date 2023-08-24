@@ -241,11 +241,47 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       }
     }
     DatabaseHelper().insertExercise(
-      name: "nam",
+      name: "Bench Press",
+      sets: 3,
+      weight: 6,
+      reps: 5,
+      date: "31.08.2023",
+      duration: _duration,
+    );
+
+    DatabaseHelper().insertExercise(
+      name: "Bench Press",
+      sets: 3,
+      weight: 10,
+      reps: 5,
+      date: "15.08.2023",
+      duration: _duration,
+    );
+
+    DatabaseHelper().insertExercise(
+      name: "Bench Press",
       sets: 3,
       weight: 4,
       reps: 5,
-      date: "15.09.2021",
+      date: "22.08.2023",
+      duration: _duration,
+    );
+
+    DatabaseHelper().insertExercise(
+      name: "Deadlift",
+      sets: 3,
+      weight: 4,
+      reps: 5,
+      date: "24.08.2022",
+      duration: _duration,
+    );
+
+    DatabaseHelper().insertExercise(
+      name: "Deadlift",
+      sets: 3,
+      weight: 4,
+      reps: 8,
+      date: "16.08.2023",
       duration: _duration,
     );
   }

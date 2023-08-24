@@ -4,8 +4,13 @@ import 'exercisedetailpage.dart';
 class Exercise extends StatelessWidget {
   final String name;
   final String description;
+  final String muscleGroup; // Add this line
 
-  Exercise({required this.name, required this.description});
+  Exercise({
+    required this.name,
+    required this.description,
+    required this.muscleGroup, // Add this line
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +20,8 @@ class Exercise extends StatelessWidget {
         Navigator.push(
           context,
           CupertinoPageRoute(
-            builder: (context) => ExerciseDetailPage(name: name),
+            builder: (context) =>
+                ExerciseDetailPage(exercise: name, description: description),
           ),
         );
       },
@@ -37,7 +43,9 @@ class Exercise extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              description,
+              description.length > 50
+                  ? description.substring(0, 50) + "..."
+                  : description,
               style: TextStyle(
                 fontSize: 17,
               ),

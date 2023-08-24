@@ -1,174 +1,131 @@
 import 'package:flutter/cupertino.dart';
-
-import 'package:fl_chart/fl_chart.dart';
+import 'chart.dart';
 
 class ExerciseDetailPage extends StatefulWidget {
-  final String name;
+  final String exercise;
+  final String description;
 
-  ExerciseDetailPage({required this.name});
+  ExerciseDetailPage({required this.exercise, required this.description});
   @override
   State<ExerciseDetailPage> createState() => _ExerciseDetailPageState();
 }
 
 class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
+  String _selectedInterval = 'week';
+  List<String> monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+
+  String getCurrentWeekDateRange() {
+    DateTime now = DateTime.now();
+    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday));
+    String startDateString =
+        "${startOfWeek.day.toString().padLeft(2, '0')}.${startOfWeek.month.toString().padLeft(2, '0')}";
+    String endDateString =
+        "${endOfWeek.day.toString().padLeft(2, '0')}.${endOfWeek.month.toString().padLeft(2, '0')}";
+    return "$startDateString - $endDateString";
+  }
+
+  String getCurrentMonth() {
+    DateTime now = DateTime.now();
+    return monthNames[now.month - 1];
+  }
+
+  String getCurrentYear() {
+    DateTime now = DateTime.now();
+    return now.year.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: Text(widget.name),
-        ),
-        child: Center(
-          child: LineChartSample2(),
-        ));
-  }
-}
-
-class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({super.key});
-
-  @override
-  State<LineChartSample2> createState() => _LineChartSample2State();
-}
-
-class _LineChartSample2State extends State<LineChartSample2> {
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AspectRatio(
-          aspectRatio: 1.70,
-          child: Padding(
-            padding: const EdgeInsets.only(
-              right: 18,
-              left: 12,
-              top: 12,
-              bottom: 12,
+      navigationBar: CupertinoNavigationBar(
+        middle: Text(widget.exercise),
+      ),
+      child: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            Text(
+              "Description",
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.underline,
+              ),
             ),
-            child: LineChart(
-              mainData(),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                '"${widget.description}"',
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    );
-    Widget text;
-    switch (value.toInt()) {
-      case 2:
-        text = const Text('MAR', style: style);
-        break;
-      case 5:
-        text = const Text('JUN', style: style);
-        break;
-      case 8:
-        text = const Text('SEP', style: style);
-        break;
-      default:
-        text = const Text('', style: style);
-        break;
-    }
-
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: text,
-    );
-  }
-
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '10K';
-        break;
-      case 3:
-        text = '30k';
-        break;
-      case 5:
-        text = '50k';
-        break;
-      default:
-        return Container();
-    }
-
-    return Text(text, style: style, textAlign: TextAlign.left);
-  }
-
-  LineChartData mainData() {
-    return LineChartData(
-      gridData: FlGridData(
-        show: true,
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            interval: 1,
-            getTitlesWidget: bottomTitleWidgets,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            interval: 1,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
-          ),
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: CupertinoColors.activeBlue, width: 2),
-      ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
-      lineBarsData: [
-        LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
+            SizedBox(height: 20),
+            if (_selectedInterval == 'week')
+              Text(
+                getCurrentWeekDateRange(), // Display current week date range
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            if (_selectedInterval == 'month')
+              Text(
+                getCurrentMonth(), // Display current week date range
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            if (_selectedInterval == 'year')
+              Text(
+                getCurrentYear(), // Display current week date range
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            SizedBox(height: 20),
+            LineChartSample2(
+              exercise: widget.exercise,
+              selectedInterval: _selectedInterval,
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              width: double.infinity,
+              child: CupertinoSegmentedControl(
+                children: {
+                  'week': Text('Week'), // Change 'Week' to 'week'
+                  'month': Text('Month'), // Change 'Month' to 'month'
+                  'year': Text('Year'), // Change 'Year' to 'year'
+                },
+                onValueChanged: (value) {
+                  setState(() {
+                    _selectedInterval = value;
+                  });
+                },
+                groupValue: _selectedInterval,
+              ),
+            ),
           ],
-          isCurved: true,
-          color: CupertinoColors.activeOrange,
-          barWidth: 3,
-          dotData: const FlDotData(
-            show: true,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: [
-                CupertinoColors.inactiveGray,
-                CupertinoColors.systemPurple, // End color
-              ],
-            ),
-          ),
         ),
-      ],
+      ),
     );
   }
 }

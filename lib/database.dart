@@ -145,4 +145,18 @@ class DatabaseHelper {
 
     return await db.rawQuery('SELECT * FROM exercise WHERE date = "$date"');
   }
+
+  Future<List<Map<String, dynamic>>> getMaxWeightRepsForExercise(
+      String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('''
+    SELECT name, date, MAX(weight * reps) as max_weight_reps
+    FROM exercise
+    WHERE name = "$exerciseName"
+    GROUP BY name, date
+    ORDER BY date DESC
+  ''');
+  }
 }
