@@ -9,10 +9,10 @@ class LineChartSample2 extends StatefulWidget {
       {super.key, required this.exercise, required this.selectedInterval});
 
   @override
-  State<LineChartSample2> createState() => _LineChartSample2State();
+  State<LineChartSample2> createState() => LineChartSample2State();
 }
 
-class _LineChartSample2State extends State<LineChartSample2> {
+class LineChartSample2State extends State<LineChartSample2> {
   List<FlSpot> dataPoints = [];
   double minY = 100000;
   double maxY = -100000;
@@ -33,24 +33,70 @@ class _LineChartSample2State extends State<LineChartSample2> {
     'Nov',
     'Dev'
   ];
+  List<Map<String, dynamic>> setsRepsAndDate = [];
+  Map<int, List<double>> monthData = {};
 
   @override
   void initState() {
     super.initState();
-    getInformation(); // Call getInformation when the widget initializes
+    getInformation('week');
+  }
+
+  double convertDateToXValue(String date, String selectedIndex) {
+    List<String> dateParts = date.split('.');
+
+    int day = int.parse(dateParts[0]);
+    int month = int.parse(dateParts[1]);
+    int year = int.parse(dateParts[2]);
+
+    DateTime parsedDate = DateTime(year, month, day);
+    DateTime currentDate = DateTime.now();
+    int daysDifference = currentDate.difference(parsedDate).inDays;
+
+    if (selectedIndex == 'week' && daysDifference >= 0 && daysDifference <= 6) {
+      // If the date is within the current week, return the day index
+      return parsedDate.weekday.toDouble() - 1;
+    } else if (selectedIndex == 'month') {
+      // Check if the date is in the current month
+      if (currentDate.year == year && currentDate.month == month) {
+        // Return the day of the month
+        return day.toDouble() - 1;
+      }
+    } else if (selectedIndex == 'year') {
+      if (currentDate.year == year) {
+        // Return the day of the month
+        return day.toDouble() - 1;
+      }
+    }
+
+    return -1;
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
+        // Add a container or text widget for the y-axis description
+        Positioned(
+          top: 0, // Adjust the position as needed
+          left: 4, // Adjust the position as needed
+          child: Text(
+            'Load', // Your y-axis description text
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              // Customize the color as needed
+            ),
+          ),
+        ),
         AspectRatio(
           aspectRatio: 1.70,
           child: Padding(
             padding: const EdgeInsets.only(
               right: 18,
               left: 12,
-              top: 12,
+              top:
+                  30, // Adjust the top padding to make space for the description
               bottom: 12,
             ),
             child: LineChart(
@@ -113,6 +159,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   LineChartData mainData() {
+    print(setsRepsAndDate);
+    print(dataPoints);
+
+    print(minY);
+    print(maxY);
+    // Update the chart when the interval is changed
     double interval = 1; // Default interval
 
     switch (widget.selectedInterval) {
@@ -126,9 +178,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         interval = 12;
         break;
     }
-
     maxX = interval - 1;
-    print(maxX);
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -171,7 +221,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       lineBarsData: [
         LineChartBarData(
           spots: dataPoints,
-          isCurved: true,
+          isCurved: false,
           color: CupertinoColors.activeOrange,
           barWidth: 3,
           dotData: const FlDotData(
@@ -191,28 +241,98 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
   }
 
-  void getInformation() async {
-    List<Map<String, dynamic>> setsRepsAndDate =
+  Future<void> getInformation(String selectedIndex) async {
+    List<Map<String, dynamic>> setsRepsAndDate1 =
         await DatabaseHelper().getMaxWeightRepsForExercise(widget.exercise);
-    print(setsRepsAndDate);
+
+    setState(() {
+      setsRepsAndDate = setsRepsAndDate1;
+    });
+
+    // Reset
+    dataPoints.clear();
+    minY = 100000;
+    maxY = -100000;
+    monthData.clear();
+    print(widget.selectedInterval);
+    print(selectedIndex);
 
     for (var row in setsRepsAndDate) {
-      String date = row['date'].replaceAll('.', '');
+      String date = row['date'];
       double maxWeightReps = row['max_weight_reps'].toDouble();
 
       // Convert the date to x-axis value
-      double xValue = double.parse(date);
+      double xValue = convertDateToXValue(date, selectedIndex);
 
-      // Use maxWeightReps as the y-axis value
-      double yValue = maxWeightReps;
+      List<String> dateParts = date.split('.');
+      int day = int.parse(dateParts[0]);
+      int month = int.parse(dateParts[1]);
+      int year = int.parse(dateParts[2]);
 
-      // Update min and max y-values
-      minY = minY > yValue ? yValue : minY;
-      maxY = maxY < yValue ? yValue : maxY;
+      DateTime parsedDate = DateTime(year, month, day);
+      DateTime currentDate = DateTime.now();
+      int daysDifference = currentDate.difference(parsedDate).inDays;
 
-      dataPoints.add(FlSpot(xValue, yValue));
+      if (selectedIndex == 'week' &&
+          daysDifference >= 0 &&
+          daysDifference <= 6) {
+        // Use maxWeightReps as the y-axis value
+        double yValue = maxWeightReps;
+        minY = minY > yValue ? yValue : minY;
+        maxY = maxY < yValue ? yValue : maxY;
+
+        dataPoints.add(FlSpot(
+          xValue,
+          yValue,
+        ));
+      } else if (selectedIndex == 'month' &&
+          currentDate.year == year &&
+          currentDate.month == month) {
+        // Use a different formula for yValue based on month interval
+        double yValue =
+            maxWeightReps; // Calculate the appropriate yValue for month
+        minY = minY > yValue ? yValue : minY;
+        maxY = maxY < yValue ? yValue : maxY;
+
+        dataPoints.add(FlSpot(
+          xValue,
+          yValue,
+        ));
+      } else if (selectedIndex == 'year' && currentDate.year == year) {
+        double yValue =
+            maxWeightReps; // Calculate the appropriate yValue for year
+
+        int monthKey = month;
+        if (!monthData.containsKey(monthKey)) {
+          monthData[monthKey] = [];
+        }
+        monthData[monthKey]?.add(yValue);
+        print("Data: ${monthData[monthKey]}");
+      }
+    }
+    monthData.forEach((monthKey, values) {
+      if (values.isNotEmpty) {
+        double average = calculateAverage(values);
+        print("Average for month $monthKey: $average");
+
+        minY = minY > average ? average : minY;
+        maxY = maxY < average ? average : maxY;
+
+        dataPoints.add(FlSpot(
+          monthKey.toDouble() - 1,
+          average,
+        ));
+      }
+    });
+  }
+
+  double calculateAverage(List<double> values) {
+    if (values.isEmpty) {
+      return 0.0; // Return 0 if the list is empty to avoid division by zero
     }
 
-    setState(() {}); // Update the chart with new data and y-axis range
+    double sum = values.reduce((a, b) => a + b);
+    print(sum / values.length);
+    return sum / values.length;
   }
 }

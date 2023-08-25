@@ -23,9 +23,11 @@ class _ExerciseListItemState extends State<ExerciseListItem> {
 
   Future<void> _getSets() async {
     int set = await DatabaseHelper().getSets(widget.date, widget.exerciseName);
-    setState(() {
-      _set = set;
-    });
+    if (mounted) {
+      setState(() {
+        _set = set;
+      });
+    }
   }
 
   @override

@@ -11,6 +11,8 @@ class ExerciseDetailPage extends StatefulWidget {
 }
 
 class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
+  GlobalKey<LineChartSample2State> _chartKey =
+      GlobalKey<LineChartSample2State>();
   String _selectedInterval = 'week';
   List<String> monthNames = [
     'January',
@@ -103,6 +105,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
               ),
             SizedBox(height: 20),
             LineChartSample2(
+              key: _chartKey,
               exercise: widget.exercise,
               selectedInterval: _selectedInterval,
             ),
@@ -119,6 +122,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                   setState(() {
                     _selectedInterval = value;
                   });
+                  _chartKey.currentState?.getInformation(value);
                 },
                 groupValue: _selectedInterval,
               ),
