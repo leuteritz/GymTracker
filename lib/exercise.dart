@@ -33,6 +33,7 @@ class Exercise extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               name,

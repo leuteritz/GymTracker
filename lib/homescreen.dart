@@ -46,13 +46,55 @@ class BreakTimer extends StatefulWidget {
   State<BreakTimer> createState() => _BreakTimerState();
 }
 
-class _BreakTimerState extends State<BreakTimer> {
+class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
   Timer? _timer;
   double _seconds = 0;
   String _timerValue = 'Pause';
   int _spinnerAngle = 0;
   double _timeselected = 0;
   int _tempseconds = 0;
+  DateTime? _lockTime;
+  bool _isModalShown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _lockTime = DateTime.now();
+      print("locktime: $_lockTime");
+      _stopTimer();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_lockTime != null) {
+        final now = DateTime.now();
+        final lockDuration = now.difference(_lockTime!);
+        final lockDurationInSeconds = lockDuration.inSeconds;
+
+        _seconds -= lockDurationInSeconds;
+        _tempseconds += lockDurationInSeconds;
+
+        if (_seconds <= 0 && !_isModalShown) {
+          _showBreakTimerEndModal(context);
+          _isModalShown = true;
+          _timerValue = 'Pause';
+          _spinnerAngle = 0;
+        } else {
+          _startTimer();
+        }
+      }
+    }
+  }
 
   void _updateTimerValue() {
     int minutes = _seconds ~/ 60;
@@ -78,7 +120,11 @@ class _BreakTimerState extends State<BreakTimer> {
         });
       } else {
         _timer?.cancel();
-        _showBreakTimerEndModal(context);
+        if (!_isModalShown) {
+          _showBreakTimerEndModal(context);
+          _isModalShown = true;
+        }
+
         Timer.periodic(Duration(seconds: 1), (timer) {
           SystemSound.play(SystemSoundType.click);
           if (timer.tick == 3) {
@@ -98,6 +144,7 @@ class _BreakTimerState extends State<BreakTimer> {
 
   // Function to open the modal view
   void _showBreakTimerModal(BuildContext context, StateSetter setState) {
+    _isModalShown = false;
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -106,16 +153,28 @@ class _BreakTimerState extends State<BreakTimer> {
           child: CupertinoPicker(
             backgroundColor: CupertinoColors.systemBackground,
             itemExtent: 32,
-            children: List<Widget>.generate(8, (index) {
-              String timeValue = '${index / 2 + 0.5} min';
-              return Text(timeValue);
+            children: List<Widget>.generate(10, (index) {
+              index += 1;
+              int hours = (index ~/ 2);
+              int minutes = (index % 2) * 30;
+
+              String formattedTime =
+                  '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')} min';
+
+              return Text(formattedTime);
             }),
             onSelectedItemChanged: (index) {
               setState(() {
+                _spinnerAngle = 0;
+                _tempseconds = 0;
+                int hours = ((index + 1) ~/ 2);
+                int minutes = ((index + 1) % 2) * 30;
+
+                _timerValue =
+                    '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
                 _timeselected = (index / 2 + 0.5) * 60;
                 _seconds = (index + 1) * 60 * 0.5;
                 _startTimer();
-                _updateTimerValue();
               });
             },
           ),
@@ -189,11 +248,26 @@ class _BreakTimerState extends State<BreakTimer> {
   }
 }
 
-class _CustomNavigationBarState extends State<CustomNavigationBar> {
+class _CustomNavigationBarState extends State<CustomNavigationBar>
+    with WidgetsBindingObserver {
   Timer? _timer;
   int _seconds = 0;
   String _timerValue = '00:00';
   String _duration = '';
+  DateTime? _lockTime;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   void _updateTimerValue() {
     int minutes = _seconds ~/ 60;
@@ -203,6 +277,25 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
     setState(() {
       _timerValue = '$formattedMinutes:$formattedSeconds';
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _lockTime = DateTime.now();
+      print(_lockTime);
+      _stopTimer();
+    } else if (state == AppLifecycleState.resumed) {
+      if (_lockTime != null) {
+        final now = DateTime.now();
+        final lockDuration = now.difference(_lockTime!);
+        final lockDurationInSeconds = lockDuration.inSeconds;
+
+        _seconds += lockDurationInSeconds;
+
+        _startTimer();
+      }
+    }
   }
 
   // Start the timer that runs every second
@@ -359,7 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
       GlobalKey<_CustomNavigationBarState>();
 
   double _currentSliderValue = 2;
-  String _selectedExercise = 'Select Exercise';
+  String _selectedExercise = 'Bench Press';
 
   bool _isAddButtonPressed = false;
 
@@ -520,7 +613,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Container(
           height: 200,
           child: CupertinoPicker(
-            backgroundColor: CupertinoColors.systemGrey6,
+            backgroundColor: CupertinoColors.systemBackground,
             itemExtent: 32, // Height of each item in the list
             onSelectedItemChanged: (int index) {
               setState(() {

@@ -79,13 +79,12 @@ class LineChartSample2State extends State<LineChartSample2> {
         // Add a container or text widget for the y-axis description
         Positioned(
           top: 0, // Adjust the position as needed
-          left: 4, // Adjust the position as needed
+          left: 2, // Adjust the position as needed
           child: Text(
             'Load', // Your y-axis description text
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 17,
               fontWeight: FontWeight.bold,
-              // Customize the color as needed
             ),
           ),
         ),
