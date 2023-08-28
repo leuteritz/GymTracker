@@ -466,6 +466,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool _isAddButtonPressed = false;
 
+  String _getGreeting() {
+    var hour = DateTime.now().hour;
+    if (hour >= 0 && hour < 12) {
+      return 'Good Morning';
+    } else if (hour >= 12 && hour < 19) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Night';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -534,6 +545,47 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: Icon(CupertinoIcons.delete_left_fill,
                     size: 60, color: CupertinoColors.systemRed),
+              ),
+            ),
+            Visibility(
+              visible: !_isAddButtonPressed,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _getGreeting(),
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Text.rich(
+                      TextSpan(
+                        text: 'Press the',
+                        children: [
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: CupertinoButton(
+                              onPressed: () {
+                                // Add your button's onPressed logic here
+                              },
+                              child: Icon(CupertinoIcons.add_circled_solid,
+                                  size: 30, color: CupertinoColors.systemGreen),
+                            ),
+                          ),
+                          TextSpan(text: 'to start the workout'),
+                        ],
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: CupertinoColors.systemGrey,
+                        ),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
