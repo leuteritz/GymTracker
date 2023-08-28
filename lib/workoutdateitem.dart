@@ -7,13 +7,12 @@ import 'exerciselistitem.dart';
 class WorkoutDateItem extends StatefulWidget {
   final String date;
 
-  WorkoutDateItem({required this.date});
-
+  WorkoutDateItem({required this.date, Key? key}) : super(key: key);
   @override
-  State<WorkoutDateItem> createState() => _WorkoutDateItemState();
+  State<WorkoutDateItem> createState() => WorkoutDateItemState();
 }
 
-class _WorkoutDateItemState extends State<WorkoutDateItem> {
+class WorkoutDateItemState extends State<WorkoutDateItem> {
   DateTime myDate = DateTime.now();
   String dayOfWeek = '';
   String _duration = '';
@@ -25,6 +24,7 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
     super.initState();
     myDate = _parseDate(widget.date);
     dayOfWeek = getDayOfWeek(myDate);
+
     _getDuration();
     _getTotalWeight();
     _getExercises();
@@ -32,24 +32,31 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
 
   Future<void> _getDuration() async {
     String duration = await DatabaseHelper().getDuration(widget.date);
-    setState(() {
-      _duration = duration;
-    });
+    if (mounted) {
+      setState(() {
+        _duration = duration;
+      });
+    }
   }
 
   Future<void> _getTotalWeight() async {
     int totalWeight = await DatabaseHelper().getTotalWeight(widget.date);
-    setState(() {
-      _totalWeight = totalWeight;
-    });
+
+    if (mounted) {
+      setState(() {
+        _totalWeight = totalWeight;
+      });
+    }
   }
 
   Future<void> _getExercises() async {
     List<Map<String, dynamic>> exercises =
         await DatabaseHelper().getExercisesByDate(widget.date);
-    setState(() {
-      _exercises = exercises;
-    });
+    if (mounted) {
+      setState(() {
+        _exercises = exercises;
+      });
+    }
   }
 
   @override
@@ -157,6 +164,8 @@ class _WorkoutDateItemState extends State<WorkoutDateItem> {
     ];
 
     int dayIndex = date.weekday - 1;
+
+    print(daysOfWeek[dayIndex]);
 
     return daysOfWeek[dayIndex];
   }

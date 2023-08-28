@@ -284,7 +284,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
     if (state == AppLifecycleState.paused) {
       _lockTime = DateTime.now();
       print(_lockTime);
-      _stopTimer();
+      _timer?.cancel();
     } else if (state == AppLifecycleState.resumed) {
       if (_lockTime != null) {
         final now = DateTime.now();
@@ -333,12 +333,13 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
         );
       }
     }
+
     DatabaseHelper().insertExercise(
       name: "Bench Press",
       sets: 3,
-      weight: 6,
-      reps: 7,
-      date: "31.08.2023",
+      weight: 50,
+      reps: 1,
+      date: "26.08.2023",
       duration: _duration,
     );
 
@@ -382,7 +383,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       sets: 3,
       weight: 7,
       reps: 12,
-      date: "23.09.2024",
+      date: "24.09.2024",
       duration: _duration,
     );
 

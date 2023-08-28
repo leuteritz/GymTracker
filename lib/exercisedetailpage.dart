@@ -15,7 +15,6 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
       GlobalKey<LineChartSample2State>();
 
   int _selectedMonthIndex = DateTime.now().month - 1;
-  int _selectedWeek = DateTime.now().weekday - 1;
   String _currentWeek = '';
 
   String _selectedInterval = 'week';
@@ -34,15 +33,32 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     'December'
   ];
 
-  String getCurrentWeekDateRange() {
-    DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday));
-    String startDateString =
-        "${startOfWeek.day.toString().padLeft(2, '0')}.${startOfWeek.month.toString().padLeft(2, '0')}";
-    String endDateString =
-        "${endOfWeek.day.toString().padLeft(2, '0')}.${endOfWeek.month.toString().padLeft(2, '0')}";
-    return "$startDateString - $endDateString";
+  @override
+  void initState() {
+    super.initState();
+    getCurrentWeekDateRange();
+  }
+
+  void getCurrentWeekDateRange() {
+    if (_selectedMonthIndex == DateTime.now().month - 1) {
+      DateTime now = DateTime.now();
+      DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+      DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday));
+      String startDateString =
+          "${startOfWeek.day.toString().padLeft(2, '0')}.${startOfWeek.month.toString().padLeft(2, '0')}";
+      String endDateString =
+          "${endOfWeek.day.toString().padLeft(2, '0')}.${endOfWeek.month.toString().padLeft(2, '0')}";
+      _currentWeek = "$startDateString - $endDateString";
+    } else {
+      DateTime now = DateTime(DateTime.now().year, _selectedMonthIndex + 1, 1);
+      DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+      DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday));
+      String startDateString =
+          "${startOfWeek.day.toString().padLeft(2, '0')}.${startOfWeek.month.toString().padLeft(2, '0')}";
+      String endDateString =
+          "${endOfWeek.day.toString().padLeft(2, '0')}.${endOfWeek.month.toString().padLeft(2, '0')}";
+      _currentWeek = "$startDateString - $endDateString";
+    }
   }
 
   String getCurrentYear() {
@@ -54,12 +70,20 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
-        List<Widget> weekWidgets = [];
+        List<String> weekWidgets = [];
 
         DateTime firstDayOfMonth =
             DateTime(DateTime.now().year, _selectedMonthIndex + 1, 1);
         DateTime lastDayOfMonth =
             DateTime(DateTime.now().year, _selectedMonthIndex + 2, 0);
+
+        int startDay = 1;
+
+        // Find the closest Monday that is before the first day of the month.
+        while (firstDayOfMonth.weekday != 1) {
+          firstDayOfMonth = firstDayOfMonth.subtract(Duration(days: 1));
+          startDay--;
+        }
 
         DateTime currentDay = firstDayOfMonth;
         while (currentDay.isBefore(lastDayOfMonth)) {
@@ -71,15 +95,11 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
               "${endOfWeek.day.toString().padLeft(2, '0')}.${endOfWeek.month.toString().padLeft(2, '0')}";
           String weekDateRange = '$startDateString - $endDateString';
 
-          weekWidgets.add(
-            Center(
-              child: Text(weekDateRange),
-            ),
-          );
+          weekWidgets.add(weekDateRange);
 
           currentDay = currentDay.add(Duration(days: 7));
-          _currentWeek = weekDateRange;
         }
+        print(weekWidgets);
 
         return Container(
           height: 200,
@@ -88,17 +108,23 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
             itemExtent: 40,
             onSelectedItemChanged: (int index) {
               setState(() {
-                _selectedWeek = index;
+                _currentWeek = weekWidgets[index].toString();
+                _chartKey.currentState?.getWeek(_currentWeek);
+                _chartKey.currentState?.getInformation(_selectedInterval);
               });
             },
-            children: weekWidgets,
+            children: List<Widget>.generate(weekWidgets.length, (int index) {
+              return Center(
+                child: Text(weekWidgets[index]),
+              );
+            }),
           ),
         );
       },
     );
   }
 
-  void _showCupertinoModal(BuildContext context, setState) {
+  void _showCupertinoModalMonth(BuildContext context, setState) {
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -110,6 +136,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
             onSelectedItemChanged: (int index) {
               setState(() {
                 _selectedMonthIndex = index;
+                getCurrentWeekDateRange();
               });
             },
             children: List<Widget>.generate(monthNames.length, (int index) {
@@ -159,7 +186,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                   _showCupertinoModalWeek(context, setState);
                 },
                 child: Text(
-                  getCurrentWeekDateRange(), // Display current week date range
+                  _currentWeek, // Display current week date range
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -170,7 +197,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
               GestureDetector(
                 onTap: () {
                   setState(() {});
-                  _showCupertinoModal(context, setState);
+                  _showCupertinoModalMonth(context, setState);
                 },
                 child: Text(
                   monthNames[_selectedMonthIndex],
@@ -193,6 +220,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
               key: _chartKey,
               exercise: widget.exercise,
               selectedInterval: _selectedInterval,
+              currentWeek: _currentWeek,
             ),
             Container(
               padding: EdgeInsets.all(10),
@@ -207,7 +235,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                   setState(() {
                     _selectedInterval = value;
                   });
-                  _chartKey.currentState?.getInformation(value);
+                  _chartKey.currentState?.getInformation(_selectedInterval);
                 },
                 groupValue: _selectedInterval,
               ),

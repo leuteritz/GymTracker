@@ -5,8 +5,13 @@ import 'database.dart';
 class LineChartSample2 extends StatefulWidget {
   final String exercise;
   final String selectedInterval;
-  const LineChartSample2(
-      {super.key, required this.exercise, required this.selectedInterval});
+  String currentWeek;
+
+  LineChartSample2(
+      {super.key,
+      required this.exercise,
+      required this.selectedInterval,
+      required this.currentWeek});
 
   @override
   State<LineChartSample2> createState() => LineChartSample2State();
@@ -42,34 +47,166 @@ class LineChartSample2State extends State<LineChartSample2> {
     getInformation('week');
   }
 
+  void getWeek(String currentWeek) {
+    setState(() {
+      widget.currentWeek = currentWeek;
+    });
+  }
+
+  Future<void> getInformation(String selectedIndex) async {
+    List<Map<String, dynamic>> setsRepsAndDate1 =
+        await DatabaseHelper().getMaxWeightRepsForExercise(widget.exercise);
+
+    setState(() {
+      setsRepsAndDate = setsRepsAndDate1;
+    });
+    print(dataPoints);
+    // Reset
+    dataPoints.clear();
+    minY = 100000;
+    maxY = -100000;
+    monthData.clear();
+
+    for (var row in setsRepsAndDate) {
+      String date = row['date'];
+      double maxWeightReps = row['max_weight_reps'].toDouble();
+
+      // Convert the date to x-axis value
+      double xValue = convertDateToXValue(date, selectedIndex);
+
+      List<String> dateParts = date.split('.');
+      int day = int.parse(dateParts[0]);
+      int month = int.parse(dateParts[1]);
+      int year = int.parse(dateParts[2]);
+
+      DateTime parsedDate = DateTime(year, month, day);
+      print(parsedDate);
+
+      List<String> currentWeekParts = widget.currentWeek.split(' - ');
+      String startWeekPart = currentWeekParts[0];
+      String endWeekPart = currentWeekParts[1];
+
+      int startDay = int.parse(startWeekPart.split('.')[0]);
+      int startMonth = int.parse(startWeekPart.split('.')[1]);
+
+      int endDay = int.parse(endWeekPart.split('.')[0]);
+      int endMonth = int.parse(endWeekPart.split('.')[1]);
+
+      DateTime startWeekDate = DateTime(year, startMonth, startDay);
+      DateTime endWeekDate = DateTime(year, endMonth, endDay);
+
+      if (selectedIndex == 'week' &&
+          (parsedDate.isAtSameMomentAs(startWeekDate) ||
+              parsedDate.isAfter(startWeekDate)) &&
+          (parsedDate.isAtSameMomentAs(endWeekDate) ||
+              parsedDate.isBefore(endWeekDate))) {
+        // Use maxWeightReps as the y-axis value
+        double yValue = maxWeightReps;
+        minY = minY > yValue ? yValue : minY;
+        maxY = maxY < yValue ? yValue : maxY;
+
+        dataPoints.add(FlSpot(
+          xValue,
+          yValue,
+        ));
+      } else if (selectedIndex == 'month' &&
+          parsedDate.year == DateTime.now().year &&
+          parsedDate.month == DateTime.now().month) {
+        // Use a different formula for yValue based on month interval
+        double yValue =
+            maxWeightReps; // Calculate the appropriate yValue for month
+        minY = minY > yValue ? yValue : minY;
+        maxY = maxY < yValue ? yValue : maxY;
+
+        dataPoints.add(FlSpot(
+          xValue,
+          yValue,
+        ));
+      } else if (selectedIndex == 'year' &&
+          parsedDate.year == DateTime.now().year) {
+        double yValue =
+            maxWeightReps; // Calculate the appropriate yValue for year
+
+        int monthKey = month;
+        if (!monthData.containsKey(monthKey)) {
+          monthData[monthKey] = [];
+        }
+        monthData[monthKey]?.add(yValue);
+        print("Data: ${monthData[monthKey]}");
+      }
+    }
+    monthData.forEach((monthKey, values) {
+      if (values.isNotEmpty) {
+        double average = calculateAverage(values);
+        print("Average for month $monthKey: $average");
+
+        minY = minY > average ? average : minY;
+        maxY = maxY < average ? average : maxY;
+
+        dataPoints.add(FlSpot(
+          monthKey.toDouble() - 1,
+          average,
+        ));
+      }
+    });
+  }
+
+  double calculateAverage(List<double> values) {
+    if (values.isEmpty) {
+      return 0.0; // Return 0 if the list is empty to avoid division by zero
+    }
+
+    double sum = values.reduce((a, b) => a + b);
+    print(sum / values.length);
+    return sum / values.length;
+  }
+
   double convertDateToXValue(String date, String selectedIndex) {
     List<String> dateParts = date.split('.');
+
+    print("current week: ${widget.currentWeek}");
 
     int day = int.parse(dateParts[0]);
     int month = int.parse(dateParts[1]);
     int year = int.parse(dateParts[2]);
 
     DateTime parsedDate = DateTime(year, month, day);
-    DateTime currentDate = DateTime.now();
-    int daysDifference = currentDate.difference(parsedDate).inDays;
+    print(parsedDate);
 
-    if (selectedIndex == 'week' && daysDifference >= 0 && daysDifference <= 6) {
-      // If the date is within the current week, return the day index
+    List<String> currentWeekParts = widget.currentWeek.split(' - ');
+    String startWeekPart = currentWeekParts[0];
+    String endWeekPart = currentWeekParts[1];
+
+    int startDay = int.parse(startWeekPart.split('.')[0]);
+    int startMonth = int.parse(startWeekPart.split('.')[1]);
+
+    int endDay = int.parse(endWeekPart.split('.')[0]);
+    int endMonth = int.parse(endWeekPart.split('.')[1]);
+
+    DateTime startWeekDate = DateTime(year, startMonth, startDay);
+    DateTime endWeekDate = DateTime(year, endMonth, endDay);
+
+    if (selectedIndex == 'week' &&
+        (parsedDate.isAtSameMomentAs(startWeekDate) ||
+            parsedDate.isAfter(startWeekDate)) &&
+        (parsedDate.isAtSameMomentAs(endWeekDate) ||
+            parsedDate.isBefore(endWeekDate))) {
+      // If the date is within the selected week, return the day index
       return parsedDate.weekday.toDouble() - 1;
     } else if (selectedIndex == 'month') {
       // Check if the date is in the current month
-      if (currentDate.year == year && currentDate.month == month) {
+      if (parsedDate.year == DateTime.now().year &&
+          parsedDate.month == DateTime.now().month) {
         // Return the day of the month
         return day.toDouble() - 1;
       }
     } else if (selectedIndex == 'year') {
-      if (currentDate.year == year) {
+      if (parsedDate.year == DateTime.now().year) {
         // Return the day of the month
         return day.toDouble() - 1;
       }
     }
-
-    return -1;
+    return 0.0;
   }
 
   @override
@@ -238,100 +375,5 @@ class LineChartSample2State extends State<LineChartSample2> {
         ),
       ],
     );
-  }
-
-  Future<void> getInformation(String selectedIndex) async {
-    List<Map<String, dynamic>> setsRepsAndDate1 =
-        await DatabaseHelper().getMaxWeightRepsForExercise(widget.exercise);
-
-    setState(() {
-      setsRepsAndDate = setsRepsAndDate1;
-    });
-
-    // Reset
-    dataPoints.clear();
-    minY = 100000;
-    maxY = -100000;
-    monthData.clear();
-    print(widget.selectedInterval);
-    print(selectedIndex);
-
-    for (var row in setsRepsAndDate) {
-      String date = row['date'];
-      double maxWeightReps = row['max_weight_reps'].toDouble();
-
-      // Convert the date to x-axis value
-      double xValue = convertDateToXValue(date, selectedIndex);
-
-      List<String> dateParts = date.split('.');
-      int day = int.parse(dateParts[0]);
-      int month = int.parse(dateParts[1]);
-      int year = int.parse(dateParts[2]);
-
-      DateTime parsedDate = DateTime(year, month, day);
-      DateTime currentDate = DateTime.now();
-      int daysDifference = currentDate.difference(parsedDate).inDays;
-
-      if (selectedIndex == 'week' &&
-          daysDifference >= 0 &&
-          daysDifference <= 6) {
-        // Use maxWeightReps as the y-axis value
-        double yValue = maxWeightReps;
-        minY = minY > yValue ? yValue : minY;
-        maxY = maxY < yValue ? yValue : maxY;
-
-        dataPoints.add(FlSpot(
-          xValue,
-          yValue,
-        ));
-      } else if (selectedIndex == 'month' &&
-          currentDate.year == year &&
-          currentDate.month == month) {
-        // Use a different formula for yValue based on month interval
-        double yValue =
-            maxWeightReps; // Calculate the appropriate yValue for month
-        minY = minY > yValue ? yValue : minY;
-        maxY = maxY < yValue ? yValue : maxY;
-
-        dataPoints.add(FlSpot(
-          xValue,
-          yValue,
-        ));
-      } else if (selectedIndex == 'year' && currentDate.year == year) {
-        double yValue =
-            maxWeightReps; // Calculate the appropriate yValue for year
-
-        int monthKey = month;
-        if (!monthData.containsKey(monthKey)) {
-          monthData[monthKey] = [];
-        }
-        monthData[monthKey]?.add(yValue);
-        print("Data: ${monthData[monthKey]}");
-      }
-    }
-    monthData.forEach((monthKey, values) {
-      if (values.isNotEmpty) {
-        double average = calculateAverage(values);
-        print("Average for month $monthKey: $average");
-
-        minY = minY > average ? average : minY;
-        maxY = maxY < average ? average : maxY;
-
-        dataPoints.add(FlSpot(
-          monthKey.toDouble() - 1,
-          average,
-        ));
-      }
-    });
-  }
-
-  double calculateAverage(List<double> values) {
-    if (values.isEmpty) {
-      return 0.0; // Return 0 if the list is empty to avoid division by zero
-    }
-
-    double sum = values.reduce((a, b) => a + b);
-    print(sum / values.length);
-    return sum / values.length;
   }
 }

@@ -37,6 +37,7 @@ class HistoryScreenState extends State<HistoryScreen> {
       setState(() {
         filteredWorkoutDatesList =
             _dates.where((date) => date.startsWith(searchText)).toList();
+        print(filteredWorkoutDatesList);
       });
     }
   }
@@ -61,7 +62,10 @@ class HistoryScreenState extends State<HistoryScreen> {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final date = filteredWorkoutDatesList[index];
-                    return WorkoutDateItem(date: date);
+                    return WorkoutDateItem(
+                      date: date,
+                      key: Key(date),
+                    );
                   },
                   childCount: filteredWorkoutDatesList.length,
                 ),

@@ -93,362 +93,174 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                child: CupertinoSegmentedControl(
-                  padding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
-                  children: {
-                    0: Padding(
-                      padding:
-                          EdgeInsets.all(10), // Add the desired padding here
-                      child: Text('Exercises'),
+            child: Column(
+          children: [
+            SizedBox(height: 20),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 10), // Add horizontal padding
+              child: Container(
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 60, 60, 60),
+                    borderRadius: BorderRadius.circular(8)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                      child: Row(children: [
+                        Icon(
+                          CupertinoIcons.time,
+                          color: CupertinoColors.white,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          _duration,
+                          style: TextStyle(
+                            fontSize: 17,
+                          ),
+                        ),
+                      ]),
                     ),
-                    1: Padding(
-                      padding:
-                          EdgeInsets.all(10), // Add the desired padding here
-                      child: Text('Stats'),
-                    ),
-                  },
-                  onValueChanged: (int index) {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                  },
-                  groupValue: _selectedIndex,
+                    Container(
+                      child: Row(children: [
+                        Icon(
+                          CupertinoIcons.sum,
+                          color: CupertinoColors.white,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          _totalWeight.toString() + ' kg',
+                          style: TextStyle(fontSize: 17),
+                        ),
+                      ]),
+                    )
+                  ],
                 ),
               ),
-              SizedBox(height: 20),
-              _selectedIndex == 0 ? _buildExerciseList() : _buildStats(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildExerciseList() {
-    return Column(
-      children: [
-        Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: 10), // Add horizontal padding
-          child: Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: Color.fromARGB(255, 60, 60, 60),
-                borderRadius: BorderRadius.circular(8)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Container(
-                  child: Row(children: [
-                    Icon(
-                      CupertinoIcons.time,
-                      color: CupertinoColors.white,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      _duration,
-                      style: TextStyle(
-                        fontSize: 17,
-                      ),
-                    ),
-                  ]),
-                ),
-                Container(
-                  child: Row(children: [
-                    Icon(
-                      CupertinoIcons.sum,
-                      color: CupertinoColors.white,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      _totalWeight.toString() + ' kg',
-                      style: TextStyle(fontSize: 17),
-                    ),
-                  ]),
-                )
-              ],
             ),
-          ),
-        ),
-        SizedBox(height: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: transformedExercises.map<Widget>((exercise) {
-            // Extract exercise information
-            String exerciseName = exercise['name'];
-            List<Map<String, dynamic>> sets =
-                List<Map<String, dynamic>>.from(exercise['sets']);
+            SizedBox(height: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: transformedExercises.map<Widget>((exercise) {
+                // Extract exercise information
+                String exerciseName = exercise['name'];
+                List<Map<String, dynamic>> sets =
+                    List<Map<String, dynamic>>.from(exercise['sets']);
 
-            // Generate set rows
-            List<Widget> setRows = [];
-            for (int i = 0; i < sets.length; i++) {
-              Map<String, dynamic> set = sets[i];
-              int setNumber = i + 1;
-              int weight = set['weight'];
-              int reps = set['reps'];
+                // Generate set rows
+                List<Widget> setRows = [];
+                for (int i = 0; i < sets.length; i++) {
+                  Map<String, dynamic> set = sets[i];
+                  int setNumber = i + 1;
+                  int weight = set['weight'];
+                  int reps = set['reps'];
 
-              setRows.add(
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        // Adjust the padding as needed
-                        child: Center(
-                          child: Text(
-                            '$setNumber',
-                            style: TextStyle(fontSize: 17),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: Text(
-                            '$weight',
-                            style: TextStyle(fontSize: 17),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        // Adjust the padding as needed
-                        child: Center(
-                          child: Text(
-                            '$reps',
-                            style: TextStyle(fontSize: 17),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-            return Container(
-              padding: EdgeInsets.all(20),
-              margin: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 60, 60, 60),
-                  borderRadius: BorderRadius.circular(8)),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                        vertical: 10), // Add horizontal padding
-                    child: Center(
-                      child: Text(
-                        exerciseName,
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Center(
-                                child: Text(
-                                  'Set',
-                                  style: TextStyle(fontSize: 17),
-                                ),
-                              ),
-                            ),
-                            Expanded(
+                  setRows.add(
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            // Adjust the padding as needed
+                            child: Center(
                               child: Text(
-                                'Weight (kg)',
+                                '$setNumber',
                                 style: TextStyle(fontSize: 17),
                               ),
                             ),
-                            Expanded(
-                              child: Center(
-                                child: Text(
-                                  'Reps',
-                                  style: TextStyle(fontSize: 17),
-                                ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                '$weight',
+                                style: TextStyle(fontSize: 17),
                               ),
                             ),
-                          ]),
-                      SizedBox(height: 10),
-                      Container(
-                        height: 2,
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.white,
-                          borderRadius: BorderRadius.circular(1),
+                          ),
+                          Expanded(
+                            // Adjust the padding as needed
+                            child: Center(
+                              child: Text(
+                                '$reps',
+                                style: TextStyle(fontSize: 17),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return Container(
+                  padding: EdgeInsets.all(20),
+                  margin: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 60, 60, 60),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 10), // Add horizontal padding
+                        child: Center(
+                          child: Text(
+                            exerciseName,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
-                      ...setRows, // Spread set rows using the spread operator
-                      SizedBox(height: 8), // Add spacing between exercises
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Center(
+                                    child: Text(
+                                      'Set',
+                                      style: TextStyle(fontSize: 17),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    'Weight (kg)',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Center(
+                                    child: Text(
+                                      'Reps',
+                                      style: TextStyle(fontSize: 17),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                          SizedBox(height: 10),
+                          Container(
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: CupertinoColors.white,
+                              borderRadius: BorderRadius.circular(1),
+                            ),
+                          ),
+                          ...setRows, // Spread set rows using the spread operator
+                          SizedBox(height: 8), // Add spacing between exercises
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStats() {
-    print(workoutDatesList);
-    return LineChartSample2();
-  }
-}
-
-class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({super.key});
-
-  @override
-  State<LineChartSample2> createState() => _LineChartSample2State();
-}
-
-class _LineChartSample2State extends State<LineChartSample2> {
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AspectRatio(
-          aspectRatio: 1.70,
-          child: Padding(
-            padding: const EdgeInsets.only(
-              right: 18,
-              left: 12,
-              top: 12,
-              bottom: 12,
+                );
+              }).toList(),
             ),
-            child: LineChart(
-              mainData(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    );
-    Widget text;
-    switch (value.toInt()) {
-      case 2:
-        text = const Text('MAR', style: style);
-        break;
-      case 5:
-        text = const Text('JUN', style: style);
-        break;
-      case 8:
-        text = const Text('SEP', style: style);
-        break;
-      default:
-        text = const Text('', style: style);
-        break;
-    }
-
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: text,
-    );
-  }
-
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '10K';
-        break;
-      case 3:
-        text = '30k';
-        break;
-      case 5:
-        text = '50k';
-        break;
-      default:
-        return Container();
-    }
-
-    return Text(text, style: style, textAlign: TextAlign.left);
-  }
-
-  LineChartData mainData() {
-    return LineChartData(
-      gridData: FlGridData(
-        show: true,
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            interval: 1,
-            getTitlesWidget: bottomTitleWidgets,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            interval: 1,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
-          ),
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: CupertinoColors.activeBlue, width: 2),
-      ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
-      lineBarsData: [
-        LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
           ],
-          isCurved: true,
-          color: CupertinoColors.activeOrange,
-          barWidth: 3,
-          dotData: const FlDotData(
-            show: true,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: [
-                CupertinoColors.inactiveGray,
-                CupertinoColors.systemPurple, // End color
-              ],
-            ),
-          ),
-        ),
-      ],
+        )),
+      ),
     );
   }
 }
