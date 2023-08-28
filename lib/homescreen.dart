@@ -373,8 +373,17 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       name: "Bench Press",
       sets: 3,
       weight: 7,
-      reps: 12,
+      reps: 20,
       date: "23.09.2023",
+      duration: _duration,
+    );
+
+    DatabaseHelper().insertExercise(
+      name: "Bench Press",
+      sets: 3,
+      weight: 10,
+      reps: 20,
+      date: "21.09.2024",
       duration: _duration,
     );
 
@@ -383,7 +392,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       sets: 3,
       weight: 7,
       reps: 12,
-      date: "24.09.2024",
+      date: "24.09.2023",
       duration: _duration,
     );
 

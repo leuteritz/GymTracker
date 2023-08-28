@@ -6,12 +6,16 @@ class LineChartSample2 extends StatefulWidget {
   final String exercise;
   final String selectedInterval;
   String currentWeek;
+  int currentMonth;
+  int currentYear;
 
   LineChartSample2(
       {super.key,
       required this.exercise,
       required this.selectedInterval,
-      required this.currentWeek});
+      required this.currentWeek,
+      required this.currentMonth,
+      required this.currentYear});
 
   @override
   State<LineChartSample2> createState() => LineChartSample2State();
@@ -53,6 +57,18 @@ class LineChartSample2State extends State<LineChartSample2> {
     });
   }
 
+  void getMonth(int currentMonth) {
+    setState(() {
+      widget.currentMonth = currentMonth;
+    });
+  }
+
+  void getYear(int currentYear) {
+    setState(() {
+      widget.currentYear = currentYear;
+    });
+  }
+
   Future<void> getInformation(String selectedIndex) async {
     List<Map<String, dynamic>> setsRepsAndDate1 =
         await DatabaseHelper().getMaxWeightRepsForExercise(widget.exercise);
@@ -60,7 +76,7 @@ class LineChartSample2State extends State<LineChartSample2> {
     setState(() {
       setsRepsAndDate = setsRepsAndDate1;
     });
-    print(dataPoints);
+
     // Reset
     dataPoints.clear();
     minY = 100000;
@@ -82,24 +98,7 @@ class LineChartSample2State extends State<LineChartSample2> {
       DateTime parsedDate = DateTime(year, month, day);
       print(parsedDate);
 
-      List<String> currentWeekParts = widget.currentWeek.split(' - ');
-      String startWeekPart = currentWeekParts[0];
-      String endWeekPart = currentWeekParts[1];
-
-      int startDay = int.parse(startWeekPart.split('.')[0]);
-      int startMonth = int.parse(startWeekPart.split('.')[1]);
-
-      int endDay = int.parse(endWeekPart.split('.')[0]);
-      int endMonth = int.parse(endWeekPart.split('.')[1]);
-
-      DateTime startWeekDate = DateTime(year, startMonth, startDay);
-      DateTime endWeekDate = DateTime(year, endMonth, endDay);
-
-      if (selectedIndex == 'week' &&
-          (parsedDate.isAtSameMomentAs(startWeekDate) ||
-              parsedDate.isAfter(startWeekDate)) &&
-          (parsedDate.isAtSameMomentAs(endWeekDate) ||
-              parsedDate.isBefore(endWeekDate))) {
+      if (selectedIndex == 'week' && xValue != -1) {
         // Use maxWeightReps as the y-axis value
         double yValue = maxWeightReps;
         minY = minY > yValue ? yValue : minY;
@@ -109,9 +108,7 @@ class LineChartSample2State extends State<LineChartSample2> {
           xValue,
           yValue,
         ));
-      } else if (selectedIndex == 'month' &&
-          parsedDate.year == DateTime.now().year &&
-          parsedDate.month == DateTime.now().month) {
+      } else if (selectedIndex == 'month' && xValue != -1) {
         // Use a different formula for yValue based on month interval
         double yValue =
             maxWeightReps; // Calculate the appropriate yValue for month
@@ -122,8 +119,7 @@ class LineChartSample2State extends State<LineChartSample2> {
           xValue,
           yValue,
         ));
-      } else if (selectedIndex == 'year' &&
-          parsedDate.year == DateTime.now().year) {
+      } else if (selectedIndex == 'year' && xValue != -1) {
         double yValue =
             maxWeightReps; // Calculate the appropriate yValue for year
 
@@ -132,13 +128,11 @@ class LineChartSample2State extends State<LineChartSample2> {
           monthData[monthKey] = [];
         }
         monthData[monthKey]?.add(yValue);
-        print("Data: ${monthData[monthKey]}");
       }
     }
     monthData.forEach((monthKey, values) {
       if (values.isNotEmpty) {
         double average = calculateAverage(values);
-        print("Average for month $monthKey: $average");
 
         minY = minY > average ? average : minY;
         maxY = maxY < average ? average : maxY;
@@ -157,21 +151,25 @@ class LineChartSample2State extends State<LineChartSample2> {
     }
 
     double sum = values.reduce((a, b) => a + b);
-    print(sum / values.length);
+
     return sum / values.length;
   }
 
   double convertDateToXValue(String date, String selectedIndex) {
     List<String> dateParts = date.split('.');
 
+    print(dateParts);
+
     print("current week: ${widget.currentWeek}");
+    print("current month: ${widget.currentMonth}");
+    print("current year: ${widget.currentYear}");
 
     int day = int.parse(dateParts[0]);
     int month = int.parse(dateParts[1]);
     int year = int.parse(dateParts[2]);
 
     DateTime parsedDate = DateTime(year, month, day);
-    print(parsedDate);
+    print(parsedDate.year);
 
     List<String> currentWeekParts = widget.currentWeek.split(' - ');
     String startWeekPart = currentWeekParts[0];
@@ -190,23 +188,24 @@ class LineChartSample2State extends State<LineChartSample2> {
         (parsedDate.isAtSameMomentAs(startWeekDate) ||
             parsedDate.isAfter(startWeekDate)) &&
         (parsedDate.isAtSameMomentAs(endWeekDate) ||
-            parsedDate.isBefore(endWeekDate))) {
+            parsedDate.isBefore(endWeekDate)) &&
+        parsedDate.year == widget.currentYear) {
       // If the date is within the selected week, return the day index
       return parsedDate.weekday.toDouble() - 1;
     } else if (selectedIndex == 'month') {
       // Check if the date is in the current month
-      if (parsedDate.year == DateTime.now().year &&
-          parsedDate.month == DateTime.now().month) {
+      if (parsedDate.month - 1 == widget.currentMonth &&
+          parsedDate.year == widget.currentYear) {
         // Return the day of the month
         return day.toDouble() - 1;
       }
     } else if (selectedIndex == 'year') {
-      if (parsedDate.year == DateTime.now().year) {
+      if (parsedDate.year == widget.currentYear) {
         // Return the day of the month
         return day.toDouble() - 1;
       }
     }
-    return 0.0;
+    return -1;
   }
 
   @override
@@ -298,8 +297,6 @@ class LineChartSample2State extends State<LineChartSample2> {
     print(setsRepsAndDate);
     print(dataPoints);
 
-    print(minY);
-    print(maxY);
     // Update the chart when the interval is changed
     double interval = 1; // Default interval
 
