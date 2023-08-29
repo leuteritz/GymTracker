@@ -76,7 +76,10 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
       child: Container(
         margin: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 60, 60, 60),
+          border: Border.all(
+            color: CupertinoColors.systemGrey,
+            width: 4.0,
+          ),
           borderRadius: BorderRadius.circular(8),
         ),
         padding: EdgeInsets.all(20),
@@ -104,12 +107,13 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
                   child: Row(children: [
                     Icon(
                       CupertinoIcons.time,
-                      color: CupertinoColors.white,
+                      color: CupertinoColors.systemGrey,
                     ),
                     SizedBox(width: 10),
                     Text(
                       _duration,
-                      style: TextStyle(fontSize: 17),
+                      style: TextStyle(
+                          fontSize: 17, color: CupertinoColors.systemGrey),
                     ),
                   ]),
                 ),
@@ -117,12 +121,13 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
                   child: Row(children: [
                     Icon(
                       CupertinoIcons.sum,
-                      color: CupertinoColors.white,
+                      color: CupertinoColors.systemGrey,
                     ),
                     SizedBox(width: 10),
                     Text(
                       _totalWeight.toString() + ' kg',
-                      style: TextStyle(fontSize: 17),
+                      style: TextStyle(
+                          fontSize: 17, color: CupertinoColors.systemGrey),
                     ),
                   ]),
                 )

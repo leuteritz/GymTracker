@@ -40,7 +40,10 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
       padding: EdgeInsets.all(20),
       margin: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 60, 60, 60),
+        border: Border.all(
+          color: CupertinoColors.systemGrey,
+          width: 4.0,
+        ),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Stack(

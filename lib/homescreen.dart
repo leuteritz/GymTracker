@@ -238,7 +238,9 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
               // Text widget to display the timer value
               Text(
                 _timerValue,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                ),
               ),
             ],
           ),
@@ -255,6 +257,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   String _timerValue = '00:00';
   String _duration = '';
   DateTime? _lockTime;
+  int lockDurationInSeconds = 0;
 
   @override
   void initState() {
@@ -289,9 +292,10 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       if (_lockTime != null) {
         final now = DateTime.now();
         final lockDuration = now.difference(_lockTime!);
-        final lockDurationInSeconds = lockDuration.inSeconds;
+        lockDurationInSeconds = lockDuration.inSeconds;
 
         _seconds += lockDurationInSeconds;
+        lockDurationInSeconds = 0;
 
         _startTimer();
       }
@@ -470,8 +474,10 @@ class _HomeScreenState extends State<HomeScreen> {
     var hour = DateTime.now().hour;
     if (hour >= 0 && hour < 12) {
       return 'Good Morning';
-    } else if (hour >= 12 && hour < 19) {
+    } else if (hour >= 12 && hour < 17) {
       return 'Good Afternoon';
+    } else if (hour >= 17 && hour < 22) {
+      return 'Good Evening';
     } else {
       return 'Good Night';
     }
@@ -556,7 +562,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       _getGreeting(),
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -632,7 +638,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               max: 5.0,
                               divisions: 3,
                               onChanged: (value) {
-                                // Update the slider value when dragging
                                 setState(() {
                                   _currentSliderValue = value;
                                 });
@@ -645,7 +650,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: CupertinoColors.activeBlue,
                         child: Text('Add'),
                         onPressed: () {
-                          // Close the modal
                           Navigator.of(context).pop();
                           _addExerciseToList();
                         },

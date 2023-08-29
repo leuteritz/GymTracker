@@ -51,7 +51,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
           "${endOfWeek.day.toString().padLeft(2, '0')}.${endOfWeek.month.toString().padLeft(2, '0')}";
       _currentWeek = "$startDateString - $endDateString";
     } else {
-      DateTime now = DateTime(DateTime.now().year, _selectedMonthIndex + 1, 1);
+      DateTime now = DateTime(selectedYear, _selectedMonthIndex + 1, 1);
       DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
       DateTime endOfWeek = now.add(Duration(days: 7 - now.weekday));
       String startDateString =
@@ -68,15 +68,20 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
       builder: (BuildContext context) {
         List<String> weekWidgets = [];
 
-        DateTime firstDayOfMonth = DateTime(selectedYear,
-            _selectedMonthIndex + 1, 1); // Use the selected year here
-        DateTime lastDayOfMonth = DateTime(selectedYear,
-            _selectedMonthIndex + 2, 0); // Use the selected year here
+        DateTime firstDayOfMonth =
+            DateTime(selectedYear, _selectedMonthIndex + 1, 1);
+        DateTime lastDayOfMonth =
+            DateTime(selectedYear, _selectedMonthIndex + 2, 0);
 
-        // Calculate the start day of the week based on whether January 1st is a Monday
-        int startDay = firstDayOfMonth.weekday == DateTime.monday ? 1 : 2;
+        int startDay = 1;
 
-        DateTime currentDay = firstDayOfMonth.add(Duration(days: startDay - 1));
+        // Find the closest Monday that is before the first day of the month.
+        while (firstDayOfMonth.weekday != 1) {
+          firstDayOfMonth = firstDayOfMonth.subtract(Duration(days: 1));
+          startDay--;
+        }
+
+        DateTime currentDay = firstDayOfMonth;
         while (currentDay.isBefore(lastDayOfMonth)) {
           DateTime startOfWeek = currentDay;
           DateTime endOfWeek = currentDay.add(Duration(days: 6));
@@ -90,13 +95,13 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
 
           currentDay = currentDay.add(Duration(days: 7));
         }
+        print(weekWidgets);
 
         return Container(
           height: 200,
           child: CupertinoPicker(
             backgroundColor: CupertinoColors.systemBackground,
             itemExtent: 40,
-            looping: true,
             onSelectedItemChanged: (int index) {
               setState(() {
                 _currentWeek = weekWidgets[index].toString();
@@ -186,12 +191,14 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            Text(
-              "Description",
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
+            Center(
+              child: Text(
+                "Description",
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -266,6 +273,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                   'year': Text('Year'), // Change 'Year' to 'year'
                 },
                 onValueChanged: (value) {
+                  getCurrentWeekDateRange();
                   setState(() {
                     _selectedInterval = value;
                   });

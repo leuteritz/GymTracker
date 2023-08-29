@@ -69,7 +69,7 @@ class _ListItemState extends State<ListItem> {
                 placeholderStyle:
                     TextStyle(color: CupertinoColors.lightBackgroundGray),
                 decoration: BoxDecoration(
-                  color: CupertinoColors.white,
+                  color: CupertinoColors.systemGrey,
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
@@ -100,7 +100,7 @@ class _ListItemState extends State<ListItem> {
                 placeholderStyle:
                     TextStyle(color: CupertinoColors.lightBackgroundGray),
                 decoration: BoxDecoration(
-                  color: CupertinoColors.white,
+                  color: CupertinoColors.systemGrey,
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),

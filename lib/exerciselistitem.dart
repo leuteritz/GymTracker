@@ -39,7 +39,10 @@ class _ExerciseListItemState extends State<ExerciseListItem> {
           padding: EdgeInsets.symmetric(horizontal: 35),
           child: Text(
             '$_set x ${widget.exerciseName}', // Display sets before exercise name
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: CupertinoColors.systemGrey),
           ),
         ),
         SizedBox(height: 5),

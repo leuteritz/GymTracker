@@ -72,10 +72,9 @@ class ExerciseScreen extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  height: 2,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: CupertinoColors.white,
-                    borderRadius: BorderRadius.circular(1),
                   ),
                 ),
                 Center(
