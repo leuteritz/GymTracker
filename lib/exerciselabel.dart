@@ -44,7 +44,14 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
           color: CupertinoColors.systemGrey,
           width: 4.0,
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: CupertinoColors.systemGrey.withOpacity(0.3),
+            spreadRadius: 10,
+            blurRadius: 20,
+          ),
+        ],
       ),
       child: Stack(
         children: [
@@ -75,7 +82,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                         horizontal: 20), // Adjust the padding as needed
                     child: Center(
                       child: Text(

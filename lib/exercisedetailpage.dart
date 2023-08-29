@@ -219,7 +219,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                   _showCupertinoModalWeek(context, setState);
                 },
                 child: Text(
-                  _currentWeek, // Display current week date range
+                  _currentWeek + "." + selectedYear.toString(),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -233,7 +233,9 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                   _showCupertinoModalMonth(context, setState);
                 },
                 child: Text(
-                  monthNames[_selectedMonthIndex],
+                  monthNames[_selectedMonthIndex] +
+                      " " +
+                      selectedYear.toString(),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

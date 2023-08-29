@@ -61,6 +61,9 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
 
   @override
   Widget build(BuildContext context) {
+    _getDuration();
+    _getTotalWeight();
+    _getExercises();
     return GestureDetector(
       onTap: () {
         // Navigate to the WorkoutDetailPage when the item is pressed
@@ -80,7 +83,14 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
             color: CupertinoColors.systemGrey,
             width: 4.0,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: CupertinoColors.systemGrey.withOpacity(0.3),
+              spreadRadius: 10,
+              blurRadius: 20,
+            ),
+          ],
         ),
         padding: EdgeInsets.all(20),
         child: Column(

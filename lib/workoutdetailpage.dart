@@ -93,23 +93,32 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-            child: Column(
-          children: [
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 10), // Add horizontal padding
-              child: Container(
-                padding: EdgeInsets.all(10),
-                margin: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 60, 60, 60),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      child: Row(children: [
+            child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: CupertinoColors.systemGrey,
+              width: 4.0,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: CupertinoColors.systemGrey.withOpacity(0.3),
+                spreadRadius: 10,
+                blurRadius: 20,
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              SizedBox(height: 30),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 10), // Add horizontal padding
+                child: Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(children: [
                         Icon(
                           CupertinoIcons.time,
                           color: CupertinoColors.white,
@@ -122,9 +131,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                           ),
                         ),
                       ]),
-                    ),
-                    Container(
-                      child: Row(children: [
+                      Row(children: [
                         Icon(
                           CupertinoIcons.sum,
                           color: CupertinoColors.white,
@@ -135,130 +142,130 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                           style: TextStyle(fontSize: 17),
                         ),
                       ]),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: transformedExercises.map<Widget>((exercise) {
-                // Extract exercise information
-                String exerciseName = exercise['name'];
-                List<Map<String, dynamic>> sets =
-                    List<Map<String, dynamic>>.from(exercise['sets']);
+              SizedBox(height: 30),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: transformedExercises.map<Widget>((exercise) {
+                    // Extract exercise information
+                    String exerciseName = exercise['name'];
+                    List<Map<String, dynamic>> sets =
+                        List<Map<String, dynamic>>.from(exercise['sets']);
 
-                // Generate set rows
-                List<Widget> setRows = [];
-                for (int i = 0; i < sets.length; i++) {
-                  Map<String, dynamic> set = sets[i];
-                  int setNumber = i + 1;
-                  int weight = set['weight'];
-                  int reps = set['reps'];
+                    // Generate set rows
+                    List<Widget> setRows = [];
+                    for (int i = 0; i < sets.length; i++) {
+                      Map<String, dynamic> set = sets[i];
+                      int setNumber = i + 1;
+                      int weight = set['weight'];
+                      int reps = set['reps'];
 
-                  setRows.add(
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            // Adjust the padding as needed
-                            child: Center(
-                              child: Text(
-                                '$setNumber',
-                                style: TextStyle(fontSize: 17),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                '$weight',
-                                style: TextStyle(fontSize: 17),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            // Adjust the padding as needed
-                            child: Center(
-                              child: Text(
-                                '$reps',
-                                style: TextStyle(fontSize: 17),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                return Container(
-                  padding: EdgeInsets.all(20),
-                  margin: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 60, 60, 60),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10), // Add horizontal padding
-                        child: Center(
-                          child: Text(
-                            exerciseName,
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Center(
-                                    child: Text(
-                                      'Set',
-                                      style: TextStyle(fontSize: 17),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
+                      setRows.add(
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                // Adjust the padding as needed
+                                child: Center(
                                   child: Text(
-                                    'Weight (kg)',
+                                    '$setNumber',
                                     style: TextStyle(fontSize: 17),
                                   ),
                                 ),
-                                Expanded(
-                                  child: Center(
-                                    child: Text(
-                                      'Reps',
-                                      style: TextStyle(fontSize: 17),
-                                    ),
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: Text(
+                                    '$weight',
+                                    style: TextStyle(fontSize: 17),
                                   ),
                                 ),
-                              ]),
-                          SizedBox(height: 10),
-                          Container(
-                            height: 2,
-                            decoration: BoxDecoration(
-                              color: CupertinoColors.white,
-                              borderRadius: BorderRadius.circular(1),
+                              ),
+                              Expanded(
+                                // Adjust the padding as needed
+                                child: Center(
+                                  child: Text(
+                                    '$reps',
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    return Container(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10), // Add horizontal padding
+                            child: Center(
+                              child: Text(
+                                exerciseName,
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
-                          ...setRows, // Spread set rows using the spread operator
-                          SizedBox(height: 8), // Add spacing between exercises
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          'Set',
+                                          style: TextStyle(fontSize: 17),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        'Weight (kg)',
+                                        style: TextStyle(fontSize: 17),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          'Reps',
+                                          style: TextStyle(fontSize: 17),
+                                        ),
+                                      ),
+                                    ),
+                                  ]),
+                              SizedBox(height: 10),
+                              Container(
+                                height: 2,
+                                decoration: BoxDecoration(
+                                  color: CupertinoColors.white,
+                                  borderRadius: BorderRadius.circular(1),
+                                ),
+                              ),
+                              ...setRows, // Spread set rows using the spread operator
+                              SizedBox(
+                                  height: 8), // Add spacing between exercises
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
         )),
       ),
     );

@@ -50,11 +50,12 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
   Timer? _timer;
   double _seconds = 0;
   String _timerValue = 'Pause';
-  int _spinnerAngle = 0;
+  int _spinnerAngle = 360;
   double _timeselected = 0;
   int _tempseconds = 0;
   DateTime? _lockTime;
   bool _isModalShown = false;
+  bool _showPauseText = true;
 
   @override
   void initState() {
@@ -107,6 +108,7 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
   }
 
   void _startTimer() {
+    _showPauseText = false;
     _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_seconds > 0) {
@@ -134,6 +136,7 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
         _spinnerAngle = 0;
         _tempseconds = 0;
         _timerValue = 'Pause';
+        _showPauseText = true;
       }
     });
   }
@@ -225,25 +228,40 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
         _stopTimer();
       },
       child: Container(
-        width: MediaQuery.of(context).size.width / 4,
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Add the CustomPaint widget for the spinner
-              CustomPaint(
-                size: Size(25, 25),
-                painter: _SpinnerPainter(_spinnerAngle),
-              ),
-              // Text widget to display the timer value
-              Text(
-                _timerValue,
-                style: TextStyle(
-                  fontSize: 20,
+        width: MediaQuery.of(context).size.width / 3.5,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (!_showPauseText)
+                  CustomPaint(
+                    size: Size(30, 30),
+                    painter: _SpinnerPainter(_spinnerAngle),
+                  )
+                else
+                  Text(
+                    _timerValue,
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+              ],
+            ),
+            if (!_showPauseText)
+              Positioned(
+                left: 35,
+                bottom: 5,
+                child: Text(
+                  _timerValue, // Display the timer value here
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -257,7 +275,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   String _timerValue = '00:00';
   String _duration = '';
   DateTime? _lockTime;
-  int lockDurationInSeconds = 0;
 
   @override
   void initState() {
@@ -292,7 +309,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       if (_lockTime != null) {
         final now = DateTime.now();
         final lockDuration = now.difference(_lockTime!);
-        lockDurationInSeconds = lockDuration.inSeconds;
+        int lockDurationInSeconds = lockDuration.inSeconds;
 
         _seconds += lockDurationInSeconds;
         lockDurationInSeconds = 0;
@@ -317,6 +334,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
     _timer?.cancel();
 
     _duration = _timerValue;
+
+    _seconds = 0;
 
     // insert the exercise into the database
     for (var exercise in exerciseList) {
@@ -385,6 +404,15 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
     DatabaseHelper().insertExercise(
       name: "Bench Press",
       sets: 3,
+      weight: 7,
+      reps: 20,
+      date: "22.11.2028",
+      duration: _duration,
+    );
+
+    DatabaseHelper().insertExercise(
+      name: "Bench Press",
+      sets: 3,
       weight: 10,
       reps: 20,
       date: "21.09.2024",
@@ -428,13 +456,13 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
           BreakTimer(),
           // Add some spacing between the break timer and text
           Container(
-            width: MediaQuery.of(context).size.width / 4,
+            width: MediaQuery.of(context).size.width / 3.5,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Icon(
                   CupertinoIcons.stopwatch_fill,
-                  size: 25,
+                  size: 30,
                 ),
                 Text(
                   _timerValue,
@@ -444,10 +472,10 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
             ),
           ),
           Container(
-            width: MediaQuery.of(context).size.width / 4,
+            width: MediaQuery.of(context).size.width / 3.5,
             child: Icon(
               CupertinoIcons.gear,
-              size: 25,
+              size: 30,
             ),
           ),
         ],
@@ -472,7 +500,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _getGreeting() {
     var hour = DateTime.now().hour;
-    if (hour >= 0 && hour < 12) {
+    if (hour >= 7 && hour < 12) {
       return 'Good Morning';
     } else if (hour >= 12 && hour < 17) {
       return 'Good Afternoon';
@@ -536,6 +564,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: CupertinoButton(
                   onPressed: () {
                     _key.currentState?._stopTimer();
+                    setState(() {
+                      exerciseList.clear();
+                    });
+                    _showCupertinoModalEndWorkout(context);
                   },
                   child: Icon(CupertinoIcons.stop_circle_fill,
                       size: 60, color: CupertinoColors.systemRed),
@@ -600,7 +632,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // function to open modal view
   void _showCupertinoModal(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -652,6 +683,52 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPressed: () {
                           Navigator.of(context).pop();
                           _addExerciseToList();
+                        },
+                      )
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showCupertinoModalEndWorkout(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    final double modalHeight = screenHeight * 0.3;
+    final double modalWidth = screenWidth * 0.8;
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: Container(
+            width: modalWidth,
+            height: modalHeight,
+            child: CupertinoPopupSurface(
+              child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        'Workout ended!',
+                        style: TextStyle(fontSize: 25),
+                      ),
+                      Text(_key.currentState!._timerValue),
+                      CupertinoButton(
+                        color: CupertinoColors.activeBlue,
+                        child: Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          setState(() {
+                            _isAddButtonPressed = false;
+                          });
                         },
                       )
                     ],
