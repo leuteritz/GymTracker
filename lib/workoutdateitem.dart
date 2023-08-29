@@ -16,6 +16,7 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
   DateTime myDate = DateTime.now();
   String dayOfWeek = '';
   String _duration = '';
+  String? _startTime = '';
   int _totalWeight = 0;
   List<Map<String, dynamic>> _exercises = [];
 
@@ -28,6 +29,7 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
     _getDuration();
     _getTotalWeight();
     _getExercises();
+    _getStartTime();
   }
 
   Future<void> _getDuration() async {
@@ -35,6 +37,15 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
     if (mounted) {
       setState(() {
         _duration = duration;
+      });
+    }
+  }
+
+  Future<void> _getStartTime() async {
+    String? startTime = await DatabaseHelper().getStartTime(widget.date);
+    if (mounted) {
+      setState(() {
+        _startTime = startTime;
       });
     }
   }
@@ -64,6 +75,7 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
     _getDuration();
     _getTotalWeight();
     _getExercises();
+    _getStartTime();
     return GestureDetector(
       onTap: () {
         // Navigate to the WorkoutDetailPage when the item is pressed
@@ -113,6 +125,12 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Container(
+                    child: Text(
+                  _startTime!,
+                  style: TextStyle(
+                      fontSize: 17, color: CupertinoColors.systemGrey),
+                )),
                 Container(
                   child: Row(children: [
                     Icon(

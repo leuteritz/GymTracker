@@ -30,20 +30,21 @@ class DatabaseHelper {
       weight INTEGER,
       reps INTEGER,
       date TEXT,
-      duration TEXT
+      duration TEXT,
+      starttime TEXT
     )
   ''');
   }
 
   // Function to insert data to the database
-  Future<void> insertExercise({
-    required String name,
-    required int sets,
-    required int weight,
-    required int reps,
-    required String date,
-    required String duration,
-  }) async {
+  Future<void> insertExercise(
+      {required String name,
+      required int sets,
+      required int weight,
+      required int reps,
+      required String date,
+      required String duration,
+      required String startTime}) async {
     final db = await this.db;
     if (db == null) return;
 
@@ -56,6 +57,7 @@ class DatabaseHelper {
         'reps': reps,
         'date': date,
         'duration': duration,
+        'starttime': startTime,
       },
     );
   }
@@ -84,6 +86,20 @@ class DatabaseHelper {
 
     return maps[0]
         ['duration']; // Return an empty string if no results are found.
+  }
+
+  Future<String?> getStartTime(String date) async {
+    final db = await this.db;
+    if (db == null) return null;
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+        'SELECT DISTINCT starttime FROM exercise WHERE date = "$date"');
+
+    if (maps.isNotEmpty && maps[0]['starttime'] != null) {
+      return maps[0]['starttime'];
+    } else {
+      return null; // Return null if no start time is found.
+    }
   }
 
   // Function to calculate the total weight for a specific day

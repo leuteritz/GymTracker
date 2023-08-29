@@ -237,7 +237,7 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
               children: [
                 if (!_showPauseText)
                   CustomPaint(
-                    size: Size(30, 30),
+                    size: Size(35, 35),
                     painter: _SpinnerPainter(_spinnerAngle),
                   )
                 else
@@ -251,14 +251,14 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
             ),
             if (!_showPauseText)
               Positioned(
-                left: 35,
-                bottom: 5,
+                left: 33.5,
+                bottom: 7.5,
                 child: Text(
                   _timerValue, // Display the timer value here
                   style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: CupertinoColors.systemGrey),
                 ),
               ),
           ],
@@ -337,6 +337,13 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
 
     _seconds = 0;
 
+    DateTime now = DateTime.now();
+
+    print(now);
+
+    String _starttime =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
     // insert the exercise into the database
     for (var exercise in exerciseList) {
       String name = exercise['name'];
@@ -353,6 +360,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
           reps: reps,
           date: date,
           duration: _duration,
+          startTime: _starttime,
         );
       }
     }
@@ -364,6 +372,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 1,
       date: "26.08.2023",
       duration: _duration,
+      startTime: "21:30",
     );
 
     DatabaseHelper().insertExercise(
@@ -373,6 +382,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 5,
       date: "15.08.2023",
       duration: _duration,
+      startTime: "21:30",
     );
 
     DatabaseHelper().insertExercise(
@@ -382,6 +392,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 5,
       date: "22.08.2023",
       duration: _duration,
+      startTime: "21:30",
     );
     DatabaseHelper().insertExercise(
       name: "Bench Press",
@@ -390,6 +401,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 6,
       date: "23.08.2023",
       duration: _duration,
+      startTime: "21:30",
     );
 
     DatabaseHelper().insertExercise(
@@ -399,6 +411,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 20,
       date: "23.09.2023",
       duration: _duration,
+      startTime: "21:30",
     );
 
     DatabaseHelper().insertExercise(
@@ -408,6 +421,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 20,
       date: "22.11.2028",
       duration: _duration,
+      startTime: "21:30",
     );
 
     DatabaseHelper().insertExercise(
@@ -417,6 +431,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 20,
       date: "21.09.2024",
       duration: _duration,
+      startTime: "21:30",
     );
 
     DatabaseHelper().insertExercise(
@@ -426,6 +441,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 12,
       date: "24.09.2023",
       duration: _duration,
+      startTime: "21:30",
     );
 
     DatabaseHelper().insertExercise(
@@ -435,6 +451,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 5,
       date: "24.08.2022",
       duration: _duration,
+      startTime: "21:30",
     );
 
     DatabaseHelper().insertExercise(
@@ -444,6 +461,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       reps: 8,
       date: "16.08.2023",
       duration: _duration,
+      startTime: "21:30",
     );
   }
 
