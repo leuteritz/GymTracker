@@ -41,20 +41,17 @@ class _ListItemState extends State<ListItem> {
               width: 70,
               child: Center(
                 child:
-                    Text('${widget.index + 1}', style: TextStyle(fontSize: 17)),
+                    Text('${widget.index + 1}', style: TextStyle(fontSize: 15)),
               )),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 20), // Adjust the padding as needed
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: CupertinoTextField(
                 keyboardType: TextInputType.number,
                 controller: weightController,
                 onChanged: (value) {
                   setState(() {
-                    // Update the weight value when the text field changes
                     widget.weight = int.parse(value);
-                    // Update the weight value in the global exercise list
                     _updateSet(
                         exerciseList.indexWhere(
                             (exercise) => exercise['name'] == widget.name),
@@ -65,7 +62,7 @@ class _ListItemState extends State<ListItem> {
                 },
                 placeholder: 'Weight',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: CupertinoColors.black, fontSize: 17),
+                style: TextStyle(color: CupertinoColors.black, fontSize: 15),
                 placeholderStyle:
                     TextStyle(color: CupertinoColors.lightBackgroundGray),
                 decoration: BoxDecoration(
@@ -83,9 +80,7 @@ class _ListItemState extends State<ListItem> {
                 controller: repsController,
                 onChanged: (value) {
                   setState(() {
-                    // Update the reps value when the text field changes
                     widget.reps = int.parse(value);
-                    // Update the reps value in the global exercise list
                     _updateSet(
                         exerciseList.indexWhere(
                             (exercise) => exercise['name'] == widget.name),
@@ -96,7 +91,7 @@ class _ListItemState extends State<ListItem> {
                 },
                 placeholder: 'Reps',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: CupertinoColors.black, fontSize: 17),
+                style: TextStyle(color: CupertinoColors.black, fontSize: 15),
                 placeholderStyle:
                     TextStyle(color: CupertinoColors.lightBackgroundGray),
                 decoration: BoxDecoration(

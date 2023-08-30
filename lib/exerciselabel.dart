@@ -37,8 +37,8 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
     print("Exercise List $exerciseList");
 
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       decoration: BoxDecoration(
         border: Border.all(
           color: CupertinoColors.systemGrey,
@@ -60,14 +60,14 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
             children: [
               Text(
                 widget.exercise,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
               Row(children: [
                 Container(
                     width: 70,
                     child: Center(
-                        child: Text('Set', style: TextStyle(fontSize: 17)))),
+                        child: Text('Set', style: TextStyle(fontSize: 15)))),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -75,7 +75,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
                     child: Center(
                       child: Text(
                         'Weight (kg)',
-                        style: TextStyle(fontSize: 17),
+                        style: TextStyle(fontSize: 15),
                       ),
                     ),
                   ),
@@ -83,11 +83,11 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                        horizontal: 20), // Adjust the padding as needed
+                        horizontal: 0), // Adjust the padding as needed
                     child: Center(
                       child: Text(
                         'Reps',
-                        style: TextStyle(fontSize: 17),
+                        style: TextStyle(fontSize: 15),
                       ),
                     ),
                   ),
@@ -134,9 +134,10 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
               ),
               SizedBox(height: 10),
               CupertinoButton.filled(
+                  padding: EdgeInsets.symmetric(horizontal: 40),
                   child: Text('Add Set',
                       style: TextStyle(
-                          color: CupertinoColors.white, fontSize: 17)),
+                          color: CupertinoColors.white, fontSize: 15)),
                   onPressed: () {
                     setState(() {
                       widget.sets.add({'weight': 0, 'reps': 0});
@@ -145,7 +146,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
             ],
           ),
           Positioned(
-            top: -15,
+            top: -17,
             right: -20,
             child: CupertinoButton(
               onPressed: () {

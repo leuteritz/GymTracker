@@ -76,6 +76,7 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
     _getTotalWeight();
     _getExercises();
     _getStartTime();
+
     return GestureDetector(
       onTap: () {
         // Navigate to the WorkoutDetailPage when the item is pressed
@@ -126,11 +127,19 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                    child: Text(
-                  _startTime!,
-                  style: TextStyle(
-                      fontSize: 17, color: CupertinoColors.systemGrey),
-                )),
+                  child: Row(children: [
+                    Icon(
+                      CupertinoIcons.time_solid,
+                      color: CupertinoColors.systemGrey,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      _startTime!,
+                      style: TextStyle(
+                          fontSize: 17, color: CupertinoColors.systemGrey),
+                    ),
+                  ]),
+                ),
                 Container(
                   child: Row(children: [
                     Icon(

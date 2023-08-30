@@ -250,16 +250,17 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
               ],
             ),
             if (!_showPauseText)
-              Positioned(
-                left: 33.5,
-                bottom: 7.5,
-                child: Text(
-                  _timerValue, // Display the timer value here
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: CupertinoColors.systemGrey),
-                ),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Text(
+                    _timerValue, // Display the timer value here
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: CupertinoColors.systemGrey),
+                  ),
+                ],
               ),
           ],
         ),
@@ -601,6 +602,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: Icon(CupertinoIcons.delete_left_fill,
                     size: 60, color: CupertinoColors.systemRed),
+              ),
+            ),
+            Visibility(
+              visible: !_isAddButtonPressed,
+              child: Positioned(
+                top: 5,
+                left: 15,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(
+                      CupertinoIcons.arrow_up,
+                      size: 40,
+                      color: CupertinoColors.systemGrey,
+                    ),
+                    Text(
+                      'Tap to set ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: CupertinoColors.systemGrey,
+                      ),
+                    ),
+                    Text(
+                      'a break timer',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: CupertinoColors.systemGrey,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Visibility(

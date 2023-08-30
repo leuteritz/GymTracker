@@ -1,6 +1,26 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+void main() async {
+  final databaseHelper = DatabaseHelper();
+
+  // Insert exercise list data into the 'exerciselist' table
+  await _insertExerciseList(databaseHelper);
+}
+
+Future<void> _insertExerciseList(DatabaseHelper databaseHelper) async {
+  try {
+    await databaseHelper.insertExerciseList(
+      name: 'Bench Press',
+      muscle: 'Chest',
+      favorite: false,
+    );
+    print("Exercise list inserted successfully!");
+  } catch (e) {
+    print("Error inserting exercise list: $e");
+  }
+}
+
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
   factory DatabaseHelper() => _instance;
@@ -34,6 +54,14 @@ class DatabaseHelper {
       starttime TEXT
     )
   ''');
+    await db.execute('''
+    CREATE TABLE exerciselist(
+      id INTEGER PRIMARY KEY,
+      name TEXT,
+      muscle TEXT,
+      favorite BOOLEAN
+    )
+  ''');
   }
 
   // Function to insert data to the database
@@ -58,6 +86,23 @@ class DatabaseHelper {
         'date': date,
         'duration': duration,
         'starttime': startTime,
+      },
+    );
+  }
+
+  Future<void> insertExerciseList(
+      {required String name,
+      required String muscle,
+      required bool favorite}) async {
+    final db = await this.db;
+    if (db == null) return;
+
+    await db.insert(
+      'exerciselist',
+      {
+        'name': name,
+        'muscle': muscle,
+        'favorite': favorite,
       },
     );
   }

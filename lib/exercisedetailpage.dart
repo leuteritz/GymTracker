@@ -69,19 +69,17 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
         List<String> weekWidgets = [];
 
         DateTime firstDayOfMonth =
-            DateTime(selectedYear, _selectedMonthIndex + 1, 1);
+            DateTime.utc(selectedYear, _selectedMonthIndex + 1, 1);
         DateTime lastDayOfMonth =
-            DateTime(selectedYear, _selectedMonthIndex + 2, 0);
-
-        int startDay = 1;
+            DateTime.utc(selectedYear, _selectedMonthIndex + 2, 0);
 
         // Find the closest Monday that is before the first day of the month.
         while (firstDayOfMonth.weekday != 1) {
           firstDayOfMonth = firstDayOfMonth.subtract(Duration(days: 1));
-          startDay--;
         }
 
         DateTime currentDay = firstDayOfMonth;
+
         while (currentDay.isBefore(lastDayOfMonth)) {
           DateTime startOfWeek = currentDay;
           DateTime endOfWeek = currentDay.add(Duration(days: 6));
@@ -95,7 +93,6 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
 
           currentDay = currentDay.add(Duration(days: 7));
         }
-        print(weekWidgets);
 
         return Container(
           height: 200,
