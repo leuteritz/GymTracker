@@ -94,6 +94,8 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
       child: SafeArea(
         child: SingleChildScrollView(
             child: Container(
+          padding: EdgeInsets.all(20),
+          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           decoration: BoxDecoration(
             border: Border.all(
               color: CupertinoColors.systemGrey,
@@ -110,7 +112,6 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
           ),
           child: Column(
             children: [
-              SizedBox(height: 30),
               Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: 10), // Add horizontal padding

@@ -1,26 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-void main() async {
-  final databaseHelper = DatabaseHelper();
-
-  // Insert exercise list data into the 'exerciselist' table
-  await _insertExerciseList(databaseHelper);
-}
-
-Future<void> _insertExerciseList(DatabaseHelper databaseHelper) async {
-  try {
-    await databaseHelper.insertExerciseList(
-      name: 'Bench Press',
-      muscle: 'Chest',
-      favorite: false,
-    );
-    print("Exercise list inserted successfully!");
-  } catch (e) {
-    print("Error inserting exercise list: $e");
-  }
-}
-
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper.internal();
   factory DatabaseHelper() => _instance;
@@ -59,7 +39,8 @@ class DatabaseHelper {
       id INTEGER PRIMARY KEY,
       name TEXT,
       muscle TEXT,
-      favorite BOOLEAN
+      favorite INTEGER,
+      description TEXT
     )
   ''');
   }
@@ -93,7 +74,8 @@ class DatabaseHelper {
   Future<void> insertExerciseList(
       {required String name,
       required String muscle,
-      required bool favorite}) async {
+      required int favorite,
+      required String description}) async {
     final db = await this.db;
     if (db == null) return;
 
@@ -103,8 +85,67 @@ class DatabaseHelper {
         'name': name,
         'muscle': muscle,
         'favorite': favorite,
+        'description': description,
       },
     );
+  }
+
+  Future<List<Map<String, dynamic>>> getAllExerciseListInformation() async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('SELECT * FROM exerciselist');
+  }
+
+  Future<void> updateExerciseFavoriteStatus(
+      String name, int favoriteStatus) async {
+    final db = await this.db;
+    if (db == null) return;
+
+    await db.update(
+      'exerciselist',
+      {'favorite': favoriteStatus},
+      where: 'name = ?',
+      whereArgs: [name],
+    );
+    print("Updated favorite status for $name to $favoriteStatus");
+  }
+
+  Future<bool> isExerciseFavorite(String name) async {
+    final db = await this.db;
+    if (db == null) return false;
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      'exerciselist',
+      columns: ['favorite'],
+      where: 'name = ?',
+      whereArgs: [name],
+      limit: 1,
+    );
+
+    if (maps.isNotEmpty) {
+      return maps[0]['favorite'] == 1;
+    } else {
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getExerciseByName(String name) async {
+    final db = await this.db;
+    if (db == null) return null;
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      'exerciselist',
+      where: 'name = ?',
+      whereArgs: [name],
+      limit: 1,
+    );
+
+    if (maps.isNotEmpty) {
+      return maps[0];
+    } else {
+      return null;
+    }
   }
 
   // Function to get all workout dates from the database

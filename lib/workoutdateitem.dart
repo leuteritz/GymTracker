@@ -90,7 +90,8 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
         );
       },
       child: Container(
-        margin: EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
+        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         decoration: BoxDecoration(
           border: Border.all(
             color: CupertinoColors.systemGrey,
@@ -105,7 +106,6 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
             ),
           ],
         ),
-        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

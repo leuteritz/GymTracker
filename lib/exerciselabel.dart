@@ -37,7 +37,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
     print("Exercise List $exerciseList");
 
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      padding: EdgeInsets.all(20),
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       decoration: BoxDecoration(
         border: Border.all(
