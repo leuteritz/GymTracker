@@ -72,26 +72,30 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      _lockTime = DateTime.now();
-      print("locktime: $_lockTime");
-      _stopTimer();
-    } else if (state == AppLifecycleState.resumed) {
-      if (_lockTime != null) {
-        final now = DateTime.now();
-        final lockDuration = now.difference(_lockTime!);
-        final lockDurationInSeconds = lockDuration.inSeconds;
+    if (_seconds > 0) {
+      if (state == AppLifecycleState.paused) {
+        _lockTime = DateTime.now();
+        _stopTimer();
+      } else if (state == AppLifecycleState.resumed) {
+        if (_lockTime != null) {
+          int lockDurationInSeconds = 0;
+          final now = DateTime.now();
+          final lockDuration = now.difference(_lockTime!);
+          lockDurationInSeconds = lockDuration.inSeconds;
 
-        _seconds -= lockDurationInSeconds;
-        _tempseconds += lockDurationInSeconds;
+          _seconds -= lockDurationInSeconds;
+          _tempseconds += lockDurationInSeconds;
 
-        if (_seconds <= 0 && !_isModalShown) {
-          _showBreakTimerEndModal(context);
-          _isModalShown = true;
-          _timerValue = 'Pause';
-          _spinnerAngle = 0;
-        } else {
-          _startTimer();
+          _lockTime = null;
+
+          if (_seconds <= 0 && !_isModalShown) {
+            _showBreakTimerEndModal(context);
+            _isModalShown = true;
+            _timerValue = 'Pause';
+            _spinnerAngle = 0;
+          } else {
+            _startTimer();
+          }
         }
       }
     }
@@ -147,7 +151,6 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
 
   // Function to open the modal view
   void _showBreakTimerModal(BuildContext context, StateSetter setState) {
-    _isModalShown = false;
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -187,6 +190,7 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
   }
 
   void _showBreakTimerEndModal(BuildContext context) {
+    _isModalShown = false;
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -302,20 +306,31 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      _lockTime = DateTime.now();
-      print(_lockTime);
-      _timer?.cancel();
-    } else if (state == AppLifecycleState.resumed) {
-      if (_lockTime != null) {
-        final now = DateTime.now();
-        final lockDuration = now.difference(_lockTime!);
-        int lockDurationInSeconds = lockDuration.inSeconds;
+    if (_seconds > 0) {
+      if (state == AppLifecycleState.paused) {
+        print("inactive");
+        _lockTime = DateTime.now();
+        print(_lockTime);
+        _timer?.cancel();
+      } else if (state == AppLifecycleState.resumed) {
+        if (_lockTime != null) {
+          print("resumed");
+          int lockDurationInSeconds = 0;
+          final now = DateTime.now();
+          print("now: $now");
 
-        _seconds += lockDurationInSeconds;
-        lockDurationInSeconds = 0;
+          final lockDuration = now.difference(_lockTime!);
+          print(lockDuration);
+          lockDurationInSeconds = lockDuration.inSeconds;
+          print("duration: $lockDurationInSeconds");
+          _seconds += lockDurationInSeconds;
+          print("seconds: $_seconds");
 
-        _startTimer();
+          _lockTime = null;
+          print(lockDurationInSeconds);
+
+          _startTimer();
+        }
       }
     }
   }
@@ -339,8 +354,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
     _seconds = 0;
 
     DateTime now = DateTime.now();
-
-    print(now);
 
     String _starttime =
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';

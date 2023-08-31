@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'exercisescreen.dart';
 import 'homescreen.dart';
 import 'historyscreen.dart';
+import 'insertexercise.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -17,6 +18,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    insertExercises();
   }
 
   @override

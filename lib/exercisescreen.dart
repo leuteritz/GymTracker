@@ -11,54 +11,14 @@ class ExerciseScreen extends StatefulWidget {
 
 class ExerciseScreenState extends State<ExerciseScreen> {
   List<Map<String, dynamic>> exercises = [];
-
-  void insertExercises() async {
-    List<Map<String, dynamic>> exercisesToAdd = [
-      {
-        'name': 'Bench Press',
-        'muscle': 'Chest',
-        'favorite': 1,
-        'description':
-            'Lie on training bench, position bar over chest, grasp hands slightly wider than shoulder-width. Slowly lower bar, then press up explosively. Strengthens chest, shoulders and triceps.',
-      },
-      {
-        'name': 'Squat',
-        'muscle': 'Legs',
-        'favorite': 0,
-        'description':
-            'Feet shoulder-width apart, bend knees as if to sit down, then straighten. Strengthens legs and gluteal muscles.',
-      },
-      {
-        'name': 'Deadlift',
-        'muscle': 'Back',
-        'favorite': 0,
-        'description':
-            'Stand in front of barbell, grasp hands at shoulder width, keep back straight. Bend, lift barbell, straighten hips and knees. Then lower in a controlled manner. Exercises back, legs and buttocks. Ensure correct posture to avoid injury.',
-      },
-    ];
-
-    for (var exerciseData in exercisesToAdd) {
-      final exerciseName = exerciseData['name'];
-
-      // Check if the exercise already exists in the database
-      final existingExercise =
-          await DatabaseHelper().getExerciseByName(exerciseName);
-
-      if (existingExercise == null) {
-        await DatabaseHelper().insertExerciseList(
-          name: exerciseData['name'],
-          muscle: exerciseData['muscle'],
-          favorite: exerciseData['favorite'],
-          description: exerciseData['description'],
-        );
-      }
-    }
-  }
-
-  void update() {
-    fetchExercises();
-    print("test 1");
-  }
+  List<String> desiredMuscleGroupOrder = [
+    'Chest',
+    'Back',
+    'Legs',
+    'Shoulders',
+    'Triceps',
+    'Biceps'
+  ];
 
   void fetchExercises() async {
     final List<Map<String, dynamic>> allExerciseData =
@@ -86,7 +46,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
   @override
   void initState() {
     super.initState();
-    insertExercises();
+
     fetchExercises();
   }
 
@@ -128,7 +88,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
       ),
       child: Center(
           child: ListView.builder(
-        itemCount: exerciseMap.length + 1,
+        itemCount: desiredMuscleGroupOrder.length + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == 0) {
             // Favorites section
@@ -201,9 +161,9 @@ class ExerciseScreenState extends State<ExerciseScreen> {
             }
           } else {
             // Regular muscle group section
-            var muscleGroup = exerciseMap.keys.toList()[
-                index - 1]; // Subtract 1 to account for "Favorites" section
-            var exercisesForGroup = exerciseMap[muscleGroup]!;
+            var muscleGroup = desiredMuscleGroupOrder[index - 1];
+            var exercisesForGroup =
+                exerciseMap[muscleGroup] ?? []; // Use null-aware operator
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,

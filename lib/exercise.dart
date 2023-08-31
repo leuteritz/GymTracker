@@ -34,10 +34,11 @@ class _ExerciseState extends State<Exercise> {
     final dbHelper = DatabaseHelper();
     bool isFavorite = await dbHelper.isExerciseFavorite(widget.name);
     print("status: $isFavorite");
-
-    setState(() {
-      isPressed = isFavorite;
-    });
+    if (mounted) {
+      setState(() {
+        isPressed = isFavorite;
+      });
+    }
   }
 
   bool isPressed = false;
