@@ -3,8 +3,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'database.dart';
 
 class LineChartSample2 extends StatefulWidget {
-  final String exercise;
-  final String selectedInterval;
+  String exercise;
+  String selectedInterval;
   String currentWeek;
   int currentMonth;
   int currentYear;

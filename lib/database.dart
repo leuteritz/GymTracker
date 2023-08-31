@@ -261,4 +261,22 @@ class DatabaseHelper {
     ORDER BY date DESC
   ''');
   }
+
+  Map<String, List<String>> groupDatesByMonthAndYear(List<String> dates) {
+    Map<String, List<String>> groupedDates = {};
+
+    for (String date in dates) {
+      DateTime dateTime = DateTime.parse(date);
+      String monthYearKey =
+          "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}";
+
+      if (groupedDates.containsKey(monthYearKey)) {
+        groupedDates[monthYearKey]!.add(date);
+      } else {
+        groupedDates[monthYearKey] = [date];
+      }
+    }
+
+    return groupedDates;
+  }
 }

@@ -89,6 +89,7 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
           _lockTime = null;
 
           if (_seconds <= 0 && !_isModalShown) {
+            _showPauseText = true;
             _showBreakTimerEndModal(context);
             _isModalShown = true;
             _timerValue = 'Pause';
@@ -112,6 +113,7 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
   }
 
   void _startTimer() {
+    _isModalShown = false;
     _showPauseText = false;
     _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -126,6 +128,7 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
         });
       } else {
         _timer?.cancel();
+
         if (!_isModalShown) {
           _showBreakTimerEndModal(context);
           _isModalShown = true;
@@ -190,7 +193,6 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
   }
 
   void _showBreakTimerEndModal(BuildContext context) {
-    _isModalShown = false;
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
@@ -434,6 +436,15 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       weight: 7,
       reps: 20,
       date: "22.11.2028",
+      duration: _duration,
+      startTime: "21:30",
+    );
+    DatabaseHelper().insertExercise(
+      name: "Bench Press",
+      sets: 3,
+      weight: 7,
+      reps: 20,
+      date: "21.11.2028",
       duration: _duration,
       startTime: "21:30",
     );
