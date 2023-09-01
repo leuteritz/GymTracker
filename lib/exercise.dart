@@ -71,6 +71,8 @@ class _ExerciseState extends State<Exercise> {
         );
       },
       child: Container(
+        alignment: Alignment.center,
+        width: double.infinity,
         padding: EdgeInsets.all(20),
         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         decoration: BoxDecoration(
@@ -103,12 +105,15 @@ class _ExerciseState extends State<Exercise> {
                   ),
                 ),
                 SizedBox(height: 10),
-                Text(
-                  widget.description.length > 40
-                      ? widget.description.substring(0, 40) + "..."
-                      : widget.description,
-                  style: TextStyle(
-                      fontSize: 18, color: CupertinoColors.systemGrey),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    widget.description.length > 40
+                        ? widget.description.substring(0, 40) + "..."
+                        : widget.description,
+                    style: TextStyle(
+                        fontSize: 18, color: CupertinoColors.systemGrey),
+                  ),
                 ),
               ],
             ),

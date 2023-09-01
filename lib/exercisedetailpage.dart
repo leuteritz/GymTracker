@@ -190,192 +190,194 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
       ),
       child: SafeArea(
         child: ListView.builder(
-          itemCount: 2, // 2 items: Description and Chart
+          itemCount: 1,
           itemBuilder: (context, index) {
-            if (index == 0) {
-              return Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 20, horizontal: 0),
-                          width: MediaQuery.of(context).size.width,
-                          child: CupertinoSegmentedControl(
-                            children: {
-                              'description': Text('Instructions'),
-                              'chart': Text('Chart'),
-                            },
-                            onValueChanged: (value) {
-                              setState(() {
-                                _selectedContent = value;
-                              });
-                            },
-                            groupValue: _selectedContent,
-                          ),
+            return Column(
+              children: [
+                Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+                        width: MediaQuery.of(context).size.width,
+                        child: CupertinoSegmentedControl(
+                          children: {
+                            'description': Text(
+                              'Instructions',
+                              style: TextStyle(fontSize: 22),
+                            ),
+                            'chart':
+                                Text('Chart', style: TextStyle(fontSize: 22)),
+                          },
+                          onValueChanged: (value) {
+                            setState(() {
+                              _selectedContent = value;
+                            });
+                          },
+                          groupValue: _selectedContent,
                         ),
-                        SizedBox(height: 10),
-                        if (_selectedContent == 'description')
-                          SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Image.asset('assets/benchpress.gif'),
-                                SizedBox(height: 20),
-                                Text(
-                                  "Instructions",
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.symmetric(vertical: 10),
-                                  width: MediaQuery.of(context).size.width,
-                                  child: Center(
-                                    child: Column(
-                                      children: List<Widget>.generate(
-                                        descriptionLength,
-                                        (index) {
-                                          return Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 10),
-                                                child: Center(
-                                                  child: Row(
-                                                    children: [
-                                                      Container(
-                                                          width: 50,
-                                                          alignment:
-                                                              Alignment.center,
-                                                          child: Text(
-                                                            '${index + 1}.',
-                                                            style: TextStyle(
-                                                                fontSize: 25,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          )),
-                                                      SizedBox(width: 10),
-                                                      Container(
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.7,
+                      ),
+                      SizedBox(height: 10),
+                      if (_selectedContent == 'description')
+                        SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  child: Image.asset('assets/benchpress.gif')),
+                              SizedBox(height: 20),
+                              Text(
+                                "Instructions",
+                                style: TextStyle(fontSize: 30),
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                margin: EdgeInsets.symmetric(vertical: 10),
+                                width: MediaQuery.of(context).size.width,
+                                child: Center(
+                                  child: Column(
+                                    children: List<Widget>.generate(
+                                      descriptionLength,
+                                      (index) {
+                                        return Column(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10),
+                                              child: Center(
+                                                child: Row(
+                                                  children: [
+                                                    Container(
+                                                        width: 50,
+                                                        alignment:
+                                                            Alignment.center,
                                                         child: Text(
-                                                            descriptionLines[
-                                                                index],
-                                                            style: TextStyle(
-                                                                fontSize: 22),
-                                                            textAlign:
-                                                                TextAlign.left),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                          '${index + 1}.',
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        )),
+                                                    SizedBox(width: 10),
+                                                    Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.8,
+                                                      child: Text(
+                                                          descriptionLines[
+                                                              index],
+                                                          style: TextStyle(
+                                                              fontSize: 18),
+                                                          textAlign:
+                                                              TextAlign.left),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                            ],
-                                          );
-                                        },
-                                      ),
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        if (_selectedContent == 'chart')
-                          SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                if (_selectedInterval == 'week')
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {});
-                                      _showCupertinoModalWeek(
-                                          context, setState);
-                                    },
-                                    child: Text(
-                                      _currentWeek +
-                                          "." +
-                                          selectedYear.toString(),
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                        ),
+                      if (_selectedContent == 'chart')
+                        SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              if (_selectedInterval == 'week')
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {});
+                                    _showCupertinoModalWeek(context, setState);
+                                  },
+                                  child: Text(
+                                    _currentWeek +
+                                        "." +
+                                        selectedYear.toString(),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  ),
-                                if (_selectedInterval == 'month')
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {});
-                                      _showCupertinoModalMonth(
-                                          context, setState);
-                                    },
-                                    child: Text(
-                                      monthNames[_selectedMonthIndex] +
-                                          " " +
-                                          selectedYear.toString(),
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                if (_selectedInterval == 'year')
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {});
-                                      _showCupertinoModalYear(
-                                          context, setState);
-                                    },
-                                    child: Text(
-                                      selectedYear.toString(),
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                LineChartSample2(
-                                  key: _chartKey,
-                                  exercise: widget.exercise,
-                                  selectedInterval: _selectedInterval,
-                                  currentWeek: _currentWeek,
-                                  currentMonth: _selectedMonthIndex,
-                                  currentYear: selectedYear,
-                                ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 20, horizontal: 0),
-                                  width: MediaQuery.of(context).size.width,
-                                  child: CupertinoSegmentedControl(
-                                    children: {
-                                      'week': Text('Week'),
-                                      'month': Text('Month'),
-                                      'year': Text('Year'),
-                                    },
-                                    onValueChanged: (value) {
-                                      getCurrentWeekDateRange();
-                                      setState(() {
-                                        _selectedInterval = value;
-                                      });
-                                      _chartKey.currentState
-                                          ?.getInformation(_selectedInterval);
-                                    },
-                                    groupValue: _selectedInterval,
                                   ),
                                 ),
-                              ],
-                            ),
-                          )
-                      ],
-                    ),
+                              if (_selectedInterval == 'month')
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {});
+                                    _showCupertinoModalMonth(context, setState);
+                                  },
+                                  child: Text(
+                                    monthNames[_selectedMonthIndex] +
+                                        " " +
+                                        selectedYear.toString(),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              if (_selectedInterval == 'year')
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {});
+                                    _showCupertinoModalYear(context, setState);
+                                  },
+                                  child: Text(
+                                    selectedYear.toString(),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              LineChartSample2(
+                                key: _chartKey,
+                                exercise: widget.exercise,
+                                selectedInterval: _selectedInterval,
+                                currentWeek: _currentWeek,
+                                currentMonth: _selectedMonthIndex,
+                                currentYear: selectedYear,
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 20, horizontal: 0),
+                                width: MediaQuery.of(context).size.width,
+                                child: CupertinoSegmentedControl(
+                                  children: {
+                                    'week': Text('Week'),
+                                    'month': Text('Month'),
+                                    'year': Text('Year'),
+                                  },
+                                  onValueChanged: (value) {
+                                    getCurrentWeekDateRange();
+                                    setState(() {
+                                      _selectedInterval = value;
+                                    });
+                                    _chartKey.currentState
+                                        ?.getInformation(_selectedInterval);
+                                  },
+                                  groupValue: _selectedInterval,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                    ],
                   ),
-                ],
-              );
-            }
+                ),
+              ],
+            );
           },
         ),
       ),
