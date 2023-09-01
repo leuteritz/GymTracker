@@ -7,7 +7,10 @@ void insertExercises() async {
       'muscle': 'Chest',
       'favorite': 0,
       'description':
-          'Lie on training bench, position bar over chest, grasp hands slightly wider than shoulder-width. Slowly lower bar, then press up explosively. Strengthens chest, shoulders and triceps.',
+          'Lie on training bench with your back flat and feet on the floor.\n'
+              'Grip the bar slightly wider than shoulder-width apart.\n'
+              'Lower the barbell to your chest in a controlled manner.\n'
+              'Push the barbell back up explosively to the starting position.'
     },
     {
       'name': 'Squat',
@@ -205,7 +208,7 @@ void insertExercises() async {
         name: exerciseData['name'],
         muscle: exerciseData['muscle'],
         favorite: exerciseData['favorite'],
-        description: exerciseData['description'],
+        description: exerciseData['description'].toString(),
       );
     }
   }

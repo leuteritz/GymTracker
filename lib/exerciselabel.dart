@@ -5,12 +5,12 @@ import 'listitem.dart';
 class ExerciseLabel extends StatefulWidget {
   final String exercise;
   final List<Map<String, int>> sets;
-  final Function(String exercise) onDelete; // Add onDelete callback
+  final Function(String exercise) onDelete;
 
   ExerciseLabel({
     required this.exercise,
     required this.sets,
-    required this.onDelete, // Receive onDelete callback in the constructor
+    required this.onDelete,
   });
 
   @override
@@ -160,6 +160,15 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
                 color: CupertinoColors.systemRed,
               ),
             ),
+          ),
+          Positioned(
+            top: 7,
+            left: 16,
+            child: Text("00:00",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                )),
           ),
         ],
       ),

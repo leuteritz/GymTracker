@@ -97,9 +97,10 @@ class HistoryScreenState extends State<HistoryScreen> {
       });
     } else {
       Map<String, List<String>> newFilteredGroups = {};
+
       for (String groupKey in groupedWorkoutDates.keys) {
         List<String> filteredDates = groupedWorkoutDates[groupKey]!
-            .where((date) => date.startsWith(searchText))
+            .where((date) => date.contains(searchText))
             .toList();
         if (filteredDates.isNotEmpty) {
           newFilteredGroups[groupKey] = filteredDates;
@@ -116,7 +117,7 @@ class HistoryScreenState extends State<HistoryScreen> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: SizedBox(
-          width: 150,
+          width: 200,
           child: CupertinoSearchTextField(
             placeholder: 'Workout durchsuchen',
             onChanged: _searchWorkoutDates,
@@ -124,49 +125,47 @@ class HistoryScreenState extends State<HistoryScreen> {
         ),
       ),
       child: SafeArea(
-        child: CupertinoScrollbar(
-          child: ListView.builder(
-            itemCount: filteredGroups.length,
-            itemBuilder: (context, index) {
-              String monthYearKey = filteredGroups.keys.elementAt(index);
-              List<String> datesForMonthYear = filteredGroups[monthYearKey]!;
+        child: ListView.builder(
+          itemCount: filteredGroups.length,
+          itemBuilder: (context, index) {
+            String monthYearKey = filteredGroups.keys.elementAt(index);
+            List<String> datesForMonthYear = filteredGroups[monthYearKey]!;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Text(
-                      monthYearKey,
-                      style: TextStyle(
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    monthYearKey,
+                    style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                        color: CupertinoColors.systemGrey),
                   ),
-                  Container(
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: CupertinoColors.white,
-                    ),
+                ),
+                Container(
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: CupertinoColors.white,
                   ),
-                  SizedBox(height: 20),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: datesForMonthYear.length,
-                    itemBuilder: (context, subIndex) {
-                      final date = datesForMonthYear[subIndex];
-                      return WorkoutDateItem(
-                        date: date,
-                        key: Key(date),
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
+                ),
+                SizedBox(height: 20),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: datesForMonthYear.length,
+                  itemBuilder: (context, subIndex) {
+                    final date = datesForMonthYear[subIndex];
+                    return WorkoutDateItem(
+                      date: date,
+                      key: Key(date),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

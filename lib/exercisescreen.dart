@@ -10,7 +10,6 @@ class ExerciseScreen extends StatefulWidget {
 }
 
 class ExerciseScreenState extends State<ExerciseScreen> {
-  List<Map<String, dynamic>> exercises = [];
   List<String> desiredMuscleGroupOrder = [
     'Chest',
     'Back',
@@ -19,6 +18,8 @@ class ExerciseScreenState extends State<ExerciseScreen> {
     'Triceps',
     'Biceps'
   ];
+  List<Map<String, dynamic>> exercises = [];
+  Map<String, List<Exercise>> exerciseMap = {};
 
   void fetchExercises() async {
     final List<Map<String, dynamic>> allExerciseData =
@@ -48,6 +49,41 @@ class ExerciseScreenState extends State<ExerciseScreen> {
     super.initState();
 
     fetchExercises();
+  }
+
+  void _searchExercise(String searchText) {
+    if (searchText.isEmpty) {
+      setState(() {
+        fetchExercises();
+      });
+    } else {
+      List<Map<String, dynamic>> filteredExercises = [];
+
+      for (var exercise in exercises) {
+        if (exercise['name'].toLowerCase().contains(searchText.toLowerCase())) {
+          filteredExercises.add(exercise);
+        }
+      }
+
+      // Create a set to store unique muscle groups in filtered exercises
+      Set<String> muscleGroupsInFilteredExercises = Set<String>();
+      for (var exercise in filteredExercises) {
+        muscleGroupsInFilteredExercises.add(exercise['muscle']);
+      }
+
+      // Filter exerciseMap to only include muscle groups from filtered exercises
+      Map<String, List<Exercise>> filteredExerciseMap = {};
+      for (var muscleGroup in muscleGroupsInFilteredExercises) {
+        if (exerciseMap.containsKey(muscleGroup)) {
+          filteredExerciseMap[muscleGroup] = exerciseMap[muscleGroup]!;
+        }
+      }
+
+      setState(() {
+        exercises = filteredExercises;
+        exerciseMap = filteredExerciseMap;
+      });
+    }
   }
 
   @override
@@ -80,15 +116,16 @@ class ExerciseScreenState extends State<ExerciseScreen> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: SizedBox(
-          width: 150,
+          width: 200,
           child: CupertinoSearchTextField(
             placeholder: 'Übung durchsuchen',
+            onChanged: _searchExercise,
           ),
         ),
       ),
-      child: Center(
+      child: SafeArea(
           child: ListView.builder(
-        itemCount: desiredMuscleGroupOrder.length + 1,
+        itemCount: exerciseMap.length + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == 0) {
             // Favorites section
@@ -106,9 +143,9 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                       child: Text(
                         "Favorites" + " (${favoriteExercises.length})",
                         style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: CupertinoColors.systemGrey),
                       ),
                     ),
                   ),
@@ -145,9 +182,9 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                     child: Text(
                       "Favorites" + " (${favoriteExercises.length})",
                       style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: CupertinoColors.systemGrey),
                     ),
                   ),
                   Container(
@@ -161,9 +198,8 @@ class ExerciseScreenState extends State<ExerciseScreen> {
             }
           } else {
             // Regular muscle group section
-            var muscleGroup = desiredMuscleGroupOrder[index - 1];
-            var exercisesForGroup =
-                exerciseMap[muscleGroup] ?? []; // Use null-aware operator
+            var muscleGroup = exerciseMap.keys.elementAt(index - 1);
+            var exercisesForGroup = exerciseMap[muscleGroup] ?? [];
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,9 +209,9 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                   child: Text(
                     muscleGroup,
                     style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: CupertinoColors.systemGrey),
                   ),
                 ),
                 Container(

@@ -561,31 +561,29 @@ class _HomeScreenState extends State<HomeScreen> {
       child: SafeArea(
         child: Stack(
           children: [
-            CupertinoScrollbar(
-              child: CustomScrollView(
-                slivers: [
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final exercise = exerciseList[index];
-                        return ExerciseLabel(
-                          exercise: exercise['name'],
-                          sets: exercise['sets'],
-                          onDelete: (exerciseName) {
-                            _deleteExercise(exerciseName);
-                          },
-                        );
-                      },
-                      childCount: exerciseList.length,
-                    ),
+            CustomScrollView(
+              slivers: [
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final exercise = exerciseList[index];
+                      return ExerciseLabel(
+                        exercise: exercise['name'],
+                        sets: exercise['sets'],
+                        onDelete: (exerciseName) {
+                          _deleteExercise(exerciseName);
+                        },
+                      );
+                    },
+                    childCount: exerciseList.length,
                   ),
-                  // Add more Sliver widgets as needed for additional content
-                ],
-              ),
+                ),
+                // Add more Sliver widgets as needed for additional content
+              ],
             ),
             Positioned(
-              bottom: 5,
-              right: 5,
+              bottom: 0,
+              right: 0,
               child: CupertinoButton(
                 onPressed: () {
                   _showCupertinoModal(context);
@@ -600,8 +598,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Positioned(
-              bottom: 5,
-              left: 5,
+              bottom: 0,
+              left: 0,
               child: Visibility(
                 visible: _isAddButtonPressed,
                 child: CupertinoButton(

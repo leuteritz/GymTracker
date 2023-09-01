@@ -17,6 +17,8 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
   int _selectedMonthIndex = DateTime.now().month - 1;
   String _currentWeek = '';
   int selectedYear = DateTime.now().year;
+  int descriptionLines = 0;
+  String _selectedContent = 'description'; // Add this line
 
   String _selectedInterval = 'week';
   List<String> monthNames = [
@@ -152,7 +154,6 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) {
-        ;
         return Container(
           height: 200,
           child: CupertinoPicker(
@@ -180,108 +181,202 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<String> descriptionLines = widget.description.split('\n');
+    int descriptionLength = descriptionLines.length;
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(widget.exercise),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            Center(
-              child: Text(
-                "Description",
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text(
-                '"${widget.description}"',
-                style: TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            if (_selectedInterval == 'week')
-              GestureDetector(
-                onTap: () {
-                  setState(() {});
-                  _showCupertinoModalWeek(context, setState);
-                },
-                child: Text(
-                  _currentWeek + "." + selectedYear.toString(),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+        child: ListView.builder(
+          itemCount: 2, // 2 items: Description and Chart
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Column(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+                          width: MediaQuery.of(context).size.width,
+                          child: CupertinoSegmentedControl(
+                            children: {
+                              'description': Text('Instructions'),
+                              'chart': Text('Chart'),
+                            },
+                            onValueChanged: (value) {
+                              setState(() {
+                                _selectedContent = value;
+                              });
+                            },
+                            groupValue: _selectedContent,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        if (_selectedContent == 'description')
+                          SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Image.asset('assets/benchpress.gif'),
+                                SizedBox(height: 20),
+                                Text(
+                                  "Instructions",
+                                  style: TextStyle(fontSize: 30),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.symmetric(vertical: 10),
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Center(
+                                    child: Column(
+                                      children: List<Widget>.generate(
+                                        descriptionLength,
+                                        (index) {
+                                          return Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 10),
+                                                child: Center(
+                                                  child: Row(
+                                                    children: [
+                                                      Container(
+                                                          width: 50,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          child: Text(
+                                                            '${index + 1}.',
+                                                            style: TextStyle(
+                                                                fontSize: 25,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          )),
+                                                      SizedBox(width: 10),
+                                                      Container(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.7,
+                                                        child: Text(
+                                                            descriptionLines[
+                                                                index],
+                                                            style: TextStyle(
+                                                                fontSize: 22),
+                                                            textAlign:
+                                                                TextAlign.left),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (_selectedContent == 'chart')
+                          SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                if (_selectedInterval == 'week')
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {});
+                                      _showCupertinoModalWeek(
+                                          context, setState);
+                                    },
+                                    child: Text(
+                                      _currentWeek +
+                                          "." +
+                                          selectedYear.toString(),
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                if (_selectedInterval == 'month')
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {});
+                                      _showCupertinoModalMonth(
+                                          context, setState);
+                                    },
+                                    child: Text(
+                                      monthNames[_selectedMonthIndex] +
+                                          " " +
+                                          selectedYear.toString(),
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                if (_selectedInterval == 'year')
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {});
+                                      _showCupertinoModalYear(
+                                          context, setState);
+                                    },
+                                    child: Text(
+                                      selectedYear.toString(),
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                LineChartSample2(
+                                  key: _chartKey,
+                                  exercise: widget.exercise,
+                                  selectedInterval: _selectedInterval,
+                                  currentWeek: _currentWeek,
+                                  currentMonth: _selectedMonthIndex,
+                                  currentYear: selectedYear,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 20, horizontal: 0),
+                                  width: MediaQuery.of(context).size.width,
+                                  child: CupertinoSegmentedControl(
+                                    children: {
+                                      'week': Text('Week'),
+                                      'month': Text('Month'),
+                                      'year': Text('Year'),
+                                    },
+                                    onValueChanged: (value) {
+                                      getCurrentWeekDateRange();
+                                      setState(() {
+                                        _selectedInterval = value;
+                                      });
+                                      _chartKey.currentState
+                                          ?.getInformation(_selectedInterval);
+                                    },
+                                    groupValue: _selectedInterval,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                      ],
+                    ),
                   ),
-                ),
-              ),
-            if (_selectedInterval == 'month')
-              GestureDetector(
-                onTap: () {
-                  setState(() {});
-                  _showCupertinoModalMonth(context, setState);
-                },
-                child: Text(
-                  monthNames[_selectedMonthIndex] +
-                      " " +
-                      selectedYear.toString(),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            if (_selectedInterval == 'year')
-              GestureDetector(
-                onTap: () {
-                  setState(() {});
-                  _showCupertinoModalYear(context, setState);
-                },
-                child: Text(
-                  selectedYear.toString(),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            SizedBox(height: 20),
-            LineChartSample2(
-              key: _chartKey,
-              exercise: widget.exercise,
-              selectedInterval: _selectedInterval,
-              currentWeek: _currentWeek,
-              currentMonth: _selectedMonthIndex,
-              currentYear: selectedYear,
-            ),
-            Container(
-              padding: EdgeInsets.all(10),
-              width: double.infinity,
-              child: CupertinoSegmentedControl(
-                children: {
-                  'week': Text('Week'), // Change 'Week' to 'week'
-                  'month': Text('Month'), // Change 'Month' to 'month'
-                  'year': Text('Year'), // Change 'Year' to 'year'
-                },
-                onValueChanged: (value) {
-                  getCurrentWeekDateRange();
-                  setState(() {
-                    _selectedInterval = value;
-                  });
-                  _chartKey.currentState?.getInformation(_selectedInterval);
-                },
-                groupValue: _selectedInterval,
-              ),
-            ),
-          ],
+                ],
+              );
+            }
+          },
         ),
       ),
     );
