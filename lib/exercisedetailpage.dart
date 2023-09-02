@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'chart.dart';
+import 'chartload.dart';
+import 'chartweight.dart';
+import 'chartreps.dart';
 
 class ExerciseDetailPage extends StatefulWidget {
   final String exercise;
@@ -11,8 +13,12 @@ class ExerciseDetailPage extends StatefulWidget {
 }
 
 class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
-  GlobalKey<LineChartSample2State> _chartKey =
-      GlobalKey<LineChartSample2State>();
+  GlobalKey<LineChartSampleLoadState> _chartKey1 =
+      GlobalKey<LineChartSampleLoadState>();
+  GlobalKey<LineChartSampleWeightState> _chartKey2 =
+      GlobalKey<LineChartSampleWeightState>();
+  GlobalKey<LineChartSampleRepsState> _chartKey3 =
+      GlobalKey<LineChartSampleRepsState>();
 
   int _selectedMonthIndex = DateTime.now().month - 1;
   String _currentWeek = '';
@@ -104,8 +110,12 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
             onSelectedItemChanged: (int index) {
               setState(() {
                 _currentWeek = weekWidgets[index].toString();
-                _chartKey.currentState?.getWeek(_currentWeek);
-                _chartKey.currentState?.getInformation(_selectedInterval);
+                _chartKey1.currentState?.getWeek(_currentWeek);
+                _chartKey1.currentState?.getInformation(_selectedInterval);
+                _chartKey2.currentState?.getWeek(_currentWeek);
+                _chartKey2.currentState?.getInformation(_selectedInterval);
+                _chartKey3.currentState?.getWeek(_currentWeek);
+                _chartKey3.currentState?.getInformation(_selectedInterval);
               });
             },
             children: List<Widget>.generate(weekWidgets.length, (int index) {
@@ -132,8 +142,12 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
             onSelectedItemChanged: (int index) {
               setState(() {
                 _selectedMonthIndex = index;
-                _chartKey.currentState?.getMonth(_selectedMonthIndex);
-                _chartKey.currentState?.getInformation(_selectedInterval);
+                _chartKey1.currentState?.getMonth(_selectedMonthIndex);
+                _chartKey1.currentState?.getInformation(_selectedInterval);
+                _chartKey2.currentState?.getMonth(_selectedMonthIndex);
+                _chartKey2.currentState?.getInformation(_selectedInterval);
+                _chartKey3.currentState?.getMonth(_selectedMonthIndex);
+                _chartKey3.currentState?.getInformation(_selectedInterval);
                 getCurrentWeekDateRange();
               });
             },
@@ -163,8 +177,12 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
             onSelectedItemChanged: (int index) {
               setState(() {
                 selectedYear = currentYear + index;
-                _chartKey.currentState?.getYear(selectedYear);
-                _chartKey.currentState?.getInformation(_selectedInterval);
+                _chartKey1.currentState?.getYear(selectedYear);
+                _chartKey1.currentState?.getInformation(_selectedInterval);
+                _chartKey2.currentState?.getYear(selectedYear);
+                _chartKey2.currentState?.getInformation(_selectedInterval);
+                _chartKey3.currentState?.getYear(selectedYear);
+                _chartKey3.currentState?.getInformation(_selectedInterval);
               });
             },
             children:
@@ -295,6 +313,32 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                         SingleChildScrollView(
                           child: Column(
                             children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 20, horizontal: 0),
+                                width: MediaQuery.of(context).size.width,
+                                child: CupertinoSegmentedControl(
+                                  children: {
+                                    'week': Text('Week'),
+                                    'month': Text('Month'),
+                                    'year': Text('Year'),
+                                  },
+                                  onValueChanged: (value) {
+                                    getCurrentWeekDateRange();
+                                    setState(() {
+                                      _selectedInterval = value;
+                                    });
+                                    _chartKey1.currentState
+                                        ?.getInformation(_selectedInterval);
+                                    _chartKey2.currentState
+                                        ?.getInformation(_selectedInterval);
+                                    _chartKey3.currentState
+                                        ?.getInformation(_selectedInterval);
+                                  },
+                                  groupValue: _selectedInterval,
+                                ),
+                              ),
+                              SizedBox(height: 10),
                               if (_selectedInterval == 'week')
                                 GestureDetector(
                                   onTap: () {
@@ -341,35 +385,34 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                     ),
                                   ),
                                 ),
-                              LineChartSample2(
-                                key: _chartKey,
-                                exercise: widget.exercise,
-                                selectedInterval: _selectedInterval,
-                                currentWeek: _currentWeek,
-                                currentMonth: _selectedMonthIndex,
-                                currentYear: selectedYear,
-                              ),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 0),
-                                width: MediaQuery.of(context).size.width,
-                                child: CupertinoSegmentedControl(
-                                  children: {
-                                    'week': Text('Week'),
-                                    'month': Text('Month'),
-                                    'year': Text('Year'),
-                                  },
-                                  onValueChanged: (value) {
-                                    getCurrentWeekDateRange();
-                                    setState(() {
-                                      _selectedInterval = value;
-                                    });
-                                    _chartKey.currentState
-                                        ?.getInformation(_selectedInterval);
-                                  },
-                                  groupValue: _selectedInterval,
-                                ),
-                              ),
+                              Column(
+                                children: [
+                                  LineChartSampleLoad(
+                                    key: _chartKey1,
+                                    exercise: widget.exercise,
+                                    selectedInterval: _selectedInterval,
+                                    currentWeek: _currentWeek,
+                                    currentMonth: _selectedMonthIndex,
+                                    currentYear: selectedYear,
+                                  ),
+                                  LineChartSampleWeight(
+                                    key: _chartKey2,
+                                    exercise: widget.exercise,
+                                    selectedInterval: _selectedInterval,
+                                    currentWeek: _currentWeek,
+                                    currentMonth: _selectedMonthIndex,
+                                    currentYear: selectedYear,
+                                  ),
+                                  LineChartSampleReps(
+                                    key: _chartKey3,
+                                    exercise: widget.exercise,
+                                    selectedInterval: _selectedInterval,
+                                    currentWeek: _currentWeek,
+                                    currentMonth: _selectedMonthIndex,
+                                    currentYear: selectedYear,
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         )

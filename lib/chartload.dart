@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'database.dart';
 
-class LineChartSample2 extends StatefulWidget {
+class LineChartSampleLoad extends StatefulWidget {
   String exercise;
   String selectedInterval;
   String currentWeek;
   int currentMonth;
   int currentYear;
 
-  LineChartSample2(
+  LineChartSampleLoad(
       {super.key,
       required this.exercise,
       required this.selectedInterval,
@@ -18,10 +18,10 @@ class LineChartSample2 extends StatefulWidget {
       required this.currentYear});
 
   @override
-  State<LineChartSample2> createState() => LineChartSample2State();
+  State<LineChartSampleLoad> createState() => LineChartSampleLoadState();
 }
 
-class LineChartSample2State extends State<LineChartSample2> {
+class LineChartSampleLoadState extends State<LineChartSampleLoad> {
   List<FlSpot> dataPoints = [];
   double minY = 100000;
   double maxY = -100000;
@@ -217,7 +217,7 @@ class LineChartSample2State extends State<LineChartSample2> {
           top: 0, // Adjust the position as needed
           left: 2, // Adjust the position as needed
           child: Text(
-            'Load', // Your y-axis description text
+            'Max Load', // Your y-axis description text
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
