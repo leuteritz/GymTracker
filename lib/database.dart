@@ -31,7 +31,8 @@ class DatabaseHelper {
       reps INTEGER,
       date TEXT,
       duration TEXT,
-      starttime TEXT
+      starttime TEXT,
+      durationexercise TEXT
     )
   ''');
     await db.execute('''
@@ -53,7 +54,8 @@ class DatabaseHelper {
       required int reps,
       required String date,
       required String duration,
-      required String startTime}) async {
+      required String startTime,
+      required String exerciseduration}) async {
     final db = await this.db;
     if (db == null) return;
 
@@ -67,6 +69,7 @@ class DatabaseHelper {
         'date': date,
         'duration': duration,
         'starttime': startTime,
+        'durationexercise': exerciseduration,
       },
     );
   }
@@ -170,8 +173,7 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.rawQuery(
         'SELECT DISTINCT duration FROM exercise WHERE date = "$date"');
 
-    return maps[0]
-        ['duration']; // Return an empty string if no results are found.
+    return maps[0]['duration'];
   }
 
   Future<String?> getStartTime(String date) async {
@@ -237,6 +239,18 @@ class DatabaseHelper {
     // Extract the total sets from the query result
     int totalSets = maps[0]['total_sets'] ?? 0;
     return totalSets;
+  }
+
+  Future<List<Map<String, dynamic>>> getExercisesWithDurationsByDate(
+      String date) async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('''
+    SELECT DISTINCT name, durationexercise
+    FROM exercise
+    WHERE date = "$date"
+  ''');
   }
 
   // Function to get all exercises for a specific workout date

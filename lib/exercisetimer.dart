@@ -14,7 +14,7 @@ class ExerciseTimer extends StatefulWidget {
 class ExerciseTimerState extends State<ExerciseTimer> {
   Timer? _timer;
   int _seconds = 0;
-  String _timerValue = '00:00';
+  String timerValue = '00:00';
   @override
   void initState() {
     super.initState();
@@ -25,15 +25,28 @@ class ExerciseTimerState extends State<ExerciseTimer> {
 
     _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _seconds++;
-        _updateTimerValue();
-      });
+      if (mounted) {
+        setState(() {
+          _seconds++;
+          _updateTimerValue();
+        });
+      }
     });
   }
 
   void stopTimer() {
     _timer?.cancel();
+
+    String exerciseName = widget.exercise;
+    String duration = timerValue;
+
+    Map<String, dynamic> exerciseData = {
+      "name": exerciseName,
+      "duration": duration,
+    };
+
+    exerciseDurationList.add(exerciseData);
+    print(exerciseDurationList);
   }
 
   void _updateTimerValue() {
@@ -42,7 +55,7 @@ class ExerciseTimerState extends State<ExerciseTimer> {
     String formattedMinutes = minutes.toString().padLeft(2, '0');
     String formattedSeconds = remainingSeconds.toString().padLeft(2, '0');
     setState(() {
-      _timerValue = '$formattedMinutes:$formattedSeconds';
+      timerValue = '$formattedMinutes:$formattedSeconds';
     });
   }
 
@@ -52,10 +65,9 @@ class ExerciseTimerState extends State<ExerciseTimer> {
       child: Container(
         decoration:
             BoxDecoration(color: CupertinoColors.systemGrey.withOpacity(0.3)),
-        child: Text(_timerValue,
+        child: Text(timerValue,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.bold,
             )),
       ),
     );

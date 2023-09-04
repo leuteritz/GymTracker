@@ -7,7 +7,7 @@ class ListItem extends StatefulWidget {
   int weight;
   int reps;
   String name;
-  final GlobalKey<ExerciseTimerState> timerKey; // Add this line
+  final GlobalKey<ExerciseTimerState> timerKey;
 
   ListItem({
     required this.index,

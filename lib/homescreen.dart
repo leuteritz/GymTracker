@@ -365,6 +365,15 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       String name = exercise['name'];
       String date = exercise['date'];
       List<Map<String, int>> sets = exercise['sets'];
+
+      String exerciseDuration = "00:00";
+
+      for (var exerciseData in exerciseDurationList) {
+        if (exerciseData['name'] == name) {
+          exerciseDuration = exerciseData['duration'];
+          break;
+        }
+      }
       for (var set in sets) {
         int reps = set['reps']!;
         int weight = set['weight']!;
@@ -377,6 +386,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
           date: date,
           duration: _duration,
           startTime: _starttime,
+          exerciseduration: exerciseDuration,
         );
       }
     }
@@ -389,6 +399,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "26.08.2023",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
 
     DatabaseHelper().insertExercise(
@@ -399,6 +410,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "15.08.2023",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
 
     DatabaseHelper().insertExercise(
@@ -409,6 +421,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "22.08.2023",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
     DatabaseHelper().insertExercise(
       name: "Bench Press",
@@ -418,6 +431,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "23.08.2023",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
 
     DatabaseHelper().insertExercise(
@@ -428,6 +442,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "23.09.2023",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
 
     DatabaseHelper().insertExercise(
@@ -438,6 +453,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "22.11.2028",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
     DatabaseHelper().insertExercise(
       name: "Bench Press",
@@ -447,6 +463,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "21.11.2028",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
 
     DatabaseHelper().insertExercise(
@@ -457,6 +474,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "21.09.2024",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
 
     DatabaseHelper().insertExercise(
@@ -467,6 +485,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "24.09.2023",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
 
     DatabaseHelper().insertExercise(
@@ -477,6 +496,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "24.08.2022",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
 
     DatabaseHelper().insertExercise(
@@ -487,6 +507,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "16.08.2023",
       duration: _duration,
       startTime: "21:30",
+      exerciseduration: "00:00",
     );
   }
 

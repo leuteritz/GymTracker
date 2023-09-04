@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
 import 'database.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 class WorkoutDetailPage extends StatefulWidget {
   final String date;
@@ -13,13 +12,13 @@ class WorkoutDetailPage extends StatefulWidget {
 }
 
 class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
-  int _selectedIndex = 0;
   List<Map<String, dynamic>> exercisesForSelectedDate = [];
   List<Map<String, dynamic>> transformedExercises = [];
   String _duration = '';
   int _totalWeight = 0;
   String? _startTime = '';
   List<String> workoutDatesList = [];
+  List<Map<String, dynamic>> _exerciseduration = [];
 
   @override
   void initState() {
@@ -29,6 +28,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     _getTotalWeight();
     _loadWorkoutDates();
     _getStartTime();
+    _getExerciseDuration();
   }
 
   void _loadWorkoutDates() async {
@@ -36,6 +36,44 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     setState(() {
       workoutDatesList = dates;
     });
+  }
+
+  Future<void> _getExerciseDuration() async {
+    List<Map<String, dynamic>> exerciseduration =
+        await DatabaseHelper().getExercisesWithDurationsByDate(widget.date);
+    if (mounted) {
+      setState(() {
+        _exerciseduration = exerciseduration;
+        // Update transformedExercises with durations
+        transformedExercises = updateTransformedExercisesWithDurations();
+      });
+    }
+    print("list: $_exerciseduration");
+  }
+
+  List<Map<String, dynamic>> updateTransformedExercisesWithDurations() {
+    // Create a map for exercise durations for quick lookup
+    Map<String, String?> exerciseDurationsMap = {};
+    for (var exercise in _exerciseduration) {
+      exerciseDurationsMap[exercise['name']] = exercise['duration'];
+    }
+
+    print("map: $exerciseDurationsMap");
+
+    // Update transformedExercises with durations
+    List<Map<String, dynamic>> updatedTransformedExercises = [];
+    for (var exercise in transformedExercises) {
+      String exerciseName = exercise['name'];
+      String? duration = exerciseDurationsMap[exerciseName] ?? '00:00';
+
+      Map<String, dynamic> updatedExercise = {
+        ...exercise,
+        'duration': duration,
+      };
+      updatedTransformedExercises.add(updatedExercise);
+    }
+
+    return updatedTransformedExercises;
   }
 
   Future<void> _getTotalWeight() async {
@@ -170,7 +208,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: transformedExercises.map<Widget>((exercise) {
-                    // Extract exercise information
+                    print(transformedExercises);
                     String exerciseName = exercise['name'];
                     List<Map<String, dynamic>> sets =
                         List<Map<String, dynamic>>.from(exercise['sets']);
@@ -233,6 +271,25 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                               ),
                             ),
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                CupertinoIcons.time,
+                                color: CupertinoColors.systemGrey,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                exercise.containsKey('duration')
+                                    ? exercise['duration']
+                                    : '00:00',
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    color: CupertinoColors.systemGrey),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

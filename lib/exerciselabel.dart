@@ -166,7 +166,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
             ),
           ),
           Positioned(
-              top: 7,
+              top: 6,
               left: 16,
               child: ExerciseTimer(
                 exercise: widget.exercise,

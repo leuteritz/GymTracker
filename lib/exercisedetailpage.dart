@@ -352,6 +352,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
                                     ),
                                   ),
                                 ),
@@ -366,9 +367,9 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                         " " +
                                         selectedYear.toString(),
                                     style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline),
                                   ),
                                 ),
                               if (_selectedInterval == 'year')
@@ -380,9 +381,9 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                   child: Text(
                                     selectedYear.toString(),
                                     style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline),
                                   ),
                                 ),
                               Column(
