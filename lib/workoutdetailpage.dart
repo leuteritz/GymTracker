@@ -18,6 +18,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
   List<Map<String, dynamic>> transformedExercises = [];
   String _duration = '';
   int _totalWeight = 0;
+  String? _startTime = '';
   List<String> workoutDatesList = [];
 
   @override
@@ -27,6 +28,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     _getDuration();
     _getTotalWeight();
     _loadWorkoutDates();
+    _getStartTime();
   }
 
   void _loadWorkoutDates() async {
@@ -40,6 +42,14 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     int totalWeight = await DatabaseHelper().getTotalWeight(widget.date);
     setState(() {
       _totalWeight = totalWeight;
+    });
+  }
+
+  Future<void> _getStartTime() async {
+    String? startTime = await DatabaseHelper().getStartTime(widget.date);
+
+    setState(() {
+      _startTime = startTime;
     });
   }
 
@@ -96,20 +106,6 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
             child: Container(
           padding: EdgeInsets.all(20),
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: CupertinoColors.systemGrey,
-              width: 4.0,
-            ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: CupertinoColors.systemGrey.withOpacity(0.3),
-                spreadRadius: 10,
-                blurRadius: 20,
-              ),
-            ],
-          ),
           child: Column(
             children: [
               Padding(
@@ -119,6 +115,19 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
+                      Row(children: [
+                        Icon(
+                          CupertinoIcons.time_solid,
+                          color: CupertinoColors.white,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          _startTime!,
+                          style: TextStyle(
+                            fontSize: 17,
+                          ),
+                        ),
+                      ]),
                       Row(children: [
                         Icon(
                           CupertinoIcons.time,
@@ -147,7 +156,15 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 15),
+              Container(
+                height: 4,
+                decoration: BoxDecoration(
+                  color: CupertinoColors.white,
+                  borderRadius: BorderRadius.circular(1),
+                ),
+              ),
+              SizedBox(height: 15),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(

@@ -1,17 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'constants.dart';
+import 'exercisetimer.dart';
 
 class ListItem extends StatefulWidget {
   int index;
   int weight;
   int reps;
   String name;
+  final GlobalKey<ExerciseTimerState> timerKey; // Add this line
 
   ListItem({
     required this.index,
     required this.weight,
     required this.reps,
     required this.name,
+    required this.timerKey, // Add this line
   });
 
   @override
@@ -21,6 +24,7 @@ class ListItem extends StatefulWidget {
 class _ListItemState extends State<ListItem> {
   TextEditingController weightController = TextEditingController();
   TextEditingController repsController = TextEditingController();
+  GlobalKey<ExerciseTimerState> _key = GlobalKey<ExerciseTimerState>();
 
   @override
   void initState() {
@@ -110,6 +114,22 @@ class _ListItemState extends State<ListItem> {
     setState(() {
       exerciseList[exerciseIndex]['sets'][setIndex]['weight'] = weight;
       exerciseList[exerciseIndex]['sets'][setIndex]['reps'] = reps;
+
+      widget.timerKey.currentState?.startTimer();
     });
+    if (hasNoZeroEntries()) {
+      widget.timerKey.currentState?.stopTimer();
+    }
+  }
+
+  bool hasNoZeroEntries() {
+    for (var exercise in exerciseList) {
+      for (var set in exercise['sets']) {
+        if (set['weight'] == 0 || set['reps'] == 0) {
+          return false; // Found an entry with 0 weight or reps
+        }
+      }
+    }
+    return true; // No entry with 0 weight or reps found
   }
 }

@@ -53,8 +53,10 @@ class ExerciseScreenState extends State<ExerciseScreen> {
 
   void _searchExercise(String searchText) {
     if (searchText.isEmpty) {
+      // If the search text is empty, reset to the original list of exercises
+      fetchExercises();
       setState(() {
-        fetchExercises();
+        exerciseMap = {}; // Reset the exerciseMap
       });
     } else {
       List<Map<String, dynamic>> filteredExercises = [];
@@ -64,6 +66,9 @@ class ExerciseScreenState extends State<ExerciseScreen> {
           filteredExercises.add(exercise);
         }
       }
+
+      print("filtered exercises: $filteredExercises");
+      print(searchText);
 
       // Create a set to store unique muscle groups in filtered exercises
       Set<String> muscleGroupsInFilteredExercises = Set<String>();

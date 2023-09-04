@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'constants.dart';
 import 'listitem.dart';
+import 'exercisetimer.dart';
 
 class ExerciseLabel extends StatefulWidget {
   final String exercise;
@@ -18,6 +19,8 @@ class ExerciseLabel extends StatefulWidget {
 }
 
 class _ExerciseLabelState extends State<ExerciseLabel> {
+  GlobalKey<ExerciseTimerState> _key = GlobalKey<ExerciseTimerState>();
+
   void _removeSetFromGlobalList(int index) {
     setState(() {
       widget.sets.removeAt(index);
@@ -124,11 +127,11 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
                       color: CupertinoColors.systemRed,
                     ),
                     child: ListItem(
-                      index: index,
-                      weight: set['weight']!,
-                      reps: set['reps']!,
-                      name: widget.exercise,
-                    ),
+                        index: index,
+                        weight: set['weight']!,
+                        reps: set['reps']!,
+                        name: widget.exercise,
+                        timerKey: _key),
                   );
                 },
               ),
@@ -141,6 +144,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
                   onPressed: () {
                     setState(() {
                       widget.sets.add({'weight': 0, 'reps': 0});
+                      _key.currentState?.startTimer();
                     });
                   })
             ],
@@ -162,14 +166,12 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
             ),
           ),
           Positioned(
-            top: 7,
-            left: 16,
-            child: Text("00:00",
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                )),
-          ),
+              top: 7,
+              left: 16,
+              child: ExerciseTimer(
+                exercise: widget.exercise,
+                key: _key,
+              )),
         ],
       ),
     );
