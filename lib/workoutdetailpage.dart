@@ -55,7 +55,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     // Create a map for exercise durations for quick lookup
     Map<String, String?> exerciseDurationsMap = {};
     for (var exercise in _exerciseduration) {
-      exerciseDurationsMap[exercise['name']] = exercise['duration'];
+      exerciseDurationsMap[exercise['name']] = exercise['durationexercise'];
     }
 
     print("map: $exerciseDurationsMap");

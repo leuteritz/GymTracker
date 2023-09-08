@@ -3,6 +3,7 @@ import 'exercisescreen.dart';
 import 'homescreen.dart';
 import 'historyscreen.dart';
 import 'insertexercise.dart';
+import 'map.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -44,6 +45,10 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(CupertinoIcons.clock),
             label: 'History',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.map),
+            label: 'Map',
+          ),
         ],
         currentIndex: _selectedIndex,
         onTap: _onTabSelected,
@@ -59,6 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
             return HistoryScreen(
               key: _historyKey,
             );
+          case 3:
+            return MapScreen();
           default:
             return HomeScreen();
         }

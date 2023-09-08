@@ -173,7 +173,11 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> maps = await db.rawQuery(
         'SELECT DISTINCT duration FROM exercise WHERE date = "$date"');
 
-    return maps[0]['duration'];
+    if (maps.isNotEmpty && maps[0]['duration'] != null) {
+      return maps[0]['duration'];
+    } else {
+      return ''; // Return an empty string or a default value if no duration is found.
+    }
   }
 
   Future<String?> getStartTime(String date) async {
