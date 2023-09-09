@@ -6,29 +6,32 @@ import 'package:http/http.dart' as http;
 import 'popup.dart';
 import 'dart:convert';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
+
 import 'gymmarker.dart';
 
 class MapScreen extends StatefulWidget {
+  const MapScreen({Key? key}) : super(key: key);
   @override
-  _MapScreenState createState() => _MapScreenState();
+  MapScreenState createState() => MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class MapScreenState extends State<MapScreen> {
   MapController _mapController = MapController();
   PopupController popupController = PopupController();
 
   bool isLoading = true;
   bool isDataFetched = false;
   Marker? userLocationMarker;
-  LatLng? initialCenter;
+
   bool canZoom = true;
-  double radius = 0.01;
-  String gymname = 'Gym Name: ';
+  double radius = 0.01; // 1km
+  LatLng userLocation = LatLng(0, 0);
 
   GymMarker? gymMarker;
 
   List<GymMarker> gymData = [];
-  Future<void> fetchGymData(LatLng userLocation) async {
+
+  Future<void> fetchGymData() async {
     final double lat = userLocation.latitude;
     final double lon = userLocation.longitude;
     final double latMin = lat - radius;
@@ -57,6 +60,11 @@ class _MapScreenState extends State<MapScreen> {
           return GymMarker(
             location: LatLng(gym['lat'], gym['lon']),
             name: gymName,
+            website: gym['tags']['website'],
+            city: gym['tags']['addr:city'],
+            street: gym['tags']['addr:street'],
+            postcode: gym['tags']['addr:postcode'],
+            housenumber: gym['tags']['addr:housenumber'],
           );
         }).toList();
       });
@@ -126,17 +134,16 @@ class _MapScreenState extends State<MapScreen> {
                       builder: (ctx) => Container(
                         child: Icon(
                           CupertinoIcons
-                              .location_fill, // You can customize the marker icon
+                              .dot_square, // You can customize the marker icon
                           color: CupertinoColors.activeBlue,
                         ),
                       ),
                     );
                   }
 
-                  // Location data is available, set initialCenter
-                  initialCenter = snapshot.data!;
+                  userLocation = snapshot.data!;
                   if (!isDataFetched) {
-                    fetchGymData(initialCenter!);
+                    fetchGymData();
 
                     isDataFetched = true;
                   }
@@ -160,7 +167,7 @@ class _MapScreenState extends State<MapScreen> {
 
                   return FlutterMap(
                     options: MapOptions(
-                      center: initialCenter,
+                      center: userLocation,
                       zoom: 14.0,
                       rotation: 0.0,
                       maxZoom: 18.0,
@@ -173,16 +180,23 @@ class _MapScreenState extends State<MapScreen> {
                       },
                     ),
                     children: [
-                      TileLayer(
-                        urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'com.example.app',
+                      GestureDetector(
+                        onTap: () {
+                          popupController
+                              .hideAllPopups(); // Close all popups when tapping on the map
+                        },
+                        child: TileLayer(
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.example.app',
+                        ),
                       ),
                       MarkerLayer(
                         markers: gymMarkers,
                       ),
                       PopupMarkerLayer(
                           options: PopupMarkerLayerOptions(
+                              popupController: popupController,
                               markers: gymMarkers,
                               popupDisplayOptions: PopupDisplayOptions(
                                 builder: (BuildContext context, Marker marker) {
@@ -198,6 +212,7 @@ class _MapScreenState extends State<MapScreen> {
                       //
                     ],
                     mapController: canZoom ? _mapController : null,
+
                     // Add other map configuration and layers here
                   );
                 },
@@ -212,7 +227,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 onPressed: () {
                   // Animate to the user's current location when the button is pressed
-                  _mapController.move(initialCenter!, 14);
+                  _mapController.move(userLocation, 14);
                   _mapController.rotate(0.0);
                 },
               ),

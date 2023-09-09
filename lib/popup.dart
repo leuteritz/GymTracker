@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
-
-import 'package:flutter_map/flutter_map.dart';
 import 'gymmarker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ExamplePopup extends StatefulWidget {
   final GymMarker gymMarker;
@@ -15,7 +14,6 @@ class ExamplePopup extends StatefulWidget {
 class _ExamplePopupState extends State<ExamplePopup> {
   @override
   Widget build(BuildContext context) {
-    print(widget.gymMarker.name);
     return Container(
       margin: EdgeInsets.all(10), // Margin for spacing
       padding: EdgeInsets.all(10), // Padding for content spacing
@@ -45,6 +43,57 @@ class _ExamplePopupState extends State<ExamplePopup> {
     );
   }
 
+  void _showNavigationDialog(BuildContext context) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text('Navigate to Gym'),
+          content: Text('Choose your navigation app:'),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text('Apple Maps'),
+              onPressed: () {
+                _launchAppleMaps();
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text('Google Maps'),
+              onPressed: () {
+                _launchGoogleMaps();
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text('Cancel'), // Add Cancel button
+              onPressed: () {
+                Navigator.of(context)
+                    .pop(); // Close the dialog without any action
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _launchAppleMaps() {
+    // Use Apple Maps URL scheme
+    final String appleMapsUrl =
+        'https://maps.apple.com/?q=${widget.gymMarker.name ?? ''},'
+        '${widget.gymMarker.city ?? ''}';
+    launchUrl(Uri.parse(appleMapsUrl));
+  }
+
+  void _launchGoogleMaps() {
+    // Use Google Maps URL
+    final String googleMapsUrl =
+        'https://maps.google.com/maps?q=${widget.gymMarker.name ?? ''},'
+        '${widget.gymMarker.city ?? ''}';
+    launchUrl(Uri.parse(googleMapsUrl));
+  }
+
   Widget _cardDescription(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(minWidth: 100, maxWidth: 200),
@@ -52,12 +101,47 @@ class _ExamplePopupState extends State<ExamplePopup> {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
+          GestureDetector(
+            onTap: () {
+              _showNavigationDialog(context);
+            },
+            child: Text(
+              widget.gymMarker.name,
+              style: const TextStyle(
+                  fontSize: 12.0,
+                  color: CupertinoColors.black,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline),
+            ),
+          ),
           Text(
-            'Gym Name: ${widget.gymMarker.name}',
+            '${widget.gymMarker.postcode ?? 'no postcode'} ${widget.gymMarker.city ?? 'no city'}',
             style: const TextStyle(
-                fontSize: 12.0,
-                color: CupertinoColors.black,
-                fontWeight: FontWeight.bold),
+              fontSize: 10.0,
+              color: CupertinoColors.black,
+            ),
+          ),
+          Text(
+            '${widget.gymMarker.street ?? 'no street'} ${widget.gymMarker.housenumber ?? 'no number'} ',
+            style: const TextStyle(
+              fontSize: 10.0,
+              color: CupertinoColors.black,
+            ),
+          ),
+          GestureDetector(
+            onTap: () async {
+              final Uri url = Uri.parse(widget.gymMarker.website!);
+
+              await launchUrl(url);
+            },
+            child: Text(
+              widget.gymMarker.website ?? 'No website',
+              style: const TextStyle(
+                fontSize: 10.0,
+                color: CupertinoColors.activeBlue,
+                decoration: TextDecoration.underline,
+              ),
+            ),
           ),
         ],
       ),

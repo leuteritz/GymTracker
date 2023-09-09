@@ -11,7 +11,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  GlobalKey<HistoryScreenState> _historyKey = GlobalKey<HistoryScreenState>();
+  GlobalKey<HistoryScreenState> historyKey = GlobalKey<HistoryScreenState>();
+  GlobalKey<MapScreenState> mapKey = GlobalKey<MapScreenState>();
 
   int _selectedIndex = 1;
 
@@ -62,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
           case 2:
             load(); // Call the load function here
             return HistoryScreen(
-              key: _historyKey,
+              key: historyKey,
             );
           case 3:
             return MapScreen();
@@ -74,6 +75,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void load() {
-    _historyKey.currentState?.loadWorkoutDates();
+    historyKey.currentState?.loadWorkoutDates();
   }
 }

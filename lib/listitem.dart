@@ -24,7 +24,6 @@ class ListItem extends StatefulWidget {
 class _ListItemState extends State<ListItem> {
   TextEditingController weightController = TextEditingController();
   TextEditingController repsController = TextEditingController();
-  GlobalKey<ExerciseTimerState> _key = GlobalKey<ExerciseTimerState>();
 
   @override
   void initState() {
