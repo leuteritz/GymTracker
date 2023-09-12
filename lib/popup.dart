@@ -12,6 +12,32 @@ class ExamplePopup extends StatefulWidget {
 }
 
 class _ExamplePopupState extends State<ExamplePopup> {
+  String street = '';
+  String name = '';
+  String postcode = '';
+  String city = '';
+  String housenumber = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    street = widget.gymMarker.street ?? 'no data';
+    name = widget.gymMarker.name ?? 'no data';
+    postcode = widget.gymMarker.postcode ?? 'no data';
+    city = widget.gymMarker.city ?? 'no data';
+    housenumber = widget.gymMarker.housenumber ?? 'no data';
+
+    checkNameStreet();
+  }
+
+  void checkNameStreet() {
+    street = widget.gymMarker.street ?? 'no data';
+    street = street.replaceAll("Ã¶", "ö");
+    street = street.replaceAll("Ã¼", "ü");
+    street = street.replaceAll("Ã", "ß");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -106,7 +132,7 @@ class _ExamplePopupState extends State<ExamplePopup> {
               _showNavigationDialog(context);
             },
             child: Text(
-              widget.gymMarker.name,
+              name,
               style: const TextStyle(
                   fontSize: 12.0,
                   color: CupertinoColors.black,
@@ -115,14 +141,14 @@ class _ExamplePopupState extends State<ExamplePopup> {
             ),
           ),
           Text(
-            '${widget.gymMarker.postcode ?? 'no postcode'} ${widget.gymMarker.city ?? 'no city'}',
+            '$postcode $city',
             style: const TextStyle(
               fontSize: 10.0,
               color: CupertinoColors.black,
             ),
           ),
           Text(
-            '${widget.gymMarker.street ?? 'no street'} ${widget.gymMarker.housenumber ?? 'no number'} ',
+            '$street $housenumber',
             style: const TextStyle(
               fontSize: 10.0,
               color: CupertinoColors.black,

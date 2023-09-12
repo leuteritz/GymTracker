@@ -6,11 +6,12 @@ import 'package:http/http.dart' as http;
 import 'popup.dart';
 import 'dart:convert';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
-
 import 'gymmarker.dart';
+import 'dart:async';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  MapScreen({Key? key}) : super(key: key);
+
   @override
   MapScreenState createState() => MapScreenState();
 }
@@ -21,19 +22,26 @@ class MapScreenState extends State<MapScreen> {
 
   bool isLoading = true;
   bool isDataFetched = false;
+
   Marker? userLocationMarker;
+
+  bool firstLoad = true;
+  bool isFetched = false;
+  bool islocation = true;
+  bool isCameraMoving = false;
 
   bool canZoom = true;
   double radius = 0.01; // 1km
   LatLng userLocation = LatLng(0, 0);
+  LatLng location = LatLng(0, 0);
 
   GymMarker? gymMarker;
 
   List<GymMarker> gymData = [];
 
-  Future<void> fetchGymData() async {
-    final double lat = userLocation.latitude;
-    final double lon = userLocation.longitude;
+  Future<void> fetchGymData(LatLng location) async {
+    final double lat = location.latitude;
+    final double lon = location.longitude;
     final double latMin = lat - radius;
     final double latMax = lat + radius;
     final double lonMin = lon - radius;
@@ -50,6 +58,7 @@ class MapScreenState extends State<MapScreen> {
         Uri.parse('https://overpass-api.de/api/interpreter?data=$query');
 
     final response = await http.get(url);
+    print(1);
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body)['elements'];
@@ -69,6 +78,8 @@ class MapScreenState extends State<MapScreen> {
         }).toList();
       });
     } else {
+      print('API Request Failed with Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
       throw Exception('Failed to fetch gym data');
     }
   }
@@ -100,12 +111,100 @@ class MapScreenState extends State<MapScreen> {
     });
   }
 
+  void _showCupertinoModalInfo(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double modalHeight = screenHeight * 0.3;
+    final double modalWidth = screenWidth * 0.8;
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: Container(
+            width: modalWidth,
+            height: modalHeight,
+            child: CupertinoPopupSurface(
+              child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildInfoText(
+                        "Use the slider in the top left corner to adjust the search radius.",
+                      ),
+                      Container(
+                        height: 4,
+                        margin: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: CupertinoColors.white,
+                        ),
+                      ),
+                      _buildInfoText(
+                        "If a gym displays 'No data available', it means there is no information available for that location in the database.",
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildInfoText(String text) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 16,
+          // You can use FontWeight.bold for a bolder look
+          letterSpacing: 0.5, // Adjust the letter spacing
+          height: 1.2, // Adjust the line height
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text('Nearby Gyms Map'),
-      ),
+          middle: Text('Nearby Gyms Map'),
+          trailing: CupertinoButton(
+            padding: EdgeInsets.zero,
+            child: Icon(
+              CupertinoIcons.info_circle,
+              size: 30,
+            ),
+            onPressed: () {
+              _showCupertinoModalInfo(context);
+            },
+          ),
+          leading: Container(
+            width: 100,
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                CupertinoSlider(
+                  value: radius,
+                  min: 0.01,
+                  max: 0.05,
+                  divisions: 4,
+                  onChanged: (value) {
+                    setState(() {
+                      radius = value;
+                      fetchGymData(location);
+                    });
+                  },
+                ),
+              ],
+            ),
+          )),
       child: SafeArea(
         child: Stack(
           children: [
@@ -142,8 +241,9 @@ class MapScreenState extends State<MapScreen> {
                   }
 
                   userLocation = snapshot.data!;
+                  print("isDataFetched: $isDataFetched");
                   if (!isDataFetched) {
-                    fetchGymData();
+                    fetchGymData(userLocation);
 
                     isDataFetched = true;
                   }
@@ -167,15 +267,31 @@ class MapScreenState extends State<MapScreen> {
 
                   return FlutterMap(
                     options: MapOptions(
-                      center: userLocation,
+                      center: firstLoad ? userLocation : location,
                       zoom: 14.0,
                       rotation: 0.0,
                       maxZoom: 18.0,
                       minZoom: 3.0,
-                      onPositionChanged: (MapPosition pos, bool hasGesture) {
-                        // Check if the current zoom level is greater than the maximum allowed
+                      onPositionChanged:
+                          (MapPosition pos, bool hasGesture) async {
+                        location = pos.center!;
+
+                        print("zoom: ${pos.zoom}");
                         if (pos.zoom! >= 18.0) {
                           _mapController.move(pos.center!, 17.0);
+                        }
+                        if (pos.zoom! <= 10.0 && userLocation != pos.center!) {
+                          firstLoad = false;
+                          if (!isCameraMoving) {
+                            isCameraMoving = true;
+                            Timer(Duration(seconds: 2), () {
+                              if (isCameraMoving) {
+                                fetchGymData(location);
+                                _mapController.move(pos.center!, pos.zoom!);
+                                isCameraMoving = false;
+                              }
+                            });
+                          }
                         }
                       },
                     ),
