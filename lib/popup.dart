@@ -24,11 +24,11 @@ class _ExamplePopupState extends State<ExamplePopup> {
   void initState() {
     super.initState();
 
-    street = widget.gymMarker.street ?? 'no data';
-    name = widget.gymMarker.name ?? 'no data';
-    postcode = widget.gymMarker.postcode ?? 'no data';
-    city = widget.gymMarker.city ?? 'no data';
-    housenumber = widget.gymMarker.housenumber ?? 'no data';
+    street = widget.gymMarker.street ?? '';
+    name = widget.gymMarker.name;
+    postcode = widget.gymMarker.postcode ?? '';
+    city = widget.gymMarker.city ?? '';
+    housenumber = widget.gymMarker.housenumber ?? '';
     checkNameStreet();
   }
 
@@ -40,7 +40,7 @@ class _ExamplePopupState extends State<ExamplePopup> {
     final double lon1Rad = from.longitude * pi / 180.0;
     final double lon2Rad = to.longitude * pi / 180.0;
 
-    final double deltaLat = lat2Rad - (lat1Rad);
+    final double deltaLat = lat2Rad - lat1Rad;
     final double deltaLon = lon2Rad - lon1Rad;
 
     final double a = sin(deltaLat / 2) * sin(deltaLat / 2) +
@@ -52,7 +52,7 @@ class _ExamplePopupState extends State<ExamplePopup> {
   }
 
   void checkNameStreet() {
-    street = widget.gymMarker.street ?? 'no data';
+    street = widget.gymMarker.street ?? '';
     street = street.replaceAll("Ã¶", "ö");
     street = street.replaceAll("Ã¼", "ü");
     street = street.replaceAll("Ã", "ß");
@@ -195,7 +195,7 @@ class _ExamplePopupState extends State<ExamplePopup> {
               await launchUrl(url);
             },
             child: Text(
-              widget.gymMarker.website ?? 'No website',
+              widget.gymMarker.website ?? '',
               style: const TextStyle(
                 fontSize: 10.0,
                 color: CupertinoColors.activeBlue,

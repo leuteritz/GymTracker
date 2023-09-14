@@ -22,31 +22,27 @@ class MapScreenState extends State<MapScreen> {
 
   bool isLoading = true;
   bool isDataFetched = false;
+  bool firstLoad = true;
+  bool isCameraMoving = false;
+  bool canZoom = true;
 
   Marker? userLocationMarker;
 
-  bool firstLoad = true;
-  bool isFetched = false;
-  bool islocation = true;
-  bool isCameraMoving = false;
+  double radius = (100 / 40075) * 360; // 100km
+  double zoom = 14.0;
 
-  bool canZoom = true;
-  double radius = (5 / 40075) * 360; // 5km
-  double radiusname = (100 / 40075) * 360; // 10km
   LatLng userLocation = LatLng(0, 0);
   LatLng location = LatLng(0, 0);
-
-  GymMarker? gymMarker;
 
   List<GymMarker> gymData = [];
 
   Future<void> fetchGymData(LatLng location) async {
     final double lat = location.latitude;
     final double lon = location.longitude;
-    final double latMin = lat - radiusname;
-    final double latMax = lat + radiusname;
-    final double lonMin = lon - radiusname;
-    final double lonMax = lon + radiusname;
+    final double latMin = lat - radius;
+    final double latMax = lat + radius;
+    final double lonMin = lon - radius;
+    final double lonMax = lon + radius;
 
     final query = '''
       [out:json];
@@ -86,12 +82,17 @@ class MapScreenState extends State<MapScreen> {
   }
 
   Future<void> fetchGymDataName(String searchText) async {
+    if (searchText.isEmpty) {
+      fetchGymData(userLocation);
+      return;
+    }
+
     final double lat = userLocation.latitude;
     final double lon = userLocation.longitude;
-    final double latMin = lat - radiusname;
-    final double latMax = lat + radiusname;
-    final double lonMin = lon - radiusname;
-    final double lonMax = lon + radiusname;
+    final double latMin = lat - radius;
+    final double latMax = lat + radius;
+    final double lonMin = lon - radius;
+    final double lonMax = lon + radius;
 
     final query = '''
       [out:json];
@@ -119,14 +120,14 @@ class MapScreenState extends State<MapScreen> {
         gymData = filteredGyms.map((gym) {
           var gymName = gym['tags']['name'] ?? 'Unknown Gym';
           return GymMarker(
-            location: LatLng(gym['lat'], gym['lon']),
-            name: gymName,
-            website: gym['tags']['website'],
-            city: gym['tags']['addr:city'],
-            street: gym['tags']['addr:street'],
-            postcode: gym['tags']['addr:postcode'],
-            housenumber: gym['tags']['addr:housenumber'],
-          );
+              location: LatLng(gym['lat'], gym['lon']),
+              name: gymName,
+              website: gym['tags']['website'],
+              city: gym['tags']['addr:city'],
+              street: gym['tags']['addr:street'],
+              postcode: gym['tags']['addr:postcode'],
+              housenumber: gym['tags']['addr:housenumber'],
+              userLocation: userLocation);
         }).toList();
       });
     } else {
@@ -183,17 +184,7 @@ class MapScreenState extends State<MapScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _buildInfoText(
-                        "The search radius has been set to a distance of 5 kilometers.",
-                      ),
-                      Container(
-                        height: 4,
-                        margin: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.white,
-                        ),
-                      ),
-                      _buildInfoText(
-                        "If a gym displays 'No data available', it means there is no information available for that location in the database.",
+                        "Our gym data is sourced from OpenStreetMap (OSM), a renowned open-source mapping platform. If you are missing information, you are welcome to provide the data yourself, so other people can benefit from it as well. Credit to OSM for providing the mapping and data services!",
                       ),
                     ],
                   );
@@ -295,23 +286,22 @@ class MapScreenState extends State<MapScreen> {
                     // Handle the case where location data is not available
                     return Center(child: Text('Location data not available'));
                   } else if (snapshot.hasData) {
-                    // Create a marker for the user's current location
+                    userLocation = snapshot.data!;
+
                     userLocationMarker = Marker(
-                      width: 40.0,
-                      height: 40.0,
+                      width: 60,
+                      height: 60,
                       point: snapshot.data!,
                       rotateAlignment: Alignment.center,
                       builder: (ctx) => Container(
                         child: Icon(
                           CupertinoIcons
                               .dot_square, // You can customize the marker icon
-                          color: CupertinoColors.activeBlue,
                         ),
                       ),
                     );
                   }
 
-                  userLocation = snapshot.data!;
                   print("isDataFetched: $isDataFetched");
                   if (!isDataFetched) {
                     fetchGymData(userLocation);
@@ -339,7 +329,7 @@ class MapScreenState extends State<MapScreen> {
                   return FlutterMap(
                     options: MapOptions(
                       center: firstLoad ? userLocation : location,
-                      zoom: 14.0,
+                      zoom: zoom,
                       rotation: 0.0,
                       maxZoom: 18.0,
                       minZoom: 3.0,
@@ -350,20 +340,6 @@ class MapScreenState extends State<MapScreen> {
                         print("zoom: ${pos.zoom}");
                         if (pos.zoom! >= 18.0) {
                           _mapController.move(pos.center!, 17.0);
-                        }
-                        if (pos.zoom! <= 11.0 && userLocation != pos.center!) {
-                          firstLoad = false;
-                          if (!isCameraMoving) {
-                            isCameraMoving = true;
-                            Timer(Duration(seconds: 2), () {
-                              if (isCameraMoving) {
-                                _mapController.move(pos.center!, pos.zoom!);
-                                fetchGymData(location);
-                                _mapController.move(pos.center!, pos.zoom!);
-                                isCameraMoving = false;
-                              }
-                            });
-                          }
                         }
                       },
                     ),
@@ -417,7 +393,28 @@ class MapScreenState extends State<MapScreen> {
                   // Animate to the user's current location when the button is pressed
                   _mapController.move(userLocation, 14);
                   _mapController.rotate(0.0);
+                  setState(() {
+                    zoom = 14.0;
+                  });
                 },
+              ),
+            ),
+            Positioned(
+              bottom: 40,
+              left: 20,
+              child: Container(
+                width: 100,
+                child: CupertinoSlider(
+                  value: zoom,
+                  min: 10.0,
+                  max: 14.0,
+                  divisions: 4,
+                  onChanged: (double value) {
+                    setState(() {
+                      zoom = value;
+                    });
+                  },
+                ),
               ),
             ),
           ],
