@@ -31,7 +31,8 @@ class MapScreenState extends State<MapScreen> {
   bool isCameraMoving = false;
 
   bool canZoom = true;
-  double radius = 0.01; // 1km
+  double radius = (5 / 40075) * 360; // 5km
+  double radiusname = (100 / 40075) * 360; // 10km
   LatLng userLocation = LatLng(0, 0);
   LatLng location = LatLng(0, 0);
 
@@ -42,10 +43,10 @@ class MapScreenState extends State<MapScreen> {
   Future<void> fetchGymData(LatLng location) async {
     final double lat = location.latitude;
     final double lon = location.longitude;
-    final double latMin = lat - radius;
-    final double latMax = lat + radius;
-    final double lonMin = lon - radius;
-    final double lonMax = lon + radius;
+    final double latMin = lat - radiusname;
+    final double latMax = lat + radiusname;
+    final double lonMin = lon - radiusname;
+    final double lonMax = lon + radiusname;
 
     final query = '''
       [out:json];
@@ -65,6 +66,57 @@ class MapScreenState extends State<MapScreen> {
       print(data);
       setState(() {
         gymData = data.cast<Map<String, dynamic>>().map((gym) {
+          var gymName = gym['tags']['name'] ?? 'Unknown Gym';
+          return GymMarker(
+              location: LatLng(gym['lat'], gym['lon']),
+              name: gymName,
+              website: gym['tags']['website'],
+              city: gym['tags']['addr:city'],
+              street: gym['tags']['addr:street'],
+              postcode: gym['tags']['addr:postcode'],
+              housenumber: gym['tags']['addr:housenumber'],
+              userLocation: userLocation);
+        }).toList();
+      });
+    } else {
+      print('API Request Failed with Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      throw Exception('Failed to fetch gym data');
+    }
+  }
+
+  Future<void> fetchGymDataName(String searchText) async {
+    final double lat = userLocation.latitude;
+    final double lon = userLocation.longitude;
+    final double latMin = lat - radiusname;
+    final double latMax = lat + radiusname;
+    final double lonMin = lon - radiusname;
+    final double lonMax = lon + radiusname;
+
+    final query = '''
+      [out:json];
+      node["leisure"="fitness_centre"]
+        ($latMin,$lonMin,$latMax,$lonMax);
+      out center;
+    ''';
+
+    final url =
+        Uri.parse('https://overpass-api.de/api/interpreter?data=$query');
+
+    final response = await http.get(url);
+    print(1);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body)['elements'];
+
+      final filteredGyms = data.cast<Map<String, dynamic>>().where((gym) {
+        var gymName = gym['tags']['name'] ?? 'Unknown Gym';
+        return gymName.toLowerCase().contains(searchText.toLowerCase());
+      }).toList();
+      print("data: $filteredGyms");
+
+      setState(() {
+        gymData = filteredGyms.map((gym) {
           var gymName = gym['tags']['name'] ?? 'Unknown Gym';
           return GymMarker(
             location: LatLng(gym['lat'], gym['lon']),
@@ -131,7 +183,7 @@ class MapScreenState extends State<MapScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _buildInfoText(
-                        "Use the slider in the top left corner to adjust the search radius.",
+                        "The search radius has been set to a distance of 5 kilometers.",
                       ),
                       Container(
                         height: 4,
@@ -147,6 +199,34 @@ class MapScreenState extends State<MapScreen> {
                   );
                 },
               ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showCupertinoModalSearch(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    final double modalWidth = screenWidth * 0.7;
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: Container(
+            width: modalWidth,
+            child: CupertinoSearchTextField(
+              placeholderStyle: TextStyle(
+                color: CupertinoColors.white
+                    .withOpacity(0.5), // Set the color to transparent
+              ),
+              decoration: BoxDecoration(
+                  color: CupertinoColors.systemGrey3.withOpacity(0.3),
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(10)),
+              onChanged: fetchGymDataName,
             ),
           ),
         );
@@ -174,37 +254,28 @@ class MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-          middle: Text('Nearby Gyms Map'),
-          trailing: CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: Icon(
-              CupertinoIcons.info_circle,
-              size: 30,
-            ),
-            onPressed: () {
-              _showCupertinoModalInfo(context);
-            },
+        middle: Text('Nearby Gyms Map'),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: Icon(
+            CupertinoIcons.info_circle,
+            size: 30,
           ),
-          leading: Container(
-            width: 100,
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                CupertinoSlider(
-                  value: radius,
-                  min: 0.01,
-                  max: 0.05,
-                  divisions: 4,
-                  onChanged: (value) {
-                    setState(() {
-                      radius = value;
-                      fetchGymData(location);
-                    });
-                  },
-                ),
-              ],
-            ),
-          )),
+          onPressed: () {
+            _showCupertinoModalInfo(context);
+          },
+        ),
+        leading: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: Icon(
+            CupertinoIcons.search,
+            size: 30,
+          ),
+          onPressed: () {
+            _showCupertinoModalSearch(context);
+          },
+        ),
+      ),
       child: SafeArea(
         child: Stack(
           children: [
@@ -280,12 +351,13 @@ class MapScreenState extends State<MapScreen> {
                         if (pos.zoom! >= 18.0) {
                           _mapController.move(pos.center!, 17.0);
                         }
-                        if (pos.zoom! <= 10.0 && userLocation != pos.center!) {
+                        if (pos.zoom! <= 11.0 && userLocation != pos.center!) {
                           firstLoad = false;
                           if (!isCameraMoving) {
                             isCameraMoving = true;
                             Timer(Duration(seconds: 2), () {
                               if (isCameraMoving) {
+                                _mapController.move(pos.center!, pos.zoom!);
                                 fetchGymData(location);
                                 _mapController.move(pos.center!, pos.zoom!);
                                 isCameraMoving = false;

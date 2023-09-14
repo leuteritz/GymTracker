@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'gymmarker.dart';
+import 'dart:math';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:latlong2/latlong.dart';
 
 class ExamplePopup extends StatefulWidget {
   final GymMarker gymMarker;
@@ -27,8 +29,26 @@ class _ExamplePopupState extends State<ExamplePopup> {
     postcode = widget.gymMarker.postcode ?? 'no data';
     city = widget.gymMarker.city ?? 'no data';
     housenumber = widget.gymMarker.housenumber ?? 'no data';
-
     checkNameStreet();
+  }
+
+  double calculateDistance(LatLng from, LatLng to) {
+    const double radiusOfEarth = 6371.0;
+
+    final double lat1Rad = from.latitude * pi / 180.0;
+    final double lat2Rad = to.latitude * pi / 180.0;
+    final double lon1Rad = from.longitude * pi / 180.0;
+    final double lon2Rad = to.longitude * pi / 180.0;
+
+    final double deltaLat = lat2Rad - (lat1Rad);
+    final double deltaLon = lon2Rad - lon1Rad;
+
+    final double a = sin(deltaLat / 2) * sin(deltaLat / 2) +
+        cos(lat1Rad) * cos(lat2Rad) * sin(deltaLon / 2) * sin(deltaLon / 2);
+
+    final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return radiusOfEarth * c;
   }
 
   void checkNameStreet() {
@@ -57,11 +77,25 @@ class _ExamplePopupState extends State<ExamplePopup> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            child: Icon(
-              CupertinoIcons.location_solid,
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Icon(
+                  CupertinoIcons.location_solid,
+                ),
+              ),
+              SizedBox(height: 5),
+              Text(
+                '${calculateDistance(widget.gymMarker.userLocation!, widget.gymMarker.location).toStringAsFixed(2)} km',
+                style: const TextStyle(
+                  fontSize: 10.0,
+                  color: CupertinoColors.black,
+                ),
+              ),
+            ],
           ),
           _cardDescription(context),
         ],

@@ -8,6 +8,7 @@ class GymMarker {
   final String? street;
   final String? postcode;
   final String? housenumber;
+  final LatLng? userLocation;
 
   GymMarker(
       {required this.location,
@@ -16,5 +17,6 @@ class GymMarker {
       this.city,
       this.street,
       this.postcode,
-      this.housenumber});
+      this.housenumber,
+      this.userLocation});
 }
