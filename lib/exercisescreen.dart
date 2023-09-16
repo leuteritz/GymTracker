@@ -10,14 +10,6 @@ class ExerciseScreen extends StatefulWidget {
 }
 
 class ExerciseScreenState extends State<ExerciseScreen> {
-  List<String> desiredMuscleGroupOrder = [
-    'Chest',
-    'Back',
-    'Legs',
-    'Shoulders',
-    'Triceps',
-    'Biceps'
-  ];
   List<Map<String, dynamic>> exercises = [];
   Map<String, List<Exercise>> exerciseMap = {};
 
@@ -40,24 +32,41 @@ class ExerciseScreenState extends State<ExerciseScreen> {
       exercises = favoriteExerciseData + nonFavoriteExerciseData;
     });
 
-    print("favorite exercises: $favoriteExerciseData");
-    print("non-favorite exercises: $nonFavoriteExerciseData");
+    Map<String, List<Exercise>> initialExerciseMap = {};
+
+    exercises.forEach((exercise) {
+      final muscleGroup = exercise['muscle'];
+      final exerciseName = exercise['name'];
+      final exerciseDescription = exercise['description'];
+
+      if (initialExerciseMap[muscleGroup] == null) {
+        initialExerciseMap[muscleGroup] = [];
+      }
+
+      initialExerciseMap[muscleGroup]!.add(
+        Exercise(
+          name: exerciseName,
+          description: exerciseDescription,
+          muscleGroup: muscleGroup,
+          fetchExercisesCallback: fetchExercises,
+          key: Key(exercise['name']),
+        ),
+      );
+    });
+    setState(() {
+      exerciseMap = initialExerciseMap;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-
     fetchExercises();
   }
 
   void _searchExercise(String searchText) {
     if (searchText.isEmpty) {
-      // If the search text is empty, reset to the original list of exercises
       fetchExercises();
-      setState(() {
-        exerciseMap = {}; // Reset the exerciseMap
-      });
     } else {
       List<Map<String, dynamic>> filteredExercises = [];
 
@@ -67,25 +76,30 @@ class ExerciseScreenState extends State<ExerciseScreen> {
         }
       }
 
-      print("filtered exercises: $filteredExercises");
-      print(searchText);
-
-      // Create a set to store unique muscle groups in filtered exercises
-      Set<String> muscleGroupsInFilteredExercises = Set<String>();
-      for (var exercise in filteredExercises) {
-        muscleGroupsInFilteredExercises.add(exercise['muscle']);
-      }
-
-      // Filter exerciseMap to only include muscle groups from filtered exercises
+      // Rebuild exerciseMap based on the filtered exercises
       Map<String, List<Exercise>> filteredExerciseMap = {};
-      for (var muscleGroup in muscleGroupsInFilteredExercises) {
-        if (exerciseMap.containsKey(muscleGroup)) {
-          filteredExerciseMap[muscleGroup] = exerciseMap[muscleGroup]!;
+
+      for (var exercise in filteredExercises) {
+        final muscleGroup = exercise['muscle'];
+        final exerciseName = exercise['name'];
+        final exerciseDescription = exercise['description'];
+
+        if (filteredExerciseMap[muscleGroup] == null) {
+          filteredExerciseMap[muscleGroup] = [];
         }
+
+        filteredExerciseMap[muscleGroup]!.add(
+          Exercise(
+            name: exerciseName,
+            description: exerciseDescription,
+            muscleGroup: muscleGroup,
+            fetchExercisesCallback: fetchExercises,
+            key: Key(exercise['name']),
+          ),
+        );
       }
 
       setState(() {
-        exercises = filteredExercises;
         exerciseMap = filteredExerciseMap;
       });
     }
@@ -93,31 +107,6 @@ class ExerciseScreenState extends State<ExerciseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, List<Exercise>> exerciseMap = {};
-
-    // Group exercises by muscle group
-    exercises.forEach((exercise) {
-      final muscleGroup = exercise['muscle'];
-      final exerciseName = exercise['name'];
-      final exerciseDescription = exercise['description'];
-
-      if (exerciseMap[muscleGroup] == null) {
-        exerciseMap[muscleGroup] = [];
-      }
-
-      exerciseMap[muscleGroup]!.add(
-        Exercise(
-          name: exerciseName,
-          description: exerciseDescription,
-          muscleGroup: muscleGroup,
-          fetchExercisesCallback: fetchExercises,
-          key: Key(
-              exercise['name']), // Use a unique identifier, like exercise name
-          // Pass the callback
-        ),
-      );
-    });
-
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: SizedBox(

@@ -93,16 +93,11 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
         padding: EdgeInsets.all(20),
         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: CupertinoColors.systemGrey,
-            width: 4.0,
-          ),
-          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: CupertinoColors.systemGrey.withOpacity(0.3),
-              spreadRadius: 10,
-              blurRadius: 20,
+              spreadRadius: 2,
+              blurRadius: 30,
             ),
           ],
         ),

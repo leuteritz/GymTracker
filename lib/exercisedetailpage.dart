@@ -106,7 +106,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
           height: 200,
           child: CupertinoPicker(
             backgroundColor: CupertinoColors.systemBackground,
-            itemExtent: 40,
+            itemExtent: 27,
             onSelectedItemChanged: (int index) {
               setState(() {
                 _currentWeek = weekWidgets[index].toString();
@@ -137,7 +137,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
           height: 200,
           child: CupertinoPicker(
             backgroundColor: CupertinoColors.systemBackground,
-            itemExtent: 40,
+            itemExtent: 27,
             looping: true,
             onSelectedItemChanged: (int index) {
               setState(() {
@@ -172,7 +172,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
           height: 200,
           child: CupertinoPicker(
             backgroundColor: CupertinoColors.systemBackground,
-            itemExtent: 40,
+            itemExtent: 27,
             looping: true,
             onSelectedItemChanged: (int index) {
               setState(() {

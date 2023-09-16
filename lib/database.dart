@@ -111,7 +111,6 @@ class DatabaseHelper {
       where: 'name = ?',
       whereArgs: [name],
     );
-    print("Updated favorite status for $name to $favoriteStatus");
   }
 
   Future<bool> isExerciseFavorite(String name) async {

@@ -1,7 +1,8 @@
+import 'database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'constants.dart';
-import 'database.dart';
+import 'exerciseadd.dart';
 import 'dart:async';
 import 'exerciselabel.dart';
 import 'dart:math' as math;
@@ -161,7 +162,7 @@ class _BreakTimerState extends State<BreakTimer> with WidgetsBindingObserver {
           height: 200,
           child: CupertinoPicker(
             backgroundColor: CupertinoColors.systemBackground,
-            itemExtent: 32,
+            itemExtent: 27,
             children: List<Widget>.generate(10, (index) {
               index += 1;
               int hours = (index ~/ 2);
@@ -557,6 +558,12 @@ class _HomeScreenState extends State<HomeScreen> {
   GlobalKey<_CustomNavigationBarState> _key =
       GlobalKey<_CustomNavigationBarState>();
 
+  @override
+  void initState() {
+    super.initState();
+    fetchExercises(setState);
+  }
+
   double _currentSliderValue = 2;
   String _selectedExercise = 'Bench Press';
 
@@ -700,7 +707,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             alignment: PlaceholderAlignment.middle,
                             child: CupertinoButton(
                               onPressed: () {
-                                // Add your button's onPressed logic here
+                                _showCupertinoModal(context);
+                                _key.currentState?._startTimer();
+
+                                setState(() {
+                                  _isAddButtonPressed = true;
+                                });
                               },
                               child: Icon(CupertinoIcons.add_circled_solid,
                                   size: 30, color: CupertinoColors.systemGreen),
@@ -722,6 +734,252 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  List<Map<String, dynamic>> exercises = [];
+  Map<String, List<ExerciseAdd>> exerciseMap = {};
+
+  void fetchExercises(StateSetter setState) async {
+    final List<Map<String, dynamic>> allExerciseData =
+        await DatabaseHelper().getAllExerciseListInformation();
+
+    List<Map<String, dynamic>> favoriteExerciseData = [];
+    List<Map<String, dynamic>> nonFavoriteExerciseData = [];
+
+    for (var exerciseData in allExerciseData) {
+      if (exerciseData['favorite'] == 1) {
+        favoriteExerciseData.add(exerciseData);
+      } else {
+        nonFavoriteExerciseData.add(exerciseData);
+      }
+    }
+
+    setState(() {
+      exercises = favoriteExerciseData + nonFavoriteExerciseData;
+    });
+
+    Map<String, List<ExerciseAdd>> initialExerciseMap = {};
+
+    exercises.forEach((exercise) {
+      final muscleGroup = exercise['muscle'];
+      final exerciseName = exercise['name'];
+
+      if (initialExerciseMap[muscleGroup] == null) {
+        initialExerciseMap[muscleGroup] = [];
+      }
+
+      initialExerciseMap[muscleGroup]!.add(
+        ExerciseAdd(
+          name: exerciseName,
+          muscleGroup: muscleGroup,
+          key: Key(exercise['name']),
+        ),
+      );
+    });
+    setState(() {
+      exerciseMap = initialExerciseMap;
+    });
+  }
+
+  void _searchExercise(String searchText, StateSetter setState) {
+    print(searchText);
+    if (searchText.isEmpty) {
+      fetchExercises(setState);
+    } else {
+      List<Map<String, dynamic>> filteredExercises = [];
+
+      for (var exercise in exercises) {
+        if (exercise['name'].toLowerCase().contains(searchText.toLowerCase())) {
+          filteredExercises.add(exercise);
+        }
+      }
+      print(filteredExercises);
+
+      // Rebuild exerciseMap based on the filtered exercises
+      Map<String, List<ExerciseAdd>> filteredExerciseMap = {};
+
+      for (var exercise in filteredExercises) {
+        final muscleGroup = exercise['muscle'];
+        final exerciseName = exercise['name'];
+
+        if (filteredExerciseMap[muscleGroup] == null) {
+          filteredExerciseMap[muscleGroup] = [];
+        }
+
+        filteredExerciseMap[muscleGroup]!.add(
+          ExerciseAdd(
+            name: exerciseName,
+            muscleGroup: muscleGroup,
+            key: Key(exercise['name']),
+          ),
+        );
+      }
+
+      setState(() {
+        print(1);
+        exerciseMap = filteredExerciseMap;
+      });
+    }
+  }
+
+  void _showCupertinoModalExercise(BuildContext context, StateSetter setState) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double modalHeight = screenHeight * 0.8;
+    final double modalWidth = screenWidth * 0.8;
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (
+        BuildContext context,
+      ) {
+        return Center(
+          child: Container(
+            width: modalWidth,
+            height: modalHeight,
+            child: CupertinoPopupSurface(
+              child: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 50),
+                        child: CupertinoSearchTextField(
+                          placeholder: 'Search Exercise',
+                          onChanged: (searchText) {
+                            _searchExercise(searchText, setState);
+                          },
+                        ),
+                      ),
+                      Expanded(
+                          child: ListView.builder(
+                        padding: EdgeInsets.all(0),
+                        itemCount: exerciseMap.length + 1,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == 0) {
+                            // Favorites section
+                            var favoriteExercises = exercises
+                                .where((exercise) => exercise['favorite'] == 1)
+                                .toList();
+
+                            if (favoriteExercises.isNotEmpty) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: Center(
+                                      child: Text(
+                                        "Favorites" +
+                                            " (${favoriteExercises.length})",
+                                        style: TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.bold,
+                                            color: CupertinoColors.systemGrey),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: CupertinoColors.white,
+                                    ),
+                                  ),
+                                  SizedBox(height: 20),
+                                  Center(
+                                    child: Column(
+                                      children:
+                                          favoriteExercises.map((exercise) {
+                                        return ExerciseAdd(
+                                          name: exercise['name'],
+
+                                          muscleGroup: exercise['muscle'],
+
+                                          key: Key(exercise[
+                                              'name']), // Use a unique identifier, like exercise name
+                                          // Pass the callback
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: Text(
+                                      "Favorites" +
+                                          " (${favoriteExercises.length})",
+                                      style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                          color: CupertinoColors.systemGrey),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      color: CupertinoColors.white,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                          } else {
+                            var muscleGroup =
+                                exerciseMap.keys.elementAt(index - 1);
+                            var exercisesForGroup =
+                                exerciseMap[muscleGroup] ?? [];
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Text(
+                                    muscleGroup,
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                        color: CupertinoColors.systemGrey),
+                                  ),
+                                ),
+                                Container(
+                                  height: 4,
+                                  decoration: BoxDecoration(
+                                    color: CupertinoColors.white,
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                Center(
+                                  child: Column(
+                                    children: exercisesForGroup.map((exercise) {
+                                      return ExerciseAdd(
+                                        name: exercise.name,
+                                        muscleGroup: exercise.muscleGroup,
+                                        key: Key(exercise.name),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                        },
+                      )),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -748,7 +1006,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       CupertinoButton(
                         color: CupertinoColors.activeOrange,
                         onPressed: () {
-                          _showExerciseList(context, setState);
+                          _showCupertinoModalExercise(context, setState);
                         },
                         child: Text(_selectedExercise),
                       ),
@@ -850,10 +1108,9 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 200,
           child: CupertinoPicker(
             backgroundColor: CupertinoColors.systemBackground,
-            itemExtent: 32, // Height of each item in the list
+            itemExtent: 27,
             onSelectedItemChanged: (int index) {
               setState(() {
-                // Update the selected exercise label
                 _selectedExercise = exercises[index];
               });
             },

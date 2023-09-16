@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'gymmarker.dart';
 import 'dart:async';
+import 'dart:math';
 
 class MapScreen extends StatefulWidget {
   MapScreen({Key? key}) : super(key: key);
@@ -25,11 +26,12 @@ class MapScreenState extends State<MapScreen> {
   bool firstLoad = true;
   bool isCameraMoving = false;
   bool canZoom = true;
+  bool isZoom = true;
 
   Marker? userLocationMarker;
 
   double radius = (100 / 40075) * 360; // 100km
-  double zoom = 14.0;
+  double zoom = 15.0;
 
   LatLng userLocation = LatLng(0, 0);
   LatLng location = LatLng(0, 0);
@@ -213,6 +215,7 @@ class MapScreenState extends State<MapScreen> {
                 color: CupertinoColors.white
                     .withOpacity(0.5), // Set the color to transparent
               ),
+              placeholder: 'Search for a gym',
               decoration: BoxDecoration(
                   color: CupertinoColors.systemGrey3.withOpacity(0.3),
                   shape: BoxShape.rectangle,
@@ -302,7 +305,6 @@ class MapScreenState extends State<MapScreen> {
                     );
                   }
 
-                  print("isDataFetched: $isDataFetched");
                   if (!isDataFetched) {
                     fetchGymData(userLocation);
 
@@ -335,9 +337,9 @@ class MapScreenState extends State<MapScreen> {
                       minZoom: 3.0,
                       onPositionChanged:
                           (MapPosition pos, bool hasGesture) async {
+                        firstLoad = false;
                         location = pos.center!;
 
-                        print("zoom: ${pos.zoom}");
                         if (pos.zoom! >= 18.0) {
                           _mapController.move(pos.center!, 17.0);
                         }
@@ -406,14 +408,39 @@ class MapScreenState extends State<MapScreen> {
                 width: 100,
                 child: CupertinoSlider(
                   value: zoom,
-                  min: 10.0,
-                  max: 14.0,
-                  divisions: 4,
+                  min: 9.0,
+                  max: 17.0,
+                  divisions: 8,
                   onChanged: (double value) {
                     setState(() {
                       zoom = value;
                     });
+                    isZoom = false;
                   },
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 80,
+              left: 48,
+              child: Visibility(
+                visible: isZoom,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Zoom here',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: CupertinoColors.black,
+                      ),
+                    ),
+                    Icon(
+                      CupertinoIcons.arrow_down,
+                      size: 40,
+                      color: CupertinoColors.black,
+                    ),
+                  ],
                 ),
               ),
             ),
