@@ -141,7 +141,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
             child: CupertinoButton(
               onPressed: () {
                 setState(() {
-                  _deleteExercise();
+                  delete();
                 });
               },
               child: Icon(
@@ -160,6 +160,48 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
               )),
         ],
       ),
+    );
+  }
+
+  void delete() {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double modalHeight = screenHeight * 0.3;
+    final double modalWidth = screenWidth * 0.8;
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: Container(
+            width: modalWidth, // Set the desired width
+            height: modalHeight, // Set the desired height
+            child: CupertinoAlertDialog(
+              title: Text(
+                'Delete?',
+                style: TextStyle(),
+              ),
+              actions: <CupertinoDialogAction>[
+                CupertinoDialogAction(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: CupertinoColors.systemRed),
+                  ),
+                  onPressed: () {
+                    _deleteExercise();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

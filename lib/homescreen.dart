@@ -731,7 +731,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void updateSelectedExercise(String exercise, StateSetter setState) {
     setState(() {
-      print(exercise);
       selectedExercise = exercise;
     });
   }

@@ -158,12 +158,6 @@ class LineChartSampleLoadState extends State<LineChartSampleLoad> {
   double convertDateToXValue(String date, String selectedIndex) {
     List<String> dateParts = date.split('.');
 
-    print(dateParts);
-
-    print("current week: ${widget.currentWeek}");
-    print("current month: ${widget.currentMonth}");
-    print("current year: ${widget.currentYear}");
-
     int day = int.parse(dateParts[0]);
     int month = int.parse(dateParts[1]);
     int year = int.parse(dateParts[2]);
@@ -294,9 +288,6 @@ class LineChartSampleLoadState extends State<LineChartSampleLoad> {
   }
 
   LineChartData mainData() {
-    print(setsRepsAndDate);
-    print(dataPoints);
-
     // Update the chart when the interval is changed
     double interval = 1; // Default interval
 

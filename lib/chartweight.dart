@@ -160,12 +160,6 @@ class LineChartSampleWeightState extends State<LineChartSampleWeight> {
   double convertDateToXValue(String date, String selectedIndex) {
     List<String> dateParts = date.split('.');
 
-    print(dateParts);
-
-    print("current week: ${widget.currentWeek}");
-    print("current month: ${widget.currentMonth}");
-    print("current year: ${widget.currentYear}");
-
     int day = int.parse(dateParts[0]);
     int month = int.parse(dateParts[1]);
     int year = int.parse(dateParts[2]);
