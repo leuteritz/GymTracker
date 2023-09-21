@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'exercisedetailpage.dart';
 import 'database.dart';
-import 'exercisescreen.dart';
 
 class Exercise extends StatefulWidget {
   final String name;
@@ -22,8 +21,6 @@ class Exercise extends StatefulWidget {
 }
 
 class _ExerciseState extends State<Exercise> {
-  GlobalKey<ExerciseScreenState> _key = GlobalKey<ExerciseScreenState>();
-
   @override
   void initState() {
     super.initState();
@@ -58,85 +55,39 @@ class _ExerciseState extends State<Exercise> {
     }
   }
 
+  String getFirstLetter() {
+    return widget.name[0];
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          CupertinoPageRoute(
-            builder: (context) => ExerciseDetailPage(
-                exercise: widget.name, description: widget.description),
-          ),
-        );
-      },
-      child: Container(
-        alignment: Alignment.center,
-        width: double.infinity,
-        padding: EdgeInsets.all(20),
-        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: CupertinoColors.systemGrey,
-            width: 4.0,
-          ),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: CupertinoColors.systemGrey.withOpacity(0.3),
-              spreadRadius: 10,
-              blurRadius: 20,
+        onTap: () {
+          Navigator.push(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => ExerciseDetailPage(
+                  exercise: widget.name, description: widget.description),
             ),
-          ],
-        ),
-        child: Stack(
-          alignment: Alignment
-              .topRight, // Align the heart icon to the top right corner
+          );
+          widget.key.toString();
+        },
+        child: CupertinoListTile(
+          leading: Text(getFirstLetter()),
+          title: Text(widget.name),
+          subtitle: Text(widget.muscleGroup),
+          trailing: CupertinoButton(
+            child: Icon(
+              isPressed ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+            ),
+            onPressed: () {
+              _toggleHeart();
+              updateFavorite(widget.name);
+              widget.fetchExercisesCallback();
 
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  widget.name,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    widget.description.length > 40
-                        ? widget.description.substring(0, 40) + "..."
-                        : widget.description,
-                    style: TextStyle(
-                        fontSize: 18, color: CupertinoColors.systemGrey),
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              top: -10,
-              right: -10,
-              child: CupertinoButton(
-                padding: EdgeInsets.all(10),
-                child: Icon(
-                  isPressed ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-                  color: CupertinoColors.systemRed,
-                ),
-                onPressed: () {
-                  _toggleHeart();
-                  updateFavorite(widget.name);
-                  widget.fetchExercisesCallback();
-                  fetchFavoriteStatus();
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+              fetchFavoriteStatus();
+            },
+          ),
+        ));
   }
 }

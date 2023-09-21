@@ -48,7 +48,6 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
         transformedExercises = updateTransformedExercisesWithDurations();
       });
     }
-    print("list: $_exerciseduration");
   }
 
   List<Map<String, dynamic>> updateTransformedExercisesWithDurations() {
@@ -57,8 +56,6 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     for (var exercise in _exerciseduration) {
       exerciseDurationsMap[exercise['name']] = exercise['durationexercise'];
     }
-
-    print("map: $exerciseDurationsMap");
 
     // Update transformedExercises with durations
     List<Map<String, dynamic>> updatedTransformedExercises = [];
@@ -134,7 +131,6 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("Exercises for selected date: $transformedExercises");
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text(widget.date),
@@ -208,7 +204,6 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: transformedExercises.map<Widget>((exercise) {
-                    print(transformedExercises);
                     String exerciseName = exercise['name'];
                     List<Map<String, dynamic>> sets =
                         List<Map<String, dynamic>>.from(exercise['sets']);

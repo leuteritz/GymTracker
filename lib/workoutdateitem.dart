@@ -93,13 +93,8 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
         padding: EdgeInsets.all(20),
         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: CupertinoColors.systemGrey.withOpacity(0.3),
-              spreadRadius: 2,
-              blurRadius: 30,
-            ),
-          ],
+          border: Border.all(color: CupertinoColors.systemGrey),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -201,8 +196,6 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
     ];
 
     int dayIndex = date.weekday - 1;
-
-    print(daysOfWeek[dayIndex]);
 
     return daysOfWeek[dayIndex];
   }

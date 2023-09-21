@@ -63,8 +63,6 @@ class ExerciseTimerState extends State<ExerciseTimer> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       child: Container(
-        decoration:
-            BoxDecoration(color: CupertinoColors.systemGrey.withOpacity(0.3)),
         child: Text(timerValue,
             style: TextStyle(
               fontSize: 14,

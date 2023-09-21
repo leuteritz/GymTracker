@@ -558,14 +558,7 @@ class _HomeScreenState extends State<HomeScreen> {
   GlobalKey<_CustomNavigationBarState> _key =
       GlobalKey<_CustomNavigationBarState>();
 
-  @override
-  void initState() {
-    super.initState();
-    fetchExercises(setState);
-  }
-
   double _currentSliderValue = 2;
-  String _selectedExercise = 'Bench Press';
 
   bool _isAddButtonPressed = false;
 
@@ -606,7 +599,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     childCount: exerciseList.length,
                   ),
                 ),
-                // Add more Sliver widgets as needed for additional content
               ],
             ),
             Positioned(
@@ -737,6 +729,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void updateSelectedExercise(String exercise, StateSetter setState) {
+    setState(() {
+      print(exercise);
+      selectedExercise = exercise;
+    });
+  }
+
   List<Map<String, dynamic>> exercises = [];
   Map<String, List<ExerciseAdd>> exerciseMap = {};
 
@@ -773,6 +772,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ExerciseAdd(
           name: exerciseName,
           muscleGroup: muscleGroup,
+          onSelect: (exerciseName) {
+            updateSelectedExercise(exerciseName,
+                setState); // Call the callback when exercise is selected
+          },
+          fetchExercisesCallback: () => fetchExercises(setState),
+
+          // Pass a callback function
           key: Key(exercise['name']),
         ),
       );
@@ -783,7 +789,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _searchExercise(String searchText, StateSetter setState) {
-    print(searchText);
     if (searchText.isEmpty) {
       fetchExercises(setState);
     } else {
@@ -794,7 +799,6 @@ class _HomeScreenState extends State<HomeScreen> {
           filteredExercises.add(exercise);
         }
       }
-      print(filteredExercises);
 
       // Rebuild exerciseMap based on the filtered exercises
       Map<String, List<ExerciseAdd>> filteredExerciseMap = {};
@@ -811,13 +815,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ExerciseAdd(
             name: exerciseName,
             muscleGroup: muscleGroup,
+            onSelect: (exerciseName) {
+              updateSelectedExercise(exerciseName,
+                  setState); // Call the callback when exercise is selected
+            },
+            fetchExercisesCallback: () => fetchExercises(setState),
             key: Key(exercise['name']),
           ),
         );
       }
 
       setState(() {
-        print(1);
         exerciseMap = filteredExerciseMap;
       });
     }
@@ -875,7 +883,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         "Favorites" +
                                             " (${favoriteExercises.length})",
                                         style: TextStyle(
-                                            fontSize: 25,
+                                            fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                             color: CupertinoColors.systemGrey),
                                       ),
@@ -894,7 +902,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           favoriteExercises.map((exercise) {
                                         return ExerciseAdd(
                                           name: exercise['name'],
-
+                                          fetchExercisesCallback: () =>
+                                              fetchExercises(
+                                                  setState), // Pass a callback function
+                                          onSelect: (exerciseName) {
+                                            updateSelectedExercise(exerciseName,
+                                                setState); // Call the callback when exercise is selected
+                                          },
                                           muscleGroup: exercise['muscle'],
 
                                           key: Key(exercise[
@@ -916,7 +930,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       "Favorites" +
                                           " (${favoriteExercises.length})",
                                       style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                           color: CupertinoColors.systemGrey),
                                     ),
@@ -944,7 +958,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Text(
                                     muscleGroup,
                                     style: TextStyle(
-                                        fontSize: 25,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                         color: CupertinoColors.systemGrey),
                                   ),
@@ -962,6 +976,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       return ExerciseAdd(
                                         name: exercise.name,
                                         muscleGroup: exercise.muscleGroup,
+                                        onSelect: (exerciseName) {
+                                          updateSelectedExercise(exerciseName,
+                                              setState); // Call the callback when exercise is selected
+                                        },
+
+                                        fetchExercisesCallback: () =>
+                                            fetchExercises(
+                                                setState), // Pass a callback function
+// Pass the setState function
+
                                         key: Key(exercise.name),
                                       );
                                     }).toList(),
@@ -1000,15 +1024,26 @@ class _HomeScreenState extends State<HomeScreen> {
             child: CupertinoPopupSurface(
               child: StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
+                  void update() {
+                    setState(() {});
+                  }
+
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      CupertinoButton(
-                        color: CupertinoColors.activeOrange,
-                        onPressed: () {
-                          _showCupertinoModalExercise(context, setState);
+                      ValueListenableBuilder<String>(
+                        valueListenable: selectedExerciseNotifier,
+                        builder: (context, selectedExercise, child) {
+                          return CupertinoButton(
+                            color: CupertinoColors.activeOrange,
+                            onPressed: () {
+                              fetchExercises(setState);
+                              _showCupertinoModalExercise(context, setState);
+                              selectedExerciseNotifier.value = selectedExercise;
+                            },
+                            child: Text(selectedExerciseNotifier.value),
+                          );
                         },
-                        child: Text(_selectedExercise),
                       ),
                       Container(
                         child: Column(
@@ -1111,7 +1146,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemExtent: 27,
             onSelectedItemChanged: (int index) {
               setState(() {
-                _selectedExercise = exercises[index];
+                selectedExercise = exercises[index];
               });
             },
             children: exercises.map((exercise) => Text(exercise)).toList(),
@@ -1121,7 +1156,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // function to add exercise to the list
   void _addExerciseToList() {
     // Get the current date
     DateTime currentDate = DateTime.now();
@@ -1132,7 +1166,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       exerciseList.add({
-        'name': _selectedExercise,
+        'name': selectedExercise,
         'date': formattedDate, // Add the formatted date to the exercise entry
         'sets': List.generate(
           _currentSliderValue.toInt(),

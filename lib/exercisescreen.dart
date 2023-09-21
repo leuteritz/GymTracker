@@ -13,7 +13,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
   List<Map<String, dynamic>> exercises = [];
   Map<String, List<Exercise>> exerciseMap = {};
 
-  void fetchExercises() async {
+  void fetchExercises(StateSetter setState) async {
     final List<Map<String, dynamic>> allExerciseData =
         await DatabaseHelper().getAllExerciseListInformation();
 
@@ -48,7 +48,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
           name: exerciseName,
           description: exerciseDescription,
           muscleGroup: muscleGroup,
-          fetchExercisesCallback: fetchExercises,
+          fetchExercisesCallback: () => fetchExercises(setState),
           key: Key(exercise['name']),
         ),
       );
@@ -61,12 +61,12 @@ class ExerciseScreenState extends State<ExerciseScreen> {
   @override
   void initState() {
     super.initState();
-    fetchExercises();
+    fetchExercises(setState);
   }
 
-  void _searchExercise(String searchText) {
+  void _searchExercise(String searchText, StateSetter setState) {
     if (searchText.isEmpty) {
-      fetchExercises();
+      fetchExercises(setState);
     } else {
       List<Map<String, dynamic>> filteredExercises = [];
 
@@ -93,7 +93,9 @@ class ExerciseScreenState extends State<ExerciseScreen> {
             name: exerciseName,
             description: exerciseDescription,
             muscleGroup: muscleGroup,
-            fetchExercisesCallback: fetchExercises,
+            fetchExercisesCallback: () =>
+                fetchExercises(setState), // Pass a callback function
+
             key: Key(exercise['name']),
           ),
         );
@@ -113,7 +115,9 @@ class ExerciseScreenState extends State<ExerciseScreen> {
           width: 200,
           child: CupertinoSearchTextField(
             placeholder: 'Übung durchsuchen',
-            onChanged: _searchExercise,
+            onChanged: (searchText) {
+              _searchExercise(searchText, setState);
+            },
           ),
         ),
       ),
@@ -137,7 +141,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                       child: Text(
                         "Favorites" + " (${favoriteExercises.length})",
                         style: TextStyle(
-                            fontSize: 25,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: CupertinoColors.systemGrey),
                       ),
@@ -157,7 +161,8 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                           name: exercise['name'],
                           description: exercise['description'],
                           muscleGroup: exercise['muscle'],
-                          fetchExercisesCallback: fetchExercises,
+                          fetchExercisesCallback: () =>
+                              fetchExercises(setState),
                           key: Key(exercise[
                               'name']), // Use a unique identifier, like exercise name
                           // Pass the callback
@@ -176,7 +181,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                     child: Text(
                       "Favorites" + " (${favoriteExercises.length})",
                       style: TextStyle(
-                          fontSize: 25,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: CupertinoColors.systemGrey),
                     ),
@@ -203,7 +208,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                   child: Text(
                     muscleGroup,
                     style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: CupertinoColors.systemGrey),
                   ),
@@ -222,7 +227,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                         name: exercise.name,
                         description: exercise.description,
                         muscleGroup: exercise.muscleGroup,
-                        fetchExercisesCallback: fetchExercises,
+                        fetchExercisesCallback: () => fetchExercises(setState),
                         key: Key(exercise.name),
                       );
                     }).toList(),

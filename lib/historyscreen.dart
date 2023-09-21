@@ -90,7 +90,8 @@ class HistoryScreenState extends State<HistoryScreen> {
     });
   }
 
-  void _searchWorkoutDates(String searchText) {
+  void _searchWorkoutDates(String searchText, StateSetter setState) {
+    print(searchText);
     if (searchText.isEmpty) {
       setState(() {
         filteredGroups = groupedWorkoutDates;
@@ -109,6 +110,7 @@ class HistoryScreenState extends State<HistoryScreen> {
       setState(() {
         filteredGroups = newFilteredGroups;
       });
+      print(filteredGroups);
     }
   }
 
@@ -120,7 +122,9 @@ class HistoryScreenState extends State<HistoryScreen> {
           width: 200,
           child: CupertinoSearchTextField(
             placeholder: 'Workout durchsuchen',
-            onChanged: _searchWorkoutDates,
+            onChanged: (searchText) {
+              _searchWorkoutDates(searchText, setState);
+            },
           ),
         ),
       ),
@@ -139,7 +143,7 @@ class HistoryScreenState extends State<HistoryScreen> {
                   child: Text(
                     monthYearKey,
                     style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: CupertinoColors.systemGrey),
                   ),

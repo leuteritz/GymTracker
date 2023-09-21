@@ -1,12 +1,21 @@
 import 'package:flutter/cupertino.dart';
 
 import 'database.dart';
+import 'constants.dart';
 
 class ExerciseAdd extends StatefulWidget {
   final String name;
   final String muscleGroup;
 
-  ExerciseAdd({required this.muscleGroup, required this.name, Key? key})
+  final VoidCallback fetchExercisesCallback;
+  final Function(String) onSelect;
+
+  ExerciseAdd(
+      {required this.muscleGroup,
+      required this.name,
+      required this.fetchExercisesCallback,
+      required this.onSelect,
+      Key? key})
       : super(key: key);
 
   @override
@@ -54,21 +63,30 @@ class _ExerciseAddState extends State<ExerciseAdd> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoListTile(
-      leading: Text(getFirstLetter()),
-      title: Text(widget.name),
-      subtitle: Text(widget.muscleGroup),
-      trailing: CupertinoButton(
-        child: Icon(
-          isPressed ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-        ),
-        onPressed: () {
-          _toggleHeart();
-          updateFavorite(widget.name);
+    return GestureDetector(
+        onTap: () {
+          widget.onSelect(widget.name);
 
-          fetchFavoriteStatus();
+          selectedExerciseNotifier.value = widget.name;
+
+          Navigator.of(context).pop();
         },
-      ),
-    );
+        child: CupertinoListTile(
+          leading: Text(getFirstLetter()),
+          title: Text(widget.name),
+          subtitle: Text(widget.muscleGroup),
+          trailing: CupertinoButton(
+            child: Icon(
+              isPressed ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+            ),
+            onPressed: () {
+              _toggleHeart();
+              updateFavorite(widget.name);
+              widget.fetchExercisesCallback();
+
+              fetchFavoriteStatus();
+            },
+          ),
+        ));
   }
 }

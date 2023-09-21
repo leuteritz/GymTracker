@@ -42,15 +42,6 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
     return Container(
       padding: EdgeInsets.all(20),
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: CupertinoColors.systemGrey.withOpacity(0.3),
-            spreadRadius: 2,
-            blurRadius: 30,
-          ),
-        ],
-      ),
       child: Stack(
         children: [
           Column(

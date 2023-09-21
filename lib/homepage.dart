@@ -12,13 +12,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   GlobalKey<HistoryScreenState> historyKey = GlobalKey<HistoryScreenState>();
-  GlobalKey<MapScreenState> mapKey = GlobalKey<MapScreenState>();
+  GlobalKey<ExerciseScreenState> exerciseKey = GlobalKey<ExerciseScreenState>();
 
   int _selectedIndex = 1;
 
   void _onTabSelected(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 2) {
+        historyKey.currentState?.loadWorkoutDates();
+      }
+      if (index == 0) {
+        exerciseKey.currentState?.fetchExercises(setState);
+      }
     });
   }
 
@@ -57,11 +63,12 @@ class _MyHomePageState extends State<MyHomePage> {
       tabBuilder: (context, index) {
         switch (index) {
           case 0:
-            return ExerciseScreen();
+            return ExerciseScreen(
+              key: exerciseKey,
+            );
           case 1:
             return HomeScreen();
           case 2:
-            load(); // Call the load function here
             return HistoryScreen(
               key: historyKey,
             );
@@ -72,9 +79,5 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       },
     );
-  }
-
-  void load() {
-    historyKey.currentState?.loadWorkoutDates();
   }
 }
