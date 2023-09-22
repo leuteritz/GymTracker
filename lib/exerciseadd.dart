@@ -32,7 +32,7 @@ class _ExerciseAddState extends State<ExerciseAdd> {
   void fetchFavoriteStatus() async {
     final dbHelper = DatabaseHelper();
     bool isFavorite = await dbHelper.isExerciseFavorite(widget.name);
-    print("status: $isFavorite");
+
     if (mounted) {
       setState(() {
         isPressed = isFavorite;

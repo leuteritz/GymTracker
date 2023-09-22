@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'chartload.dart';
 import 'chartweight.dart';
 import 'chartreps.dart';
+import 'database.dart';
 
 class ExerciseDetailPage extends StatefulWidget {
   final String exercise;
@@ -46,6 +47,8 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
   void initState() {
     super.initState();
     getCurrentWeekDateRange();
+    _getMaxWeight();
+    _getMaxReps();
   }
 
   void getCurrentWeekDateRange() {
@@ -197,6 +200,33 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     );
   }
 
+  int maxWeight = 0;
+  String dateWeight = '';
+  int maxReps = 0;
+  String dateReps = '';
+
+  Future<void> _getMaxWeight() async {
+    final map = await DatabaseHelper().getMaxWeight(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        maxWeight = map['max_weight'] ?? 0;
+        dateWeight = map['date'] ?? 'No data';
+      });
+    }
+  }
+
+  Future<void> _getMaxReps() async {
+    final map = await DatabaseHelper().getMaxReps(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        maxReps = map['max_reps'] ?? 0;
+        dateReps = map['date'] ?? 'No data';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<String> descriptionLines = widget.description.split('\n');
@@ -223,10 +253,12 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                           children: {
                             'description': Text(
                               'Instructions',
-                              style: TextStyle(fontSize: 22),
+                              style: TextStyle(fontSize: 20),
                             ),
                             'chart':
-                                Text('Chart', style: TextStyle(fontSize: 22)),
+                                Text('Chart', style: TextStyle(fontSize: 20)),
+                            'records':
+                                Text('Records', style: TextStyle(fontSize: 20)),
                           },
                           onValueChanged: (value) {
                             setState(() {
@@ -416,6 +448,44 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                               )
                             ],
                           ),
+                        ),
+                      if (_selectedContent == 'records')
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  "Max Weight",
+                                  style: TextStyle(fontSize: 22),
+                                ),
+                                Text("Max Reps",
+                                    style: TextStyle(fontSize: 22)),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text("${maxWeight.toString()} kg",
+                                        style: TextStyle(fontSize: 20)),
+                                    Text(dateWeight,
+                                        style: TextStyle(fontSize: 20)),
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Text("${maxReps.toString()}",
+                                        style: TextStyle(fontSize: 20)),
+                                    Text(dateReps,
+                                        style: TextStyle(fontSize: 20)),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ],
                         )
                     ],
                   ),

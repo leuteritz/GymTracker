@@ -539,7 +539,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
           Container(
             width: MediaQuery.of(context).size.width / 3.5,
             child: Icon(
-              CupertinoIcons.gear,
+              CupertinoIcons.profile_circled,
               size: 30,
             ),
           ),
@@ -573,6 +573,12 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       return 'Good Night';
     }
+  }
+
+  @override
+  void initState() {
+    fetchExercises(setState);
+    super.initState();
   }
 
   @override
@@ -835,12 +841,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double modalHeight = screenHeight * 0.8;
     final double modalWidth = screenWidth * 0.8;
+    final double searchTextWidth = screenWidth * 0.6;
 
     showCupertinoModalPopup(
       context: context,
-      builder: (
-        BuildContext context,
-      ) {
+      builder: (BuildContext context) {
         return Center(
           child: Container(
             width: modalWidth,
@@ -848,83 +853,36 @@ class _HomeScreenState extends State<HomeScreen> {
             child: CupertinoPopupSurface(
               child: StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 50),
+                  return CupertinoPageScaffold(
+                    navigationBar: CupertinoNavigationBar(
+                      middle: Container(
+                        width: searchTextWidth,
                         child: CupertinoSearchTextField(
-                          placeholder: 'Search Exercise',
+                          placeholder: 'Übung durchsuchen',
                           onChanged: (searchText) {
                             _searchExercise(searchText, setState);
                           },
                         ),
                       ),
-                      Expanded(
-                          child: ListView.builder(
-                        padding: EdgeInsets.all(0),
-                        itemCount: exerciseMap.length + 1,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (index == 0) {
-                            // Favorites section
-                            var favoriteExercises = exercises
-                                .where((exercise) => exercise['favorite'] == 1)
-                                .toList();
+                      automaticallyImplyLeading: false,
+                    ),
+                    child: SafeArea(
+                        child: ListView.builder(
+                      itemCount: exerciseMap.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == 0) {
+                          // Favorites section
+                          var favoriteExercises = exercises
+                              .where((exercise) => exercise['favorite'] == 1)
+                              .toList();
 
-                            if (favoriteExercises.isNotEmpty) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.all(20),
-                                    child: Center(
-                                      child: Text(
-                                        "Favorites" +
-                                            " (${favoriteExercises.length})",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: CupertinoColors.systemGrey),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 4,
-                                    decoration: BoxDecoration(
-                                      color: CupertinoColors.white,
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  Center(
-                                    child: Column(
-                                      children:
-                                          favoriteExercises.map((exercise) {
-                                        return ExerciseAdd(
-                                          name: exercise['name'],
-                                          fetchExercisesCallback: () =>
-                                              fetchExercises(
-                                                  setState), // Pass a callback function
-                                          onSelect: (exerciseName) {
-                                            updateSelectedExercise(exerciseName,
-                                                setState); // Call the callback when exercise is selected
-                                          },
-                                          muscleGroup: exercise['muscle'],
-
-                                          key: Key(exercise[
-                                              'name']), // Use a unique identifier, like exercise name
-                                          // Pass the callback
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            } else {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.all(20),
+                          if (favoriteExercises.isNotEmpty) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Center(
                                     child: Text(
                                       "Favorites" +
                                           " (${favoriteExercises.length})",
@@ -934,28 +892,46 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: CupertinoColors.systemGrey),
                                     ),
                                   ),
-                                  Container(
-                                    height: 4,
-                                    decoration: BoxDecoration(
-                                      color: CupertinoColors.white,
-                                    ),
+                                ),
+                                Container(
+                                  height: 4,
+                                  decoration: BoxDecoration(
+                                    color: CupertinoColors.white,
                                   ),
-                                ],
-                              );
-                            }
-                          } else {
-                            var muscleGroup =
-                                exerciseMap.keys.elementAt(index - 1);
-                            var exercisesForGroup =
-                                exerciseMap[muscleGroup] ?? [];
+                                ),
+                                SizedBox(height: 20),
+                                Center(
+                                  child: Column(
+                                    children: favoriteExercises.map((exercise) {
+                                      return ExerciseAdd(
+                                        name: exercise['name'],
+                                        fetchExercisesCallback: () =>
+                                            fetchExercises(
+                                                setState), // Pass a callback function
+                                        onSelect: (exerciseName) {
+                                          updateSelectedExercise(exerciseName,
+                                              setState); // Call the callback when exercise is selected
+                                        },
+                                        muscleGroup: exercise['muscle'],
 
+                                        key: Key(exercise[
+                                            'name']), // Use a unique identifier, like exercise name
+                                        // Pass the callback
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
                             return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Padding(
                                   padding: EdgeInsets.all(20),
                                   child: Text(
-                                    muscleGroup,
+                                    "Favorites" +
+                                        " (${favoriteExercises.length})",
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -968,34 +944,61 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color: CupertinoColors.white,
                                   ),
                                 ),
-                                SizedBox(height: 20),
-                                Center(
-                                  child: Column(
-                                    children: exercisesForGroup.map((exercise) {
-                                      return ExerciseAdd(
-                                        name: exercise.name,
-                                        muscleGroup: exercise.muscleGroup,
-                                        onSelect: (exerciseName) {
-                                          updateSelectedExercise(exerciseName,
-                                              setState); // Call the callback when exercise is selected
-                                        },
-
-                                        fetchExercisesCallback: () =>
-                                            fetchExercises(
-                                                setState), // Pass a callback function
-// Pass the setState function
-
-                                        key: Key(exercise.name),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
                               ],
                             );
                           }
-                        },
-                      )),
-                    ],
+                        } else {
+                          // Regular muscle group section
+                          var muscleGroup =
+                              exerciseMap.keys.elementAt(index - 1);
+                          var exercisesForGroup =
+                              exerciseMap[muscleGroup] ?? [];
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(20),
+                                child: Text(
+                                  muscleGroup,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: CupertinoColors.systemGrey),
+                                ),
+                              ),
+                              Container(
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: CupertinoColors.white,
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Center(
+                                child: Column(
+                                  children: exercisesForGroup.map((exercise) {
+                                    return ExerciseAdd(
+                                      name: exercise.name,
+                                      muscleGroup: exercise.muscleGroup,
+                                      onSelect: (exerciseName) {
+                                        updateSelectedExercise(exerciseName,
+                                            setState); // Call the callback when exercise is selected
+                                      },
+
+                                      fetchExercisesCallback: () => fetchExercises(
+                                          setState), // Pass a callback function
+// Pass the setState function
+
+                                      key: Key(exercise.name),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      },
+                    )),
                   );
                 },
               ),
@@ -1023,10 +1026,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: CupertinoPopupSurface(
               child: StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
-                  void update() {
-                    setState(() {});
-                  }
-
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -1038,7 +1037,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () {
                               fetchExercises(setState);
                               _showCupertinoModalExercise(context, setState);
-                              selectedExerciseNotifier.value = selectedExercise;
                             },
                             child: Text(selectedExerciseNotifier.value),
                           );

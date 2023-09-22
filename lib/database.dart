@@ -193,7 +193,6 @@ class DatabaseHelper {
     }
   }
 
-  // Function to calculate the total weight for a specific day
   Future<int> getTotalWeight(String date) async {
     final db = await this.db;
     if (db == null) return 0;
@@ -215,11 +214,9 @@ class DatabaseHelper {
     await databaseFactory
         .deleteDatabase(databasePath); // Now delete the database file.
 
-    // After deleting, set _db to null so that it can be re-initialized if needed.
     _db = null;
   }
 
-  // Add this function to the DatabaseHelper class
   Future<List<Map<String, dynamic>>> getExercisesByDate(String date) async {
     final db = await this.db;
     if (db == null) return [];
@@ -291,6 +288,40 @@ class DatabaseHelper {
     GROUP BY name, date
     ORDER BY date DESC
   ''');
+  }
+
+  Future<Map<String, dynamic>> getMaxWeight(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'max_weight': 0, 'date': null};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MAX(weight) as max_weight, date
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'max_weight': 0, 'date': null};
+    }
+  }
+
+  Future<Map<String, dynamic>> getMaxReps(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'max_reps': 0, 'date': null};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MAX(reps) as max_reps, date
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'max_reps': 0, 'date': null};
+    }
   }
 
   Future<List<Map<String, dynamic>>> getMaxRepsForExercise(
