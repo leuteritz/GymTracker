@@ -149,7 +149,7 @@ class HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ),
                 Container(
-                  height: 4,
+                  height: 2,
                   decoration: BoxDecoration(
                     color: CupertinoColors.white,
                   ),

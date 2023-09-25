@@ -3,6 +3,7 @@ import 'chartload.dart';
 import 'chartweight.dart';
 import 'chartreps.dart';
 import 'database.dart';
+import 'workoutdetailpage.dart';
 
 class ExerciseDetailPage extends StatefulWidget {
   final String exercise;
@@ -49,6 +50,16 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     getCurrentWeekDateRange();
     _getMaxWeight();
     _getMaxReps();
+    _getMaxLoad();
+    _getAvgWeight();
+    _getAvgReps();
+    _getAvgLoad();
+    _getMinWeight();
+    _getMinReps();
+    _getMinLoad();
+    _getMaxDuration();
+    _getMinDuration();
+    _getAvgDuration();
   }
 
   void getCurrentWeekDateRange() {
@@ -201,9 +212,25 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
   }
 
   int maxWeight = 0;
-  String dateWeight = '';
+  int minWeight = 0;
+  double avgWeight = 0.0;
+  String dateWeightMax = '';
+  String dateWeightMin = '';
   int maxReps = 0;
-  String dateReps = '';
+  int minReps = 0;
+  double avgReps = 0.0;
+  String dateRepsMax = '';
+  String dateRepsMin = '';
+  int maxLoad = 0;
+  int minLoad = 0;
+  double avgLoad = 0.0;
+  String dateLoadMax = '';
+  String dateLoadMin = '';
+  String maxDuration = '';
+  String minDuration = '';
+  String avgDuration = '';
+  String dateDurationMax = '';
+  String dateDurationMin = '';
 
   Future<void> _getMaxWeight() async {
     final map = await DatabaseHelper().getMaxWeight(widget.exercise);
@@ -211,7 +238,29 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     if (mounted) {
       setState(() {
         maxWeight = map['max_weight'] ?? 0;
-        dateWeight = map['date'] ?? 'No data';
+        dateWeightMax = map['date'] ?? 'No data';
+      });
+    }
+  }
+
+  Future<void> _getMinWeight() async {
+    final map = await DatabaseHelper().getMinWeight(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        print(map['min_weight']);
+        minWeight = map['min_weight'] ?? 0;
+        dateWeightMin = map['date'] ?? 'No data';
+      });
+    }
+  }
+
+  Future<void> _getAvgWeight() async {
+    final map = await DatabaseHelper().getAverageWeight(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        avgWeight = map['avg_weight'] ?? 0;
       });
     }
   }
@@ -222,7 +271,101 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     if (mounted) {
       setState(() {
         maxReps = map['max_reps'] ?? 0;
-        dateReps = map['date'] ?? 'No data';
+        dateRepsMax = map['date'] ?? 'No data';
+      });
+    }
+  }
+
+  Future<void> _getMinReps() async {
+    final map = await DatabaseHelper().getMinReps(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        minReps = map['min_reps'] ?? 0;
+        dateRepsMin = map['date'] ?? 'No data';
+      });
+    }
+  }
+
+  Future<void> _getAvgReps() async {
+    final map = await DatabaseHelper().getAverageReps(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        avgReps = map['avg_reps'] ?? 0;
+      });
+    }
+  }
+
+  Future<void> _getMaxLoad() async {
+    final map = await DatabaseHelper().getMaxLoad(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        maxLoad = map['max_load'] ?? 0;
+        dateLoadMax = map['date'] ?? 'No data';
+      });
+    }
+  }
+
+  Future<void> _getMinLoad() async {
+    final map = await DatabaseHelper().getMinLoad(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        minLoad = map['min_load'] ?? 0;
+        dateLoadMin = map['date'] ?? 'No data';
+      });
+    }
+  }
+
+  Future<void> _getAvgLoad() async {
+    final map = await DatabaseHelper().getAverageLoad(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        avgLoad = map['avg_load'] ?? 0;
+      });
+    }
+  }
+
+  Future<void> _getMaxDuration() async {
+    final map = await DatabaseHelper().getMaxDuration(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        maxDuration = map['max_duration'] ?? '00:00';
+        dateDurationMax = map['date'] ?? 'No data';
+      });
+    }
+  }
+
+  Future<void> _getMinDuration() async {
+    final map = await DatabaseHelper().getMinDuration(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        minDuration = map['min_duration'] ?? '00:00';
+        dateDurationMin = map['date'] ?? 'No data';
+      });
+    }
+  }
+
+  Future<void> _getAvgDuration() async {
+    final map = await DatabaseHelper().getAverageDuration(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        double _avgDuration = map['avg_duration'] ?? 0;
+        int minutes = _avgDuration.floor();
+        int seconds = ((_avgDuration - minutes) * 100).round();
+
+        if (seconds >= 60) {
+          minutes += seconds ~/ 60;
+          seconds %= 60;
+        }
+        avgDuration =
+            '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
       });
     }
   }
@@ -450,43 +593,428 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                           ),
                         ),
                       if (_selectedContent == 'records')
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(
-                                  "Max Weight",
-                                  style: TextStyle(fontSize: 22),
+                        SingleChildScrollView(
+                            child: Column(children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          10), // Adjust the padding as needed
+                                  child: Center(
+                                    child: Text(
+                                      "Weight",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
                                 ),
-                                Text("Max Reps",
-                                    style: TextStyle(fontSize: 22)),
-                              ],
-                            ),
-                            SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text("${maxWeight.toString()} kg",
-                                        style: TextStyle(fontSize: 20)),
-                                    Text(dateWeight,
-                                        style: TextStyle(fontSize: 20)),
-                                  ],
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          10), // Adjust the padding as needed
+                                  child: Center(
+                                    child: Text(
+                                      "Reps",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
                                 ),
-                                Column(
-                                  children: [
-                                    Text("${maxReps.toString()}",
-                                        style: TextStyle(fontSize: 20)),
-                                    Text(dateReps,
-                                        style: TextStyle(fontSize: 20)),
-                                  ],
-                                )
-                              ],
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          10), // Adjust the padding as needed
+                                  child: Center(
+                                    child: Text(
+                                      "Load",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal:
+                                          10), // Adjust the padding as needed
+                                  child: Center(
+                                    child: Text(
+                                      "Duration",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          Container(
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: CupertinoColors.white,
                             ),
-                          ],
-                        )
+                          ),
+                          SizedBox(height: 40),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  "Maximum  🏆 :",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "${maxWeight.toString()} kg",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  WorkoutDetailPage(
+                                                date: dateWeightMax,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          dateWeightMax,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: CupertinoColors.systemGrey,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text("${maxReps.toString()}",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold)),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  WorkoutDetailPage(
+                                                date: dateRepsMax,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          dateRepsMax,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: CupertinoColors.systemGrey,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text("${maxLoad.toString()} kg",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold)),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  WorkoutDetailPage(
+                                                date: dateLoadMax,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          dateLoadMax,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: CupertinoColors.systemGrey,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(maxDuration,
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold)),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  WorkoutDetailPage(
+                                                date: dateDurationMax,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          dateDurationMax,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: CupertinoColors.systemGrey,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 40),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  "Minimum 🤏 :",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "${minWeight.toString()} kg",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  WorkoutDetailPage(
+                                                date: dateWeightMin,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          dateWeightMin,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: CupertinoColors.systemGrey,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text("${minReps.toString()}",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold)),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  WorkoutDetailPage(
+                                                date: dateRepsMin,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          dateRepsMin,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: CupertinoColors.systemGrey,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text("${minLoad.toString()} kg",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold)),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  WorkoutDetailPage(
+                                                date: dateLoadMin,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          dateLoadMin,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: CupertinoColors.systemGrey,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(minDuration,
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold)),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  WorkoutDetailPage(
+                                                date: dateDurationMin,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          dateDurationMin,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: CupertinoColors.systemGrey,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 40),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  "Average  😐 :",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    "${avgWeight.toStringAsFixed(1)} kg",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    "${avgReps.toStringAsFixed(1)}",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    "${avgLoad.toStringAsFixed(1)} kg",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    avgDuration,
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 40,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Text(
+                                  "Badges :",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ])),
                     ],
                   ),
                 ),

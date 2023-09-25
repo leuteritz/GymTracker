@@ -307,6 +307,40 @@ class DatabaseHelper {
     }
   }
 
+  Future<Map<String, dynamic>> getMinWeight(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'min_weight': 0, 'date': null};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MIN(weight) as min_weight, date
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'min_weight': 0, 'date': null};
+    }
+  }
+
+  Future<Map<String, dynamic>> getAverageWeight(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'avg_weight': 0};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT AVG(weight) as avg_weight
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'avg_weight': 0}; // Return 0.0 if no data is found.
+    }
+  }
+
   Future<Map<String, dynamic>> getMaxReps(String exerciseName) async {
     final db = await this.db;
     if (db == null) return {'max_reps': 0, 'date': null};
@@ -321,6 +355,142 @@ class DatabaseHelper {
       return result[0];
     } else {
       return {'max_reps': 0, 'date': null};
+    }
+  }
+
+  Future<Map<String, dynamic>> getMinReps(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'min_reps': 0, 'date': null};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MIN(reps) as min_reps, date
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'min_reps': 0, 'date': null};
+    }
+  }
+
+  Future<Map<String, dynamic>> getAverageReps(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'avg_reps': 0};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT AVG(reps) as avg_reps
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'avg_reps': 0}; // Return 0.0 if no data is found.
+    }
+  }
+
+  Future<Map<String, dynamic>> getMaxLoad(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'max_load': 0, 'date': null};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MAX(weight * reps) as max_load, date
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'max_load': 0, 'date': null};
+    }
+  }
+
+  Future<Map<String, dynamic>> getMinLoad(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'min_load': 0, 'date': null};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MIN(weight * reps) as min_load, date
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'min_load': 0, 'date': null};
+    }
+  }
+
+  Future<Map<String, dynamic>> getAverageLoad(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'avg_load': 0};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT AVG(weight * reps) as avg_load
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'avg_load': 0}; // Return 0.0 if no data is found.
+    }
+  }
+
+  Future<Map<String, dynamic>> getMaxDuration(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'max_duration': 0, 'date': null};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MAX(durationexercise) as max_duration, date
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'max_duration': 0, 'date': null};
+    }
+  }
+
+  Future<Map<String, dynamic>> getMinDuration(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'min_duration': 0, 'date': null};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT MIN(durationexercise) as min_duration, date
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'min_duration': 0, 'date': null};
+    }
+  }
+
+  Future<Map<String, dynamic>> getAverageDuration(String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return {'avg_duration': 0};
+
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+    SELECT AVG(durationexercise) as avg_duration
+    FROM exercise
+    WHERE name = "$exerciseName"
+  ''');
+
+    if (result.isNotEmpty) {
+      return result[0];
+    } else {
+      return {'avg_duration': 0}; // Return 0.0 if no data is found.
     }
   }
 

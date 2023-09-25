@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'constants.dart';
 import 'exerciseadd.dart';
+import 'exercisepage.dart';
 import 'dart:async';
 import 'exerciselabel.dart';
 import 'dart:math' as math;
@@ -400,7 +401,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "26.08.2023",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "03:40",
     );
 
     DatabaseHelper().insertExercise(
@@ -411,7 +412,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "15.08.2023",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "00:24",
     );
 
     DatabaseHelper().insertExercise(
@@ -422,7 +423,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "22.08.2023",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "00:12",
     );
     DatabaseHelper().insertExercise(
       name: "Bench Press",
@@ -432,7 +433,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "23.08.2023",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "00:06",
     );
 
     DatabaseHelper().insertExercise(
@@ -443,7 +444,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "23.09.2023",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "00:02",
     );
 
     DatabaseHelper().insertExercise(
@@ -454,7 +455,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "22.11.2028",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "01:30",
     );
     DatabaseHelper().insertExercise(
       name: "Bench Press",
@@ -464,7 +465,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "21.11.2028",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "00:47",
     );
 
     DatabaseHelper().insertExercise(
@@ -475,7 +476,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "21.09.2024",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "00:13",
     );
 
     DatabaseHelper().insertExercise(
@@ -486,7 +487,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "24.09.2023",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "12:20",
     );
 
     DatabaseHelper().insertExercise(
@@ -497,7 +498,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "24.08.2022",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "00:12",
     );
 
     DatabaseHelper().insertExercise(
@@ -508,7 +509,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       date: "16.08.2023",
       duration: _duration,
       startTime: "21:30",
-      exerciseduration: "00:00",
+      exerciseduration: "00:24",
     );
   }
 
@@ -793,222 +794,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _searchExercise(String searchText, StateSetter setState) {
-    if (searchText.isEmpty) {
-      fetchExercises(setState);
-    } else {
-      List<Map<String, dynamic>> filteredExercises = [];
-
-      for (var exercise in exercises) {
-        if (exercise['name'].toLowerCase().contains(searchText.toLowerCase())) {
-          filteredExercises.add(exercise);
-        }
-      }
-
-      // Rebuild exerciseMap based on the filtered exercises
-      Map<String, List<ExerciseAdd>> filteredExerciseMap = {};
-
-      for (var exercise in filteredExercises) {
-        final muscleGroup = exercise['muscle'];
-        final exerciseName = exercise['name'];
-
-        if (filteredExerciseMap[muscleGroup] == null) {
-          filteredExerciseMap[muscleGroup] = [];
-        }
-
-        filteredExerciseMap[muscleGroup]!.add(
-          ExerciseAdd(
-            name: exerciseName,
-            muscleGroup: muscleGroup,
-            onSelect: (exerciseName) {
-              updateSelectedExercise(exerciseName,
-                  setState); // Call the callback when exercise is selected
-            },
-            fetchExercisesCallback: () => fetchExercises(setState),
-            key: Key(exercise['name']),
-          ),
-        );
-      }
-
-      setState(() {
-        exerciseMap = filteredExerciseMap;
-      });
-    }
-  }
-
-  void _showCupertinoModalExercise(BuildContext context, StateSetter setState) {
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double modalHeight = screenHeight * 0.8;
-    final double modalWidth = screenWidth * 0.8;
-    final double searchTextWidth = screenWidth * 0.6;
-
-    showCupertinoModalPopup(
-      context: context,
-      builder: (BuildContext context) {
-        return Center(
-          child: Container(
-            width: modalWidth,
-            height: modalHeight,
-            child: CupertinoPopupSurface(
-              child: StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return CupertinoPageScaffold(
-                    navigationBar: CupertinoNavigationBar(
-                      middle: Container(
-                        width: searchTextWidth,
-                        child: CupertinoSearchTextField(
-                          placeholder: 'Übung durchsuchen',
-                          onChanged: (searchText) {
-                            _searchExercise(searchText, setState);
-                          },
-                        ),
-                      ),
-                      automaticallyImplyLeading: false,
-                    ),
-                    child: SafeArea(
-                        child: ListView.builder(
-                      itemCount: exerciseMap.length + 1,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == 0) {
-                          // Favorites section
-                          var favoriteExercises = exercises
-                              .where((exercise) => exercise['favorite'] == 1)
-                              .toList();
-
-                          if (favoriteExercises.isNotEmpty) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(20),
-                                  child: Center(
-                                    child: Text(
-                                      "Favorites" +
-                                          " (${favoriteExercises.length})",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: CupertinoColors.systemGrey),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: CupertinoColors.white,
-                                  ),
-                                ),
-                                SizedBox(height: 20),
-                                Center(
-                                  child: Column(
-                                    children: favoriteExercises.map((exercise) {
-                                      return ExerciseAdd(
-                                        name: exercise['name'],
-                                        fetchExercisesCallback: () =>
-                                            fetchExercises(
-                                                setState), // Pass a callback function
-                                        onSelect: (exerciseName) {
-                                          updateSelectedExercise(exerciseName,
-                                              setState); // Call the callback when exercise is selected
-                                        },
-                                        muscleGroup: exercise['muscle'],
-
-                                        key: Key(exercise[
-                                            'name']), // Use a unique identifier, like exercise name
-                                        // Pass the callback
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              ],
-                            );
-                          } else {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(20),
-                                  child: Text(
-                                    "Favorites" +
-                                        " (${favoriteExercises.length})",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: CupertinoColors.systemGrey),
-                                  ),
-                                ),
-                                Container(
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: CupertinoColors.white,
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-                        } else {
-                          // Regular muscle group section
-                          var muscleGroup =
-                              exerciseMap.keys.elementAt(index - 1);
-                          var exercisesForGroup =
-                              exerciseMap[muscleGroup] ?? [];
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(20),
-                                child: Text(
-                                  muscleGroup,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: CupertinoColors.systemGrey),
-                                ),
-                              ),
-                              Container(
-                                height: 4,
-                                decoration: BoxDecoration(
-                                  color: CupertinoColors.white,
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              Center(
-                                child: Column(
-                                  children: exercisesForGroup.map((exercise) {
-                                    return ExerciseAdd(
-                                      name: exercise.name,
-                                      muscleGroup: exercise.muscleGroup,
-                                      onSelect: (exerciseName) {
-                                        updateSelectedExercise(exerciseName,
-                                            setState); // Call the callback when exercise is selected
-                                      },
-
-                                      fetchExercisesCallback: () => fetchExercises(
-                                          setState), // Pass a callback function
-// Pass the setState function
-
-                                      key: Key(exercise.name),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                      },
-                    )),
-                  );
-                },
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _showCupertinoModal(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -1036,7 +821,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: CupertinoColors.activeOrange,
                             onPressed: () {
                               fetchExercises(setState);
-                              _showCupertinoModalExercise(context, setState);
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (context) => ExercisePage(),
+                                ),
+                              );
                             },
                             child: Text(selectedExerciseNotifier.value),
                           );

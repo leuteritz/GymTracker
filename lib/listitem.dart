@@ -65,11 +65,11 @@ class _ListItemState extends State<ListItem> {
                 },
                 placeholder: 'Weight',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: CupertinoColors.black, fontSize: 15),
+                style: TextStyle(color: CupertinoColors.white, fontSize: 15),
                 placeholderStyle:
                     TextStyle(color: CupertinoColors.lightBackgroundGray),
                 decoration: BoxDecoration(
-                  color: CupertinoColors.systemGrey,
+                  color: CupertinoColors.systemGrey3,
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
@@ -94,11 +94,11 @@ class _ListItemState extends State<ListItem> {
                 },
                 placeholder: 'Reps',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: CupertinoColors.black, fontSize: 15),
+                style: TextStyle(color: CupertinoColors.white, fontSize: 15),
                 placeholderStyle:
                     TextStyle(color: CupertinoColors.lightBackgroundGray),
                 decoration: BoxDecoration(
-                  color: CupertinoColors.systemGrey,
+                  color: CupertinoColors.systemGrey3,
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),

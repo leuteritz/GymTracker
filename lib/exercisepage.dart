@@ -1,17 +1,29 @@
 import 'package:flutter/cupertino.dart';
-import 'exercise.dart';
+import 'exerciseadd.dart';
 import 'database.dart';
+import 'constants.dart';
 
-class ExerciseScreen extends StatefulWidget {
-  ExerciseScreen({Key? key}) : super(key: key); // Add Key parameter
-
+class ExercisePage extends StatefulWidget {
+  ExercisePage({Key? key}) : super(key: key);
   @override
-  State<ExerciseScreen> createState() => ExerciseScreenState();
+  State<ExercisePage> createState() => _ExercisePageState();
 }
 
-class ExerciseScreenState extends State<ExerciseScreen> {
+class _ExercisePageState extends State<ExercisePage> {
   List<Map<String, dynamic>> exercises = [];
-  Map<String, List<Exercise>> exerciseMap = {};
+  Map<String, List<ExerciseAdd>> exerciseMap = {};
+
+  @override
+  void initState() {
+    fetchExercises(setState);
+    super.initState();
+  }
+
+  void updateSelectedExercise(String exercise, StateSetter setState) {
+    setState(() {
+      selectedExercise = exercise;
+    });
+  }
 
   void fetchExercises(StateSetter setState) async {
     final List<Map<String, dynamic>> allExerciseData =
@@ -32,23 +44,27 @@ class ExerciseScreenState extends State<ExerciseScreen> {
       exercises = favoriteExerciseData + nonFavoriteExerciseData;
     });
 
-    Map<String, List<Exercise>> initialExerciseMap = {};
+    Map<String, List<ExerciseAdd>> initialExerciseMap = {};
 
     exercises.forEach((exercise) {
       final muscleGroup = exercise['muscle'];
       final exerciseName = exercise['name'];
-      final exerciseDescription = exercise['description'];
 
       if (initialExerciseMap[muscleGroup] == null) {
         initialExerciseMap[muscleGroup] = [];
       }
 
       initialExerciseMap[muscleGroup]!.add(
-        Exercise(
+        ExerciseAdd(
           name: exerciseName,
-          description: exerciseDescription,
           muscleGroup: muscleGroup,
+          onSelect: (exerciseName) {
+            updateSelectedExercise(exerciseName,
+                setState); // Call the callback when exercise is selected
+          },
           fetchExercisesCallback: () => fetchExercises(setState),
+
+          // Pass a callback function
           key: Key(exercise['name']),
         ),
       );
@@ -56,12 +72,6 @@ class ExerciseScreenState extends State<ExerciseScreen> {
     setState(() {
       exerciseMap = initialExerciseMap;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchExercises(setState);
   }
 
   void _searchExercise(String searchText, StateSetter setState) {
@@ -77,25 +87,25 @@ class ExerciseScreenState extends State<ExerciseScreen> {
       }
 
       // Rebuild exerciseMap based on the filtered exercises
-      Map<String, List<Exercise>> filteredExerciseMap = {};
+      Map<String, List<ExerciseAdd>> filteredExerciseMap = {};
 
       for (var exercise in filteredExercises) {
         final muscleGroup = exercise['muscle'];
         final exerciseName = exercise['name'];
-        final exerciseDescription = exercise['description'];
 
         if (filteredExerciseMap[muscleGroup] == null) {
           filteredExerciseMap[muscleGroup] = [];
         }
 
         filteredExerciseMap[muscleGroup]!.add(
-          Exercise(
+          ExerciseAdd(
             name: exerciseName,
-            description: exerciseDescription,
             muscleGroup: muscleGroup,
-            fetchExercisesCallback: () =>
-                fetchExercises(setState), // Pass a callback function
-
+            onSelect: (exerciseName) {
+              updateSelectedExercise(exerciseName,
+                  setState); // Call the callback when exercise is selected
+            },
+            fetchExercisesCallback: () => fetchExercises(setState),
             key: Key(exercise['name']),
           ),
         );
@@ -111,7 +121,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: SizedBox(
+        middle: Container(
           width: 200,
           child: CupertinoSearchTextField(
             placeholder: 'Übung durchsuchen',
@@ -148,7 +158,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                     ),
                   ),
                   Container(
-                    height: 2,
+                    height: 4,
                     decoration: BoxDecoration(
                       color: CupertinoColors.white,
                     ),
@@ -157,12 +167,16 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                   Center(
                     child: Column(
                       children: favoriteExercises.map((exercise) {
-                        return Exercise(
+                        return ExerciseAdd(
                           name: exercise['name'],
-                          description: exercise['description'],
+                          fetchExercisesCallback: () => fetchExercises(
+                              setState), // Pass a callback function
+                          onSelect: (exerciseName) {
+                            updateSelectedExercise(exerciseName,
+                                setState); // Call the callback when exercise is selected
+                          },
                           muscleGroup: exercise['muscle'],
-                          fetchExercisesCallback: () =>
-                              fetchExercises(setState),
+
                           key: Key(exercise[
                               'name']), // Use a unique identifier, like exercise name
                           // Pass the callback
@@ -187,7 +201,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                     ),
                   ),
                   Container(
-                    height: 2,
+                    height: 4,
                     decoration: BoxDecoration(
                       color: CupertinoColors.white,
                     ),
@@ -214,7 +228,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                   ),
                 ),
                 Container(
-                  height: 2,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: CupertinoColors.white,
                   ),
@@ -223,11 +237,18 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                 Center(
                   child: Column(
                     children: exercisesForGroup.map((exercise) {
-                      return Exercise(
+                      return ExerciseAdd(
                         name: exercise.name,
-                        description: exercise.description,
                         muscleGroup: exercise.muscleGroup,
-                        fetchExercisesCallback: () => fetchExercises(setState),
+                        onSelect: (exerciseName) {
+                          updateSelectedExercise(exerciseName,
+                              setState); // Call the callback when exercise is selected
+                        },
+
+                        fetchExercisesCallback: () => fetchExercises(
+                            setState), // Pass a callback function
+// Pass the setState function
+
                         key: Key(exercise.name),
                       );
                     }).toList(),

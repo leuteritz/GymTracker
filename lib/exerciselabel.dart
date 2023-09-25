@@ -136,8 +136,8 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
             ],
           ),
           Positioned(
-            top: -17,
-            right: -20,
+            top: -15,
+            right: -17,
             child: CupertinoButton(
               onPressed: () {
                 setState(() {
@@ -153,7 +153,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
           ),
           Positioned(
               top: 6,
-              left: 16,
+              left: 0,
               child: ExerciseTimer(
                 exercise: widget.exercise,
                 key: _key,
