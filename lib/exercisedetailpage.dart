@@ -360,7 +360,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
         int minutes = _avgDuration.floor();
         int seconds = ((_avgDuration - minutes) * 100).round();
 
-        if (seconds >= 60) {
+        if (seconds >= 20) {
           minutes += seconds ~/ 60;
           seconds %= 60;
         }
@@ -593,7 +593,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                           ),
                         ),
                       if (_selectedContent == 'records')
-                        SingleChildScrollView(
+                        Container(
                             child: Column(children: [
                           Row(
                             children: [
@@ -1012,6 +1012,109 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                   ),
                                 ),
                               ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  // Bronze Badge
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Show modal view for Badge 1
+                                      _showBadgeModal(
+                                          context, 'Bronze', 'Lifted 20 kg!');
+                                    },
+                                    child: Container(
+                                      width: 95,
+                                      height: 70,
+                                      child: maxWeight > 20
+                                          ? Image.asset(
+                                              'assets/bronze_weight.png')
+                                          : Container(),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Show modal view for Badge 1
+                                      _showBadgeModal(
+                                          context, 'Silver', 'Lifted 80 kg!');
+                                    },
+                                    child: Container(
+                                      width: 95,
+                                      height: 70,
+                                      child: maxWeight > 20
+                                          ? Image.asset(
+                                              'assets/silver_weight.png')
+                                          : Container(),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Show modal view for Badge 1
+                                      _showBadgeModal(
+                                          context, 'Gold', 'Lifted 100 kg!');
+                                    },
+                                    child: Container(
+                                      width: 95,
+                                      height: 70,
+                                      child: maxWeight > 20
+                                          ? Image.asset(
+                                              'assets/gold_weight.png')
+                                          : Container(),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Show modal view for Badge 1
+                                      _showBadgeModal(context, 'Gladiator',
+                                          'Lifted 150 kg!');
+                                    },
+                                    child: Container(
+                                      width: 95,
+                                      height: 70,
+                                      child: maxWeight > 20
+                                          ? Image.asset(
+                                              'assets/glad_weight.png')
+                                          : Container(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Container(
+                                      width: 95,
+                                      height: 70,
+                                      child: maxWeight > 20
+                                          ? Image.asset('assets/glad_rep.png')
+                                          : Container()),
+                                  Container(
+                                      width: 95,
+                                      height: 70,
+                                      child: maxWeight > 60
+                                          ? Image.asset('assets/glad_rep.png')
+                                          : Container()),
+                                  Container(
+                                      width: 95,
+                                      height: 70,
+                                      child: maxWeight > 100
+                                          ? Image.asset('assets/glad_rep.png')
+                                          : Container()),
+                                  Container(
+                                      width: 95,
+                                      height: 70,
+                                      child: maxWeight > 150
+                                          ? Image.asset('assets/glad_rep.png')
+                                          : Container()),
+                                ],
+                              ),
                             ],
                           ),
                         ])),
@@ -1023,6 +1126,48 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
           },
         ),
       ),
+    );
+  }
+
+  void _showBadgeModal(BuildContext context, String title, String explanation) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    final double modalHeight = screenHeight * 0.2;
+    final double modalWidth = screenWidth;
+
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          width: modalWidth,
+          height: modalHeight,
+          child: CupertinoPopupSurface(
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      explanation,
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }
