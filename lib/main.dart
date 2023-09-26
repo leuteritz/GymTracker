@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'homepage.dart';
+import 'pages/homePage.dart';
 
 // TODO: add a checker to see if the exercise already exists
 void main() {

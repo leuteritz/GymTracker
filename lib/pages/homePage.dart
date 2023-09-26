@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'exercisescreen.dart';
-import 'homescreen.dart';
-import 'historyscreen.dart';
-import 'insertexercise.dart';
-import 'map.dart';
+import '/screens/exerciseScreen.dart';
+import '/screens/homeScreen.dart';
+import '/screens/historyScreen.dart';
+import '../data/insertExercise.dart';
+import '/screens/mapScreen.dart';
 
 class MyHomePage extends StatefulWidget {
   @override

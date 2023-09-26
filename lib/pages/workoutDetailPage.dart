@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
-import 'database.dart';
+import '/data/database.dart';
 
 class WorkoutDetailPage extends StatefulWidget {
   final String date;
@@ -217,119 +217,139 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                       int reps = set['reps'];
 
                       setRows.add(
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                // Adjust the padding as needed
-                                child: Center(
-                                  child: Text(
-                                    '$setNumber',
-                                    style: TextStyle(fontSize: 17),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Center(
-                                  child: Text(
-                                    '$weight',
-                                    style: TextStyle(fontSize: 17),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                // Adjust the padding as needed
-                                child: Center(
-                                  child: Text(
-                                    '$reps',
-                                    style: TextStyle(fontSize: 17),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                    return Container(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10), // Add horizontal padding
-                            child: Center(
-                              child: Text(
-                                exerciseName,
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                CupertinoIcons.time,
-                                color: CupertinoColors.systemGrey,
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                exercise.containsKey('duration')
-                                    ? exercise['duration']
-                                    : '00:00',
-                                style: TextStyle(
-                                    fontSize: 17,
-                                    color: CupertinoColors.systemGrey),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Center(
-                                        child: Text(
-                                          'Set',
-                                          style: TextStyle(fontSize: 17),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
+                        Stack(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    // Adjust the padding as needed
+                                    child: Center(
                                       child: Text(
-                                        'Weight (kg)',
+                                        '$setNumber',
                                         style: TextStyle(fontSize: 17),
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Center(
+                                  ),
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        '$weight',
+                                        style: TextStyle(fontSize: 17),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    // Adjust the padding as needed
+                                    child: Center(
+                                      child: Text(
+                                        '$reps',
+                                        style: TextStyle(fontSize: 17),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              right: 80,
+                              child: Text("🏆"),
+                            ),
+                            Positioned(
+                              right: 0,
+                              child: Text("🏆"),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return Stack(
+                      children: [
+                        Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10), // Add horizontal padding
+                              child: Center(
+                                child: Text(
+                                  exerciseName,
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  CupertinoIcons.time,
+                                  color: CupertinoColors.systemGrey,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  exercise.containsKey('duration')
+                                      ? exercise['duration']
+                                      : '00:00',
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: CupertinoColors.systemGrey),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Center(
+                                          child: Text(
+                                            'Set',
+                                            style: TextStyle(fontSize: 17),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
                                         child: Text(
-                                          'Reps',
+                                          'Weight (kg)',
                                           style: TextStyle(fontSize: 17),
                                         ),
                                       ),
-                                    ),
-                                  ]),
-                              SizedBox(height: 10),
-                              Container(
-                                height: 2,
-                                decoration: BoxDecoration(
-                                  color: CupertinoColors.white,
-                                  borderRadius: BorderRadius.circular(1),
+                                      Expanded(
+                                        child: Center(
+                                          child: Text(
+                                            'Reps',
+                                            style: TextStyle(fontSize: 17),
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
+                                SizedBox(height: 10),
+                                Container(
+                                  height: 2,
+                                  decoration: BoxDecoration(
+                                    color: CupertinoColors.white,
+                                    borderRadius: BorderRadius.circular(1),
+                                  ),
                                 ),
-                              ),
-                              ...setRows, // Spread set rows using the spread operator
-                              SizedBox(
-                                  height: 8), // Add spacing between exercises
-                            ],
-                          ),
-                        ],
-                      ),
+                                ...setRows, // Spread set rows using the spread operator
+                                SizedBox(
+                                    height: 8), // Add spacing between exercises
+                              ],
+                            ),
+                          ],
+                        ),
+                        Positioned(
+                          top: 38,
+                          right: 50,
+                          child: Text("🏆"),
+                        ),
+                      ],
                     );
                   }).toList(),
                 ),

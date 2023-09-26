@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
-import 'exerciseadd.dart';
-import 'database.dart';
-import 'constants.dart';
+import '/widgets/Homescreen/homeScreenExerciseAddItem.dart';
+import '/data/database.dart';
+import '/constants/constants.dart';
 
-class ExercisePage extends StatefulWidget {
-  ExercisePage({Key? key}) : super(key: key);
+class ExerciseAddPage extends StatefulWidget {
+  ExerciseAddPage({Key? key}) : super(key: key);
   @override
-  State<ExercisePage> createState() => _ExercisePageState();
+  State<ExerciseAddPage> createState() => _ExerciseAddPageState();
 }
 
-class _ExercisePageState extends State<ExercisePage> {
+class _ExerciseAddPageState extends State<ExerciseAddPage> {
   List<Map<String, dynamic>> exercises = [];
-  Map<String, List<ExerciseAdd>> exerciseMap = {};
+  Map<String, List<HomeScreenExerciseAddItem>> exerciseMap = {};
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class _ExercisePageState extends State<ExercisePage> {
       exercises = favoriteExerciseData + nonFavoriteExerciseData;
     });
 
-    Map<String, List<ExerciseAdd>> initialExerciseMap = {};
+    Map<String, List<HomeScreenExerciseAddItem>> initialExerciseMap = {};
 
     exercises.forEach((exercise) {
       final muscleGroup = exercise['muscle'];
@@ -55,7 +55,7 @@ class _ExercisePageState extends State<ExercisePage> {
       }
 
       initialExerciseMap[muscleGroup]!.add(
-        ExerciseAdd(
+        HomeScreenExerciseAddItem(
           name: exerciseName,
           muscleGroup: muscleGroup,
           onSelect: (exerciseName) {
@@ -87,7 +87,7 @@ class _ExercisePageState extends State<ExercisePage> {
       }
 
       // Rebuild exerciseMap based on the filtered exercises
-      Map<String, List<ExerciseAdd>> filteredExerciseMap = {};
+      Map<String, List<HomeScreenExerciseAddItem>> filteredExerciseMap = {};
 
       for (var exercise in filteredExercises) {
         final muscleGroup = exercise['muscle'];
@@ -98,7 +98,7 @@ class _ExercisePageState extends State<ExercisePage> {
         }
 
         filteredExerciseMap[muscleGroup]!.add(
-          ExerciseAdd(
+          HomeScreenExerciseAddItem(
             name: exerciseName,
             muscleGroup: muscleGroup,
             onSelect: (exerciseName) {
@@ -124,7 +124,7 @@ class _ExercisePageState extends State<ExercisePage> {
         middle: Container(
           width: 200,
           child: CupertinoSearchTextField(
-            placeholder: 'Übung durchsuchen',
+            placeholder: 'Search Exercise',
             onChanged: (searchText) {
               _searchExercise(searchText, setState);
             },
@@ -167,7 +167,7 @@ class _ExercisePageState extends State<ExercisePage> {
                   Center(
                     child: Column(
                       children: favoriteExercises.map((exercise) {
-                        return ExerciseAdd(
+                        return HomeScreenExerciseAddItem(
                           name: exercise['name'],
                           fetchExercisesCallback: () => fetchExercises(
                               setState), // Pass a callback function
@@ -237,7 +237,7 @@ class _ExercisePageState extends State<ExercisePage> {
                 Center(
                   child: Column(
                     children: exercisesForGroup.map((exercise) {
-                      return ExerciseAdd(
+                      return HomeScreenExerciseAddItem(
                         name: exercise.name,
                         muscleGroup: exercise.muscleGroup,
                         onSelect: (exerciseName) {

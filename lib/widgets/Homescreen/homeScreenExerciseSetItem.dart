@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
-import 'constants.dart';
-import 'exercisetimer.dart';
+import '/constants/constants.dart';
+import 'homeScreenExerciseTimer.dart';
 
-class ListItem extends StatefulWidget {
+class HomeScreenExerciseSetItem extends StatefulWidget {
   int index;
   int weight;
   int reps;
   String name;
-  final GlobalKey<ExerciseTimerState> timerKey;
+  final GlobalKey<HomeScreenExerciseTimerState> timerKey;
 
-  ListItem({
+  HomeScreenExerciseSetItem({
     required this.index,
     required this.weight,
     required this.reps,
@@ -18,10 +18,11 @@ class ListItem extends StatefulWidget {
   });
 
   @override
-  _ListItemState createState() => _ListItemState();
+  _HomeScreenExerciseSetItemState createState() =>
+      _HomeScreenExerciseSetItemState();
 }
 
-class _ListItemState extends State<ListItem> {
+class _HomeScreenExerciseSetItemState extends State<HomeScreenExerciseSetItem> {
   TextEditingController weightController = TextEditingController();
   TextEditingController repsController = TextEditingController();
 

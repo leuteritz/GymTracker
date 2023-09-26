@@ -1,17 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
-import 'constants.dart';
+import '/constants/constants.dart';
 
-class ExerciseTimer extends StatefulWidget {
+class HomeScreenExerciseTimer extends StatefulWidget {
   final String exercise;
 
-  ExerciseTimer({Key? key, required this.exercise}) : super(key: key);
+  HomeScreenExerciseTimer({Key? key, required this.exercise}) : super(key: key);
 
   @override
-  State<ExerciseTimer> createState() => ExerciseTimerState();
+  State<HomeScreenExerciseTimer> createState() =>
+      HomeScreenExerciseTimerState();
 }
 
-class ExerciseTimerState extends State<ExerciseTimer> {
+class HomeScreenExerciseTimerState extends State<HomeScreenExerciseTimer> {
   Timer? _timer;
   int _seconds = 0;
   String timerValue = '00:00';
@@ -21,8 +22,6 @@ class ExerciseTimerState extends State<ExerciseTimer> {
   }
 
   void startTimer() {
-    print(1);
-
     _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (mounted) {
@@ -46,7 +45,6 @@ class ExerciseTimerState extends State<ExerciseTimer> {
     };
 
     exerciseDurationList.add(exerciseData);
-    print(exerciseDurationList);
   }
 
   void _updateTimerValue() {

@@ -1,11 +1,11 @@
-import 'database.dart';
+import '/data/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'constants.dart';
-import 'exerciseadd.dart';
-import 'exercisepage.dart';
+import '/constants/constants.dart';
+import '/widgets/Homescreen/homeScreenExerciseAddItem.dart';
+import '/pages/exerciseAddPage.dart';
 import 'dart:async';
-import 'exerciselabel.dart';
+import '/widgets/Homescreen/homeScreenExerciseItem.dart';
 import 'dart:math' as math;
 
 class _SpinnerPainter extends CustomPainter {
@@ -595,7 +595,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final exercise = exerciseList[index];
-                      return ExerciseLabel(
+                      return HomeScreenExerciseItem(
                         exercise: exercise['name'],
                         sets: exercise['sets'],
                         onDelete: (exerciseName) {
@@ -743,7 +743,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Map<String, dynamic>> exercises = [];
-  Map<String, List<ExerciseAdd>> exerciseMap = {};
+  Map<String, List<HomeScreenExerciseAddItem>> exerciseMap = {};
 
   void fetchExercises(StateSetter setState) async {
     final List<Map<String, dynamic>> allExerciseData =
@@ -764,7 +764,7 @@ class _HomeScreenState extends State<HomeScreen> {
       exercises = favoriteExerciseData + nonFavoriteExerciseData;
     });
 
-    Map<String, List<ExerciseAdd>> initialExerciseMap = {};
+    Map<String, List<HomeScreenExerciseAddItem>> initialExerciseMap = {};
 
     exercises.forEach((exercise) {
       final muscleGroup = exercise['muscle'];
@@ -775,7 +775,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       initialExerciseMap[muscleGroup]!.add(
-        ExerciseAdd(
+        HomeScreenExerciseAddItem(
           name: exerciseName,
           muscleGroup: muscleGroup,
           onSelect: (exerciseName) {
@@ -824,7 +824,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.push(
                                 context,
                                 CupertinoPageRoute(
-                                  builder: (context) => ExercisePage(),
+                                  builder: (context) => ExerciseAddPage(),
                                 ),
                               );
                             },

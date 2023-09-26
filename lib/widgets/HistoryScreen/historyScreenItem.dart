@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
-import 'database.dart';
-import 'workoutdetailpage.dart';
-import 'exerciselistitem.dart';
+import '/data/database.dart';
+import '/pages/workoutDetailPage.dart';
+import 'historyScreenSetNumber.dart';
 
-class WorkoutDateItem extends StatefulWidget {
+class HistoryScreenItem extends StatefulWidget {
   final String date;
 
-  WorkoutDateItem({required this.date, Key? key}) : super(key: key);
+  HistoryScreenItem({required this.date, Key? key}) : super(key: key);
   @override
-  State<WorkoutDateItem> createState() => WorkoutDateItemState();
+  State<HistoryScreenItem> createState() => HistoryScreenItemState();
 }
 
-class WorkoutDateItemState extends State<WorkoutDateItem> {
+class HistoryScreenItemState extends State<HistoryScreenItem> {
   DateTime myDate = DateTime.now();
   String dayOfWeek = '';
   String _duration = '';
@@ -170,7 +170,7 @@ class WorkoutDateItemState extends State<WorkoutDateItem> {
                   itemCount: _exercises.length,
                   itemBuilder: (context, index) {
                     final exercise = _exercises[index];
-                    return ExerciseListItem(
+                    return HistoryScreenSetNumber(
                       exerciseName: exercise['name'],
                       date: widget.date,
                     );

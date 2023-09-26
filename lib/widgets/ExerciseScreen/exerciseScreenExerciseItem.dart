@@ -1,28 +1,28 @@
 import 'package:flutter/cupertino.dart';
+import '/pages/exerciseDetailPage.dart';
+import '/data/database.dart';
 
-import 'database.dart';
-import 'constants.dart';
-
-class ExerciseAdd extends StatefulWidget {
+class ExerciseScreenExerciseItem extends StatefulWidget {
   final String name;
+  final String description;
   final String muscleGroup;
-
   final VoidCallback fetchExercisesCallback;
-  final Function(String) onSelect;
 
-  ExerciseAdd(
-      {required this.muscleGroup,
-      required this.name,
+  ExerciseScreenExerciseItem(
+      {required this.description,
+      required this.muscleGroup,
       required this.fetchExercisesCallback,
-      required this.onSelect,
+      required this.name,
       Key? key})
       : super(key: key);
 
   @override
-  State<ExerciseAdd> createState() => _ExerciseAddState();
+  State<ExerciseScreenExerciseItem> createState() =>
+      _ExerciseScreenExerciseItemState();
 }
 
-class _ExerciseAddState extends State<ExerciseAdd> {
+class _ExerciseScreenExerciseItemState
+    extends State<ExerciseScreenExerciseItem> {
   @override
   void initState() {
     super.initState();
@@ -65,11 +65,14 @@ class _ExerciseAddState extends State<ExerciseAdd> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          widget.onSelect(widget.name);
-
-          selectedExerciseNotifier.value = widget.name;
-
-          Navigator.of(context).pop();
+          Navigator.push(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => ExerciseDetailPage(
+                  exercise: widget.name, description: widget.description),
+            ),
+          );
+          widget.key.toString();
         },
         child: CupertinoListTile(
           leading: Text(getFirstLetter()),

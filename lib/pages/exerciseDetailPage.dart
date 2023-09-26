@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'chartload.dart';
-import 'chartweight.dart';
-import 'chartreps.dart';
-import 'database.dart';
-import 'workoutdetailpage.dart';
+import '/charts/chartLoad.dart';
+import '/charts/chartWeight.dart';
+import '/charts/chartReps.dart';
+import '/data/database.dart';
+import 'workoutDetailPage.dart';
 
 class ExerciseDetailPage extends StatefulWidget {
   final String exercise;
@@ -15,12 +15,10 @@ class ExerciseDetailPage extends StatefulWidget {
 }
 
 class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
-  GlobalKey<LineChartSampleLoadState> _chartKey1 =
-      GlobalKey<LineChartSampleLoadState>();
-  GlobalKey<LineChartSampleWeightState> _chartKey2 =
-      GlobalKey<LineChartSampleWeightState>();
-  GlobalKey<LineChartSampleRepsState> _chartKey3 =
-      GlobalKey<LineChartSampleRepsState>();
+  GlobalKey<LineChartLoadState> _chartKey1 = GlobalKey<LineChartLoadState>();
+  GlobalKey<LineChartWeightState> _chartKey2 =
+      GlobalKey<LineChartWeightState>();
+  GlobalKey<LineChartRepsState> _chartKey3 = GlobalKey<LineChartRepsState>();
 
   int _selectedMonthIndex = DateTime.now().month - 1;
   String _currentWeek = '';
@@ -380,37 +378,34 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
         middle: Text(widget.exercise),
       ),
       child: SafeArea(
-        child: ListView.builder(
-          itemCount: 1,
-          itemBuilder: (context, index) {
-            return Column(
-              children: [
-                Container(
-                  child: Column(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+              width: MediaQuery.of(context).size.width,
+              child: CupertinoSegmentedControl(
+                children: {
+                  'description': Text(
+                    'Instructions',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  'chart': Text('Chart', style: TextStyle(fontSize: 20)),
+                  'records': Text('Records', style: TextStyle(fontSize: 20)),
+                },
+                onValueChanged: (value) {
+                  setState(() {
+                    _selectedContent = value;
+                  });
+                },
+                groupValue: _selectedContent,
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: 1,
+                itemBuilder: (context, index) {
+                  return Column(
                     children: [
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 20, horizontal: 0),
-                        width: MediaQuery.of(context).size.width,
-                        child: CupertinoSegmentedControl(
-                          children: {
-                            'description': Text(
-                              'Instructions',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            'chart':
-                                Text('Chart', style: TextStyle(fontSize: 20)),
-                            'records':
-                                Text('Records', style: TextStyle(fontSize: 20)),
-                          },
-                          onValueChanged: (value) {
-                            setState(() {
-                              _selectedContent = value;
-                            });
-                          },
-                          groupValue: _selectedContent,
-                        ),
-                      ),
                       SizedBox(height: 10),
                       if (_selectedContent == 'description')
                         SingleChildScrollView(
@@ -489,8 +484,6 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                           child: Column(
                             children: [
                               Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 0),
                                 width: MediaQuery.of(context).size.width,
                                 child: CupertinoSegmentedControl(
                                   children: {
@@ -513,7 +506,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                   groupValue: _selectedInterval,
                                 ),
                               ),
-                              SizedBox(height: 10),
+                              SizedBox(height: 20),
                               if (_selectedInterval == 'week')
                                 GestureDetector(
                                   onTap: () {
@@ -563,7 +556,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                 ),
                               Column(
                                 children: [
-                                  LineChartSampleLoad(
+                                  LineChartLoad(
                                     key: _chartKey1,
                                     exercise: widget.exercise,
                                     selectedInterval: _selectedInterval,
@@ -571,7 +564,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                     currentMonth: _selectedMonthIndex,
                                     currentYear: selectedYear,
                                   ),
-                                  LineChartSampleWeight(
+                                  LineChartWeight(
                                     key: _chartKey2,
                                     exercise: widget.exercise,
                                     selectedInterval: _selectedInterval,
@@ -579,7 +572,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                     currentMonth: _selectedMonthIndex,
                                     currentYear: selectedYear,
                                   ),
-                                  LineChartSampleReps(
+                                  LineChartReps(
                                     key: _chartKey3,
                                     exercise: widget.exercise,
                                     selectedInterval: _selectedInterval,
@@ -588,7 +581,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                     currentYear: selectedYear,
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -666,7 +659,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                               color: CupertinoColors.white,
                             ),
                           ),
-                          SizedBox(height: 40),
+                          SizedBox(height: 20),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1000,7 +993,16 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                 ],
                               ),
                               SizedBox(
-                                height: 40,
+                                height: 20,
+                              ),
+                              Container(
+                                height: 2,
+                                decoration: BoxDecoration(
+                                  color: CupertinoColors.white,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
                               ),
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
@@ -1119,11 +1121,11 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                           ),
                         ])),
                     ],
-                  ),
-                ),
-              ],
-            );
-          },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

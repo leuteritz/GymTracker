@@ -1,19 +1,19 @@
 import 'package:flutter/cupertino.dart';
-import 'gymmarker.dart';
+import 'gymMarker.dart';
 import 'dart:math';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:latlong2/latlong.dart';
 
-class ExamplePopup extends StatefulWidget {
+class Popup extends StatefulWidget {
   final GymMarker gymMarker;
 
-  const ExamplePopup(this.gymMarker, {Key? key}) : super(key: key);
+  const Popup(this.gymMarker, {Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ExamplePopupState();
+  State<StatefulWidget> createState() => _PopupState();
 }
 
-class _ExamplePopupState extends State<ExamplePopup> {
+class _PopupState extends State<Popup> {
   String street = '';
   String name = '';
   String postcode = '';
@@ -141,7 +141,7 @@ class _ExamplePopupState extends State<ExamplePopup> {
   void _launchAppleMaps() {
     // Use Apple Maps URL scheme
     final String appleMapsUrl =
-        'https://maps.apple.com/?q=${widget.gymMarker.name ?? ''},'
+        'https://maps.apple.com/?q=${widget.gymMarker.name},'
         '${widget.gymMarker.city ?? ''}';
     launchUrl(Uri.parse(appleMapsUrl));
   }
@@ -149,7 +149,7 @@ class _ExamplePopupState extends State<ExamplePopup> {
   void _launchGoogleMaps() {
     // Use Google Maps URL
     final String googleMapsUrl =
-        'https://maps.google.com/maps?q=${widget.gymMarker.name ?? ''},'
+        'https://maps.google.com/maps?q=${widget.gymMarker.name},'
         '${widget.gymMarker.city ?? ''}';
     launchUrl(Uri.parse(googleMapsUrl));
   }

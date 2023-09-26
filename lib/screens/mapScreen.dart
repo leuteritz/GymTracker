@@ -3,12 +3,11 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'popup.dart';
+import '/map/popup.dart';
 import 'dart:convert';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
-import 'gymmarker.dart';
+import '/map/gymMarker.dart';
 import 'dart:async';
-import 'dart:math';
 
 class MapScreen extends StatefulWidget {
   MapScreen({Key? key}) : super(key: key);
@@ -369,7 +368,7 @@ class MapScreenState extends State<MapScreen> {
                                   final index = gymMarkers.indexOf(marker);
                                   if (index >= 0 && index < gymData.length) {
                                     final gymMarker = gymData[index];
-                                    return ExamplePopup(gymMarker);
+                                    return Popup(gymMarker);
                                   }
                                   return SizedBox();
                                 },

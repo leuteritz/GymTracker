@@ -1,25 +1,26 @@
 import 'package:flutter/cupertino.dart';
-import 'constants.dart';
-import 'listitem.dart';
-import 'exercisetimer.dart';
+import '/constants/constants.dart';
+import 'homeScreenExerciseSetItem.dart';
+import 'homeScreenExerciseTimer.dart';
 
-class ExerciseLabel extends StatefulWidget {
+class HomeScreenExerciseItem extends StatefulWidget {
   final String exercise;
   final List<Map<String, int>> sets;
   final Function(String exercise) onDelete;
 
-  ExerciseLabel({
+  HomeScreenExerciseItem({
     required this.exercise,
     required this.sets,
     required this.onDelete,
   });
 
   @override
-  _ExerciseLabelState createState() => _ExerciseLabelState();
+  _HomeScreenExerciseItemState createState() => _HomeScreenExerciseItemState();
 }
 
-class _ExerciseLabelState extends State<ExerciseLabel> {
-  GlobalKey<ExerciseTimerState> _key = GlobalKey<ExerciseTimerState>();
+class _HomeScreenExerciseItemState extends State<HomeScreenExerciseItem> {
+  GlobalKey<HomeScreenExerciseTimerState> _key =
+      GlobalKey<HomeScreenExerciseTimerState>();
 
   void _removeSetFromGlobalList(int index) {
     setState(() {
@@ -37,8 +38,6 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
 
   @override
   Widget build(BuildContext context) {
-    print("Exercise List $exerciseList");
-
     return Container(
       padding: EdgeInsets.all(20),
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -112,7 +111,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
                       ),
                       color: CupertinoColors.systemRed,
                     ),
-                    child: ListItem(
+                    child: HomeScreenExerciseSetItem(
                         index: index,
                         weight: set['weight']!,
                         reps: set['reps']!,
@@ -154,7 +153,7 @@ class _ExerciseLabelState extends State<ExerciseLabel> {
           Positioned(
               top: 6,
               left: 0,
-              child: ExerciseTimer(
+              child: HomeScreenExerciseTimer(
                 exercise: widget.exercise,
                 key: _key,
               )),

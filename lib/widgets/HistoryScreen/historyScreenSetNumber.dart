@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
-import 'database.dart';
+import '/data/database.dart';
 
-class ExerciseListItem extends StatefulWidget {
+class HistoryScreenSetNumber extends StatefulWidget {
   final String exerciseName;
   final String date;
 
-  ExerciseListItem({required this.exerciseName, required this.date});
+  HistoryScreenSetNumber({required this.exerciseName, required this.date});
 
   @override
-  State<ExerciseListItem> createState() => _ExerciseListItemState();
+  State<HistoryScreenSetNumber> createState() => _HistoryScreenSetNumberState();
 }
 
-class _ExerciseListItemState extends State<ExerciseListItem> {
+class _HistoryScreenSetNumberState extends State<HistoryScreenSetNumber> {
   int _set = 0;
 
   @override

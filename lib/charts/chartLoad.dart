@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'database.dart';
+import '/data/database.dart';
 
-class LineChartSampleLoad extends StatefulWidget {
+class LineChartLoad extends StatefulWidget {
   String exercise;
   String selectedInterval;
   String currentWeek;
   int currentMonth;
   int currentYear;
 
-  LineChartSampleLoad(
+  LineChartLoad(
       {super.key,
       required this.exercise,
       required this.selectedInterval,
@@ -18,10 +18,10 @@ class LineChartSampleLoad extends StatefulWidget {
       required this.currentYear});
 
   @override
-  State<LineChartSampleLoad> createState() => LineChartSampleLoadState();
+  State<LineChartLoad> createState() => LineChartLoadState();
 }
 
-class LineChartSampleLoadState extends State<LineChartSampleLoad> {
+class LineChartLoadState extends State<LineChartLoad> {
   List<FlSpot> dataPoints = [];
   double minY = 100000;
   double maxY = -100000;
@@ -40,7 +40,7 @@ class LineChartSampleLoadState extends State<LineChartSampleLoad> {
     'Sep',
     'Oct',
     'Nov',
-    'Dev'
+    'Dec'
   ];
   List<Map<String, dynamic>> setsRepsAndDate = [];
   Map<int, List<double>> monthData = {};

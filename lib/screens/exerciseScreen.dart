@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'exercise.dart';
-import 'database.dart';
+import '/widgets/ExerciseScreen/exerciseScreenExerciseItem.dart';
+import '/data/database.dart';
 
 class ExerciseScreen extends StatefulWidget {
   ExerciseScreen({Key? key}) : super(key: key); // Add Key parameter
@@ -11,7 +11,7 @@ class ExerciseScreen extends StatefulWidget {
 
 class ExerciseScreenState extends State<ExerciseScreen> {
   List<Map<String, dynamic>> exercises = [];
-  Map<String, List<Exercise>> exerciseMap = {};
+  Map<String, List<ExerciseScreenExerciseItem>> exerciseMap = {};
 
   void fetchExercises(StateSetter setState) async {
     final List<Map<String, dynamic>> allExerciseData =
@@ -32,7 +32,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
       exercises = favoriteExerciseData + nonFavoriteExerciseData;
     });
 
-    Map<String, List<Exercise>> initialExerciseMap = {};
+    Map<String, List<ExerciseScreenExerciseItem>> initialExerciseMap = {};
 
     exercises.forEach((exercise) {
       final muscleGroup = exercise['muscle'];
@@ -44,7 +44,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
       }
 
       initialExerciseMap[muscleGroup]!.add(
-        Exercise(
+        ExerciseScreenExerciseItem(
           name: exerciseName,
           description: exerciseDescription,
           muscleGroup: muscleGroup,
@@ -77,7 +77,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
       }
 
       // Rebuild exerciseMap based on the filtered exercises
-      Map<String, List<Exercise>> filteredExerciseMap = {};
+      Map<String, List<ExerciseScreenExerciseItem>> filteredExerciseMap = {};
 
       for (var exercise in filteredExercises) {
         final muscleGroup = exercise['muscle'];
@@ -89,7 +89,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
         }
 
         filteredExerciseMap[muscleGroup]!.add(
-          Exercise(
+          ExerciseScreenExerciseItem(
             name: exerciseName,
             description: exerciseDescription,
             muscleGroup: muscleGroup,
@@ -157,7 +157,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                   Center(
                     child: Column(
                       children: favoriteExercises.map((exercise) {
-                        return Exercise(
+                        return ExerciseScreenExerciseItem(
                           name: exercise['name'],
                           description: exercise['description'],
                           muscleGroup: exercise['muscle'],
@@ -223,7 +223,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                 Center(
                   child: Column(
                     children: exercisesForGroup.map((exercise) {
-                      return Exercise(
+                      return ExerciseScreenExerciseItem(
                         name: exercise.name,
                         description: exercise.description,
                         muscleGroup: exercise.muscleGroup,

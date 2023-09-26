@@ -1,4 +1,4 @@
-import 'database.dart';
+import '/data/database.dart';
 
 void insertExercises() async {
   List<Map<String, dynamic>> exercisesToAdd = [

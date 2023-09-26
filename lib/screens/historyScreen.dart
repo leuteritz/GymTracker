@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'database.dart';
-import 'workoutdateitem.dart';
+import '/data/database.dart';
+import '/widgets/HistoryScreen/historyScreenItem.dart';
 
 class HistoryScreen extends StatefulWidget {
   HistoryScreen({Key? key}) : super(key: key);
@@ -161,7 +161,7 @@ class HistoryScreenState extends State<HistoryScreen> {
                   itemCount: datesForMonthYear.length,
                   itemBuilder: (context, subIndex) {
                     final date = datesForMonthYear[subIndex];
-                    return WorkoutDateItem(
+                    return HistoryScreenItem(
                       date: date,
                       key: Key(date),
                     );
