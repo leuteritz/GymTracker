@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import '/charts/chartLoad.dart';
 import '/charts/chartWeight.dart';
+
 import '/charts/chartReps.dart';
 import '/data/database.dart';
 import 'workoutDetailPage.dart';
+import '/charts/chartDuration.dart';
 
 class ExerciseDetailPage extends StatefulWidget {
   final String exercise;
@@ -19,6 +21,8 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
   GlobalKey<LineChartWeightState> _chartKey2 =
       GlobalKey<LineChartWeightState>();
   GlobalKey<LineChartRepsState> _chartKey3 = GlobalKey<LineChartRepsState>();
+  GlobalKey<LineChartDurationState> _chartKey4 =
+      GlobalKey<LineChartDurationState>();
 
   int _selectedMonthIndex = DateTime.now().month - 1;
   String _currentWeek = '';
@@ -128,6 +132,8 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                 _chartKey2.currentState?.getInformation(_selectedInterval);
                 _chartKey3.currentState?.getWeek(_currentWeek);
                 _chartKey3.currentState?.getInformation(_selectedInterval);
+                _chartKey4.currentState?.getWeek(_currentWeek);
+                _chartKey4.currentState?.getInformation(_selectedInterval);
               });
             },
             children: List<Widget>.generate(weekWidgets.length, (int index) {
@@ -160,6 +166,8 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                 _chartKey2.currentState?.getInformation(_selectedInterval);
                 _chartKey3.currentState?.getMonth(_selectedMonthIndex);
                 _chartKey3.currentState?.getInformation(_selectedInterval);
+                _chartKey4.currentState?.getMonth(_selectedMonthIndex);
+                _chartKey4.currentState?.getInformation(_selectedInterval);
                 getCurrentWeekDateRange();
               });
             },
@@ -195,6 +203,8 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                 _chartKey2.currentState?.getInformation(_selectedInterval);
                 _chartKey3.currentState?.getYear(selectedYear);
                 _chartKey3.currentState?.getInformation(_selectedInterval);
+                _chartKey4.currentState?.getYear(selectedYear);
+                _chartKey4.currentState?.getInformation(_selectedInterval);
               });
             },
             children:
@@ -502,6 +512,8 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                         ?.getInformation(_selectedInterval);
                                     _chartKey3.currentState
                                         ?.getInformation(_selectedInterval);
+                                    _chartKey4.currentState
+                                        ?.getInformation(_selectedInterval);
                                   },
                                   groupValue: _selectedInterval,
                                 ),
@@ -574,6 +586,14 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
                                   ),
                                   LineChartReps(
                                     key: _chartKey3,
+                                    exercise: widget.exercise,
+                                    selectedInterval: _selectedInterval,
+                                    currentWeek: _currentWeek,
+                                    currentMonth: _selectedMonthIndex,
+                                    currentYear: selectedYear,
+                                  ),
+                                  LineChartDuration(
+                                    key: _chartKey4,
                                     exercise: widget.exercise,
                                     selectedInterval: _selectedInterval,
                                     currentWeek: _currentWeek,

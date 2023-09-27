@@ -290,6 +290,34 @@ class DatabaseHelper {
   ''');
   }
 
+  Future<List<Map<String, dynamic>>> getMaxRepsForExercise(
+      String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('''
+    SELECT name, date, MAX(reps) as max_reps
+    FROM exercise
+    WHERE name = "$exerciseName"
+    GROUP BY name, date
+    ORDER BY date DESC
+  ''');
+  }
+
+  Future<List<Map<String, dynamic>>> getMaxDurationForExercise(
+      String exerciseName) async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('''
+    SELECT name, date, MAX(durationexercise) as max_duration
+    FROM exercise
+    WHERE name = "$exerciseName"
+    GROUP BY name, date
+    ORDER BY date DESC
+  ''');
+  }
+
   Future<List<Map<String, dynamic>>> getAllMaxWeightByExercise() async {
     final db = await this.db;
     if (db == null) return [];
@@ -528,20 +556,6 @@ class DatabaseHelper {
     } else {
       return {'avg_duration': 0}; // Return 0.0 if no data is found.
     }
-  }
-
-  Future<List<Map<String, dynamic>>> getMaxRepsForExercise(
-      String exerciseName) async {
-    final db = await this.db;
-    if (db == null) return [];
-
-    return await db.rawQuery('''
-    SELECT name, date, MAX(reps) as max_reps
-    FROM exercise
-    WHERE name = "$exerciseName"
-    GROUP BY name, date
-    ORDER BY date DESC
-  ''');
   }
 
   Map<String, List<String>> groupDatesByMonthAndYear(List<String> dates) {
