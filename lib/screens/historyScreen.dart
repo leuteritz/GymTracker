@@ -91,7 +91,6 @@ class HistoryScreenState extends State<HistoryScreen> {
   }
 
   void _searchWorkoutDates(String searchText, StateSetter setState) {
-    print(searchText);
     if (searchText.isEmpty) {
       setState(() {
         filteredGroups = groupedWorkoutDates;
@@ -110,7 +109,6 @@ class HistoryScreenState extends State<HistoryScreen> {
       setState(() {
         filteredGroups = newFilteredGroups;
       });
-      print(filteredGroups);
     }
   }
 

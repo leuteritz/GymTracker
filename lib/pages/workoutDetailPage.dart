@@ -17,25 +17,135 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
   String _duration = '';
   int _totalWeight = 0;
   String? _startTime = '';
-  List<String> workoutDatesList = [];
+  List<Map<String, dynamic>> maxWeightList = [];
+  List<Map<String, dynamic>> maxRepsList = [];
+  List<Map<String, dynamic>> maxDurationList = [];
   List<Map<String, dynamic>> _exerciseduration = [];
+  int maxWeightRowIndex = -1;
+
+  bool isDuration = false;
+  bool isWeight = false;
+  bool isRep = false;
 
   @override
   void initState() {
     super.initState();
-    _getExercisesForDate(widget.date);
-    _getDuration();
-    _getTotalWeight();
-    _loadWorkoutDates();
-    _getStartTime();
-    _getExerciseDuration();
+    _initializeData();
   }
 
-  void _loadWorkoutDates() async {
-    List<String> dates = await DatabaseHelper().getDates();
+  Future<void> _initializeData() async {
+    await _getMaxWeightByExerciset();
+    await _getMaxRepsByExerciset();
+    await _getMaxDurationByExerciset();
+    await getExercisesForDate(widget.date);
+    await _getExerciseDuration();
+    _getDuration();
+    _getTotalWeight();
+    _getStartTime();
+    _setRecordsWeight();
+    _setRecordsReps();
+    _setRecordsDuration();
+  }
+
+  Future<void> _getMaxWeightByExerciset() async {
+    List<Map<String, dynamic>> _maxWeightList =
+        await DatabaseHelper().getAllMaxWeightByExercise();
+
     setState(() {
-      workoutDatesList = dates;
+      maxWeightList = _maxWeightList;
     });
+  }
+
+  Future<void> _getMaxRepsByExerciset() async {
+    List<Map<String, dynamic>> _maxRepsList =
+        await DatabaseHelper().getAllMaxRepsByExercise();
+
+    setState(() {
+      maxRepsList = _maxRepsList;
+    });
+  }
+
+  Future<void> _getMaxDurationByExerciset() async {
+    List<Map<String, dynamic>> _maxDurationList =
+        await DatabaseHelper().getAllMaxDurationByExercise();
+
+    setState(() {
+      maxDurationList = _maxDurationList;
+    });
+  }
+
+  void _setRecordsWeight() async {
+    for (Map<String, dynamic> exerciseInfo in maxWeightList) {
+      if (widget.date == exerciseInfo['date']) {
+        for (Map<String, dynamic> transformedExerciseInfo
+            in transformedExercises) {
+          dynamic sets = transformedExerciseInfo['sets'];
+
+          if (exerciseInfo['name'] == transformedExerciseInfo['name']) {
+            int maxWeight = exerciseInfo['max_weight'];
+
+            for (Map<String, dynamic> set in sets) {
+              int weight = set['weight'];
+
+              if (weight == maxWeight) {
+                setState(() {
+                  set['isMaxWeight'] = true;
+                });
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void _setRecordsReps() async {
+    for (Map<String, dynamic> exerciseInfo in maxRepsList) {
+      if (widget.date == exerciseInfo['date']) {
+        for (Map<String, dynamic> transformedExerciseInfo
+            in transformedExercises) {
+          dynamic sets = transformedExerciseInfo['sets'];
+
+          if (exerciseInfo['name'] == transformedExerciseInfo['name']) {
+            int maxReps = exerciseInfo['max_reps'];
+
+            for (Map<String, dynamic> set in sets) {
+              int reps = set['reps'];
+
+              if (reps == maxReps) {
+                setState(() {
+                  set['isMaxReps'] = true;
+                });
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void _setRecordsDuration() async {
+    for (Map<String, dynamic> exerciseInfo in maxDurationList) {
+      if (widget.date == exerciseInfo['date']) {
+        for (Map<String, dynamic> transformedExerciseInfo
+            in transformedExercises) {
+          String duration = transformedExerciseInfo['duration'];
+
+          if (exerciseInfo['name'] == transformedExerciseInfo['name']) {
+            String maxDuration = exerciseInfo['max_duration'];
+
+            if (duration == maxDuration) {
+              setState(() {
+                transformedExerciseInfo['isMaxDuration'] = true;
+              });
+              break;
+            }
+          }
+        }
+      }
+    }
   }
 
   Future<void> _getExerciseDuration() async {
@@ -95,7 +205,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     });
   }
 
-  void _getExercisesForDate(String date) async {
+  Future<void> getExercisesForDate(String date) async {
     List<Map<String, dynamic>> exercises =
         await DatabaseHelper().getAllInformationByDate(date);
     exercisesForSelectedDate = exercises;
@@ -123,6 +233,8 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
       exerciseMap[key]!['sets'].add({
         'weight': exercise['weight']!,
         'reps': exercise['reps']!,
+        'isMaxWeight': false,
+        'isMaxReps': false,
       });
     }
 
@@ -205,6 +317,9 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: transformedExercises.map<Widget>((exercise) {
                     String exerciseName = exercise['name'];
+                    bool isMaxDurationExercise =
+                        exercise['isMaxDuration'] ?? false;
+
                     List<Map<String, dynamic>> sets =
                         List<Map<String, dynamic>>.from(exercise['sets']);
 
@@ -252,18 +367,21 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                                 ],
                               ),
                             ),
-                            Positioned(
-                              right: 80,
-                              child: Text("🏆"),
-                            ),
-                            Positioned(
-                              right: 0,
-                              child: Text("🏆"),
-                            ),
+                            if (set['isMaxWeight'])
+                              Positioned(
+                                right: 90,
+                                child: Text("🏆"),
+                              ),
+                            if (set['isMaxReps'])
+                              Positioned(
+                                right: 0,
+                                child: Text("🏆"),
+                              ),
                           ],
                         ),
                       );
                     }
+
                     return Stack(
                       children: [
                         Column(
@@ -344,11 +462,12 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                             ),
                           ],
                         ),
-                        Positioned(
-                          top: 38,
-                          right: 50,
-                          child: Text("🏆"),
-                        ),
+                        if (isMaxDurationExercise) // Check if it's a max duration exercise
+                          Positioned(
+                            top: 38,
+                            right: 60,
+                            child: Text("🏆"),
+                          ),
                       ],
                     );
                   }).toList(),

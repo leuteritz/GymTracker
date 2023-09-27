@@ -290,6 +290,42 @@ class DatabaseHelper {
   ''');
   }
 
+  Future<List<Map<String, dynamic>>> getAllMaxWeightByExercise() async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('''
+    SELECT name, date, MAX(weight) as max_weight
+    FROM exercise
+    GROUP BY name
+    ORDER BY name
+  ''');
+  }
+
+  Future<List<Map<String, dynamic>>> getAllMaxRepsByExercise() async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('''
+    SELECT name, date, MAX(reps) as max_reps
+    FROM exercise
+    GROUP BY name
+    ORDER BY name
+  ''');
+  }
+
+  Future<List<Map<String, dynamic>>> getAllMaxDurationByExercise() async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('''
+    SELECT name, date, MAX(durationexercise) as max_duration
+    FROM exercise
+    GROUP BY name
+    ORDER BY name
+  ''');
+  }
+
   Future<Map<String, dynamic>> getMaxWeight(String exerciseName) async {
     final db = await this.db;
     if (db == null) return {'max_weight': 0, 'date': null};
