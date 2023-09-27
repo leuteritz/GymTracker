@@ -12,13 +12,24 @@ class HomeScreenExerciseTimer extends StatefulWidget {
       HomeScreenExerciseTimerState();
 }
 
-class HomeScreenExerciseTimerState extends State<HomeScreenExerciseTimer> {
+class HomeScreenExerciseTimerState extends State<HomeScreenExerciseTimer>
+    with WidgetsBindingObserver {
   Timer? _timer;
   int _seconds = 0;
   String timerValue = '00:00';
+  DateTime? _lockTime;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   void startTimer() {
@@ -55,6 +66,37 @@ class HomeScreenExerciseTimerState extends State<HomeScreenExerciseTimer> {
     setState(() {
       timerValue = '$formattedMinutes:$formattedSeconds';
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_seconds > 0) {
+      if (state == AppLifecycleState.paused) {
+        print("inactive");
+        _lockTime = DateTime.now();
+        print(_lockTime);
+        _timer?.cancel();
+      } else if (state == AppLifecycleState.resumed) {
+        if (_lockTime != null) {
+          print("resumed");
+          int lockDurationInSeconds = 0;
+          final now = DateTime.now();
+          print("now: $now");
+
+          final lockDuration = now.difference(_lockTime!);
+          print(lockDuration);
+          lockDurationInSeconds = lockDuration.inSeconds;
+          print("duration: $lockDurationInSeconds");
+          _seconds += lockDurationInSeconds;
+          print("seconds: $_seconds");
+
+          _lockTime = null;
+          print(lockDurationInSeconds);
+
+          startTimer();
+        }
+      }
+    }
   }
 
   @override

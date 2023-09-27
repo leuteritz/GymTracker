@@ -368,6 +368,18 @@ class DatabaseHelper {
   ''');
   }
 
+  Future<List<Map<String, dynamic>>> getAllMaxLoadByExercise() async {
+    final db = await this.db;
+    if (db == null) return [];
+
+    return await db.rawQuery('''
+    SELECT name, date, MAX(weight * reps) as max_load
+    FROM exercise
+    GROUP BY name
+    ORDER BY name
+  ''');
+  }
+
   Future<Map<String, dynamic>> getMaxWeight(String exerciseName) async {
     final db = await this.db;
     if (db == null) return {'max_weight': 0, 'date': null};

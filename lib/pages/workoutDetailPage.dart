@@ -21,6 +21,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
   List<Map<String, dynamic>> maxWeightList = [];
   List<Map<String, dynamic>> maxRepsList = [];
   List<Map<String, dynamic>> maxDurationList = [];
+  List<Map<String, dynamic>> maxLoadList = [];
   List<Map<String, dynamic>> _exerciseduration = [];
   int maxWeightRowIndex = -1;
 
@@ -38,6 +39,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     await _getMaxWeightByExerciset();
     await _getMaxRepsByExerciset();
     await _getMaxDurationByExerciset();
+    await _getMaxLoadByExerciset();
     await getExercisesForDate(widget.date);
     await _getExerciseDuration();
     _getDuration();
@@ -46,6 +48,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     _setRecordsWeight();
     _setRecordsReps();
     _setRecordsDuration();
+    _setRecordsLoad();
   }
 
   Future<void> _getMaxWeightByExerciset() async {
@@ -72,6 +75,15 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
 
     setState(() {
       maxDurationList = _maxDurationList;
+    });
+  }
+
+  Future<void> _getMaxLoadByExerciset() async {
+    List<Map<String, dynamic>> _maxLoadList =
+        await DatabaseHelper().getAllMaxLoadByExercise();
+
+    setState(() {
+      maxLoadList = _maxLoadList;
     });
   }
 
@@ -142,6 +154,32 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                 transformedExerciseInfo['isMaxDuration'] = true;
               });
               break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void _setRecordsLoad() async {
+    for (Map<String, dynamic> exerciseInfo in maxLoadList) {
+      if (widget.date == exerciseInfo['date']) {
+        for (Map<String, dynamic> transformedExerciseInfo
+            in transformedExercises) {
+          dynamic sets = transformedExerciseInfo['sets'];
+
+          if (exerciseInfo['name'] == transformedExerciseInfo['name']) {
+            int maxLoad = exerciseInfo['max_load'];
+
+            for (Map<String, dynamic> set in sets) {
+              int load = set['weight'] * set['reps'];
+
+              if (load == maxLoad) {
+                setState(() {
+                  set['isMaxLoad'] = true;
+                });
+                break;
+              }
             }
           }
         }
@@ -236,6 +274,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
         'reps': exercise['reps']!,
         'isMaxWeight': false,
         'isMaxReps': false,
+        'isMaxLoad': false,
       });
     }
 
@@ -378,6 +417,11 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                                 right: 0,
                                 child: Text("🏆"),
                               ),
+                            if (set['isMaxLoad'])
+                              Positioned(
+                                left: 0,
+                                child: Text("🏆"),
+                              ),
                           ],
                         ),
                       );
@@ -391,25 +435,23 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                               padding: EdgeInsets.symmetric(
                                   vertical: 10), // Add horizontal padding
                               child: Center(
-                                child: Container(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                          builder: (context) =>
-                                              ExerciseDetailPage(
-                                                  exercise: exerciseName),
-                                        ),
-                                      );
-                                    },
-                                    child: Text(
-                                      exerciseName,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.underline,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                        builder: (context) =>
+                                            ExerciseDetailPage(
+                                                exercise: exerciseName),
                                       ),
+                                    );
+                                  },
+                                  child: Text(
+                                    exerciseName,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
                                     ),
                                   ),
                                 ),

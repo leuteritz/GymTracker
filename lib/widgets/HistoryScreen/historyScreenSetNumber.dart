@@ -14,9 +14,6 @@ class HistoryScreenSetNumber extends StatefulWidget {
 
 class _HistoryScreenSetNumberState extends State<HistoryScreenSetNumber> {
   int _set = 0;
-  List<Map<String, dynamic>> maxWeightList = [];
-  List<Map<String, dynamic>> maxRepsList = [];
-  List<Map<String, dynamic>> maxDurationList = [];
   int _pr = 0;
 
   @override
@@ -26,6 +23,7 @@ class _HistoryScreenSetNumberState extends State<HistoryScreenSetNumber> {
     _getMaxWeightByExerciset();
     _getMaxRepsByExerciset();
     _getMaxDurationByExerciset();
+    _getMaxLoadByExerciset();
   }
 
   Future<void> _getSets() async {
@@ -75,6 +73,22 @@ class _HistoryScreenSetNumberState extends State<HistoryScreenSetNumber> {
 
     int maxPR = 0;
     for (Map<String, dynamic> maxDurationData in _maxDurationList) {
+      if (maxDurationData['name'] == widget.exerciseName &&
+          maxDurationData['date'] == widget.date) {
+        maxPR += 1;
+      }
+    }
+    setState(() {
+      _pr += maxPR;
+    });
+  }
+
+  Future<void> _getMaxLoadByExerciset() async {
+    List<Map<String, dynamic>> _maxLoadList =
+        await DatabaseHelper().getAllMaxLoadByExercise();
+
+    int maxPR = 0;
+    for (Map<String, dynamic> maxDurationData in _maxLoadList) {
       if (maxDurationData['name'] == widget.exerciseName &&
           maxDurationData['date'] == widget.date) {
         maxPR += 1;

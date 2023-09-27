@@ -730,6 +730,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            Visibility(
+              visible: !_isAddButtonPressed,
+              child: Positioned(
+                top: 5,
+                left: 170,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(
+                      CupertinoIcons.arrow_up,
+                      size: 40,
+                      color: CupertinoColors.systemGrey,
+                    ),
+                    Text(
+                      'Workout',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: CupertinoColors.systemGrey,
+                      ),
+                    ),
+                    Text(
+                      'Duration',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: CupertinoColors.systemGrey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
