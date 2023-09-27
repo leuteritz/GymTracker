@@ -37,7 +37,6 @@ class ExerciseScreenState extends State<ExerciseScreen> {
     exercises.forEach((exercise) {
       final muscleGroup = exercise['muscle'];
       final exerciseName = exercise['name'];
-      final exerciseDescription = exercise['description'];
 
       if (initialExerciseMap[muscleGroup] == null) {
         initialExerciseMap[muscleGroup] = [];
@@ -46,7 +45,6 @@ class ExerciseScreenState extends State<ExerciseScreen> {
       initialExerciseMap[muscleGroup]!.add(
         ExerciseScreenExerciseItem(
           name: exerciseName,
-          description: exerciseDescription,
           muscleGroup: muscleGroup,
           fetchExercisesCallback: () => fetchExercises(setState),
           key: Key(exercise['name']),
@@ -82,7 +80,6 @@ class ExerciseScreenState extends State<ExerciseScreen> {
       for (var exercise in filteredExercises) {
         final muscleGroup = exercise['muscle'];
         final exerciseName = exercise['name'];
-        final exerciseDescription = exercise['description'];
 
         if (filteredExerciseMap[muscleGroup] == null) {
           filteredExerciseMap[muscleGroup] = [];
@@ -91,7 +88,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
         filteredExerciseMap[muscleGroup]!.add(
           ExerciseScreenExerciseItem(
             name: exerciseName,
-            description: exerciseDescription,
+
             muscleGroup: muscleGroup,
             fetchExercisesCallback: () =>
                 fetchExercises(setState), // Pass a callback function
@@ -111,16 +108,21 @@ class ExerciseScreenState extends State<ExerciseScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: SizedBox(
-          width: 200,
-          child: CupertinoSearchTextField(
-            placeholder: 'Übung durchsuchen',
-            onChanged: (searchText) {
-              _searchExercise(searchText, setState);
-            },
+          middle: SizedBox(
+            width: 200,
+            child: CupertinoSearchTextField(
+              placeholder: 'Übung durchsuchen',
+              onChanged: (searchText) {
+                _searchExercise(searchText, setState);
+              },
+            ),
           ),
-        ),
-      ),
+          trailing: GestureDetector(
+            onTap: () {},
+            child: Icon(
+              CupertinoIcons.plus,
+            ),
+          )),
       child: SafeArea(
           child: ListView.builder(
         itemCount: exerciseMap.length + 1,
@@ -159,7 +161,7 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                       children: favoriteExercises.map((exercise) {
                         return ExerciseScreenExerciseItem(
                           name: exercise['name'],
-                          description: exercise['description'],
+
                           muscleGroup: exercise['muscle'],
                           fetchExercisesCallback: () =>
                               fetchExercises(setState),
@@ -225,7 +227,6 @@ class ExerciseScreenState extends State<ExerciseScreen> {
                     children: exercisesForGroup.map((exercise) {
                       return ExerciseScreenExerciseItem(
                         name: exercise.name,
-                        description: exercise.description,
                         muscleGroup: exercise.muscleGroup,
                         fetchExercisesCallback: () => fetchExercises(setState),
                         key: Key(exercise.name),

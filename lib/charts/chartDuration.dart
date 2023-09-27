@@ -77,8 +77,6 @@ class LineChartDurationState extends State<LineChartDuration> {
       setsRepsAndDate = setsRepsAndDate1;
     });
 
-    print(setsRepsAndDate);
-
     // Reset
     dataPoints.clear();
     minY = 100000;
@@ -91,12 +89,9 @@ class LineChartDurationState extends State<LineChartDuration> {
 
       int hours = int.parse(timeParts[0]);
       int minutes = int.parse(timeParts[1]);
-      print(hours);
-      print(minutes);
 
       double seconds = ((hours * 60) + minutes).toDouble();
       double maxWeightDuration = seconds;
-      print("maxWeightDuration: $maxWeightDuration");
 
       // Convert the date to x-axis value
       double xValue = convertDateToXValue(date, selectedIndex);

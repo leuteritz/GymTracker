@@ -193,6 +193,20 @@ class DatabaseHelper {
     }
   }
 
+  Future<String> getDescription(String exercise) async {
+    final db = await this.db;
+    if (db == null) return "";
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+        'SELECT description FROM exerciselist WHERE name = "$exercise"');
+
+    if (maps.isNotEmpty) {
+      return maps[0]['description'];
+    } else {
+      return ""; // Return null if no start time is found.
+    }
+  }
+
   Future<int> getTotalWeight(String date) async {
     final db = await this.db;
     if (db == null) return 0;

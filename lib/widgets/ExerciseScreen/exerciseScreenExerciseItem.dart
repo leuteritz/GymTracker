@@ -4,13 +4,12 @@ import '/data/database.dart';
 
 class ExerciseScreenExerciseItem extends StatefulWidget {
   final String name;
-  final String description;
+
   final String muscleGroup;
   final VoidCallback fetchExercisesCallback;
 
   ExerciseScreenExerciseItem(
-      {required this.description,
-      required this.muscleGroup,
+      {required this.muscleGroup,
       required this.fetchExercisesCallback,
       required this.name,
       Key? key})
@@ -68,11 +67,9 @@ class _ExerciseScreenExerciseItemState
           Navigator.push(
             context,
             CupertinoPageRoute(
-              builder: (context) => ExerciseDetailPage(
-                  exercise: widget.name, description: widget.description),
+              builder: (context) => ExerciseDetailPage(exercise: widget.name),
             ),
           );
-          widget.key.toString();
         },
         child: CupertinoListTile(
           leading: Text(getFirstLetter()),

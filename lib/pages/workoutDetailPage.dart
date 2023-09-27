@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'dart:async';
 import '/data/database.dart';
+import '/pages/exerciseDetailPage.dart';
 
 class WorkoutDetailPage extends StatefulWidget {
   final String date;
@@ -390,11 +391,27 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                               padding: EdgeInsets.symmetric(
                                   vertical: 10), // Add horizontal padding
                               child: Center(
-                                child: Text(
-                                  exerciseName,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
+                                child: Container(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                          builder: (context) =>
+                                              ExerciseDetailPage(
+                                                  exercise: exerciseName),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      exerciseName,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),

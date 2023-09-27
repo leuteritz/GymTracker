@@ -284,6 +284,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   String _timerValue = '00:00';
   String _duration = '';
   DateTime? _lockTime;
+  String _starttime = '';
 
   @override
   void initState() {
@@ -339,15 +340,19 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
     }
   }
 
-  // Start the timer that runs every second
   void _startTimer() {
-    _timer?.cancel(); // Cancel any previous timer
+    _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         _seconds++;
         _updateTimerValue();
       });
     });
+
+    DateTime now = DateTime.now();
+
+    _starttime =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
   }
 
   void _stopTimer() {
@@ -356,11 +361,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
     _duration = _timerValue;
 
     _seconds = 0;
-
-    DateTime now = DateTime.now();
-
-    String _starttime =
-        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
     // insert the exercise into the database
     for (var exercise in exerciseList) {

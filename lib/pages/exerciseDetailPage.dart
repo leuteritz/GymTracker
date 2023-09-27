@@ -9,9 +9,8 @@ import '/charts/chartDuration.dart';
 
 class ExerciseDetailPage extends StatefulWidget {
   final String exercise;
-  final String description;
 
-  ExerciseDetailPage({required this.exercise, required this.description});
+  ExerciseDetailPage({required this.exercise});
   @override
   State<ExerciseDetailPage> createState() => _ExerciseDetailPageState();
 }
@@ -28,7 +27,8 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
   String _currentWeek = '';
   int selectedYear = DateTime.now().year;
   int descriptionLines = 0;
-  String _selectedContent = 'description'; // Add this line
+  String _selectedContent = 'description';
+  String _description = "";
 
   String _selectedInterval = 'week';
   List<String> monthNames = [
@@ -62,6 +62,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     _getMaxDuration();
     _getMinDuration();
     _getAvgDuration();
+    _getDescription();
   }
 
   void getCurrentWeekDateRange() {
@@ -348,6 +349,16 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     }
   }
 
+  Future<void> _getDescription() async {
+    String description = await DatabaseHelper().getDescription(widget.exercise);
+
+    if (mounted) {
+      setState(() {
+        _description = description;
+      });
+    }
+  }
+
   Future<void> _getMinDuration() async {
     final map = await DatabaseHelper().getMinDuration(widget.exercise);
 
@@ -380,7 +391,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> descriptionLines = widget.description.split('\n');
+    List<String> descriptionLines = _description.split('\n');
     int descriptionLength = descriptionLines.length;
 
     return CupertinoPageScaffold(

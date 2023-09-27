@@ -77,8 +77,6 @@ class LineChartWeightState extends State<LineChartWeight> {
       setsRepsAndDate = setsRepsAndDate1;
     });
 
-    print(setsRepsAndDate);
-
     // Reset
     dataPoints.clear();
     minY = 100000;
