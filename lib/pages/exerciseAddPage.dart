@@ -121,7 +121,9 @@ class _ExerciseAddPageState extends State<ExerciseAddPage> {
           middle: Container(
             width: 200,
             child: CupertinoSearchTextField(
-              placeholder: 'Search Exercise',
+              placeholder: (selectedSegment == "Exercise")
+                  ? "Search Exercise"
+                  : "Search Template",
               onChanged: (searchText) {
                 _searchExercise(searchText, setState);
               },
