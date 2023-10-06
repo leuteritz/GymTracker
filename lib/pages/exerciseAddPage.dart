@@ -12,6 +12,7 @@ class ExerciseAddPage extends StatefulWidget {
 class _ExerciseAddPageState extends State<ExerciseAddPage> {
   List<Map<String, dynamic>> exercises = [];
   Map<String, List<HomeScreenExerciseAddItem>> exerciseMap = {};
+  String selectedSegment = "Exercise";
 
   @override
   void initState() {
@@ -59,12 +60,9 @@ class _ExerciseAddPageState extends State<ExerciseAddPage> {
           name: exerciseName,
           muscleGroup: muscleGroup,
           onSelect: (exerciseName) {
-            updateSelectedExercise(exerciseName,
-                setState); // Call the callback when exercise is selected
+            updateSelectedExercise(exerciseName, setState);
           },
           fetchExercisesCallback: () => fetchExercises(setState),
-
-          // Pass a callback function
           key: Key(exercise['name']),
         ),
       );
@@ -102,8 +100,7 @@ class _ExerciseAddPageState extends State<ExerciseAddPage> {
             name: exerciseName,
             muscleGroup: muscleGroup,
             onSelect: (exerciseName) {
-              updateSelectedExercise(exerciseName,
-                  setState); // Call the callback when exercise is selected
+              updateSelectedExercise(exerciseName, setState);
             },
             fetchExercisesCallback: () => fetchExercises(setState),
             key: Key(exercise['name']),
@@ -120,145 +117,171 @@ class _ExerciseAddPageState extends State<ExerciseAddPage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Container(
-          width: 200,
-          child: CupertinoSearchTextField(
-            placeholder: 'Search Exercise',
-            onChanged: (searchText) {
-              _searchExercise(searchText, setState);
-            },
+        navigationBar: CupertinoNavigationBar(
+          middle: Container(
+            width: 200,
+            child: CupertinoSearchTextField(
+              placeholder: 'Search Exercise',
+              onChanged: (searchText) {
+                _searchExercise(searchText, setState);
+              },
+            ),
           ),
         ),
-      ),
-      child: SafeArea(
-          child: ListView.builder(
-        itemCount: exerciseMap.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == 0) {
-            // Favorites section
-            var favoriteExercises = exercises
-                .where((exercise) => exercise['favorite'] == 1)
-                .toList();
-
-            if (favoriteExercises.isNotEmpty) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Center(
-                      child: Text(
-                        "Favorites" + " (${favoriteExercises.length})",
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: CupertinoColors.systemGrey),
-                      ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+                width: MediaQuery.of(context).size.width,
+                child: CupertinoSegmentedControl(
+                  children: {
+                    'Exercise': Text(
+                      'Exercise',
+                      style: TextStyle(fontSize: 20),
                     ),
-                  ),
-                  Container(
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: CupertinoColors.white,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: Column(
-                      children: favoriteExercises.map((exercise) {
-                        return HomeScreenExerciseAddItem(
-                          name: exercise['name'],
-                          fetchExercisesCallback: () => fetchExercises(
-                              setState), // Pass a callback function
-                          onSelect: (exerciseName) {
-                            updateSelectedExercise(exerciseName,
-                                setState); // Call the callback when exercise is selected
-                          },
-                          muscleGroup: exercise['muscle'],
+                    'Template':
+                        Text('Template', style: TextStyle(fontSize: 20)),
+                  },
+                  onValueChanged: (value) {
+                    setState(() {
+                      selectedSegment = value;
+                    });
+                  },
+                  groupValue: selectedSegment,
+                ),
+              ),
+              if (selectedSegment == "Exercise")
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: exerciseMap.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 0) {
+                        // Favorites section
+                        var favoriteExercises = exercises
+                            .where((exercise) => exercise['favorite'] == 1)
+                            .toList();
 
-                          key: Key(exercise[
-                              'name']), // Use a unique identifier, like exercise name
-                          // Pass the callback
+                        if (favoriteExercises.isNotEmpty) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(20),
+                                child: Center(
+                                  child: Text(
+                                    "Favorites" +
+                                        " (${favoriteExercises.length})",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: CupertinoColors.systemGrey),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: CupertinoColors.white,
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Center(
+                                child: Column(
+                                  children: favoriteExercises.map((exercise) {
+                                    return HomeScreenExerciseAddItem(
+                                      name: exercise['name'],
+                                      fetchExercisesCallback: () => fetchExercises(
+                                          setState), // Pass a callback function
+                                      onSelect: (exerciseName) {
+                                        updateSelectedExercise(exerciseName,
+                                            setState); // Call the callback when exercise is selected
+                                      },
+                                      muscleGroup: exercise['muscle'],
+                                      key: Key(exercise[
+                                          'name']), // Use a unique identifier, like exercise name
+                                      // Pass the callback
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(20),
+                                child: Text(
+                                  "Favorites" +
+                                      " (${favoriteExercises.length})",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: CupertinoColors.systemGrey),
+                                ),
+                              ),
+                              Container(
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: CupertinoColors.white,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      } else {
+                        // Regular muscle group section
+                        var muscleGroup = exerciseMap.keys.elementAt(index - 1);
+                        var exercisesForGroup = exerciseMap[muscleGroup] ?? [];
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Text(
+                                muscleGroup,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: CupertinoColors.systemGrey),
+                              ),
+                            ),
+                            Container(
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: CupertinoColors.white,
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Center(
+                              child: Column(
+                                children: exercisesForGroup.map((exercise) {
+                                  return HomeScreenExerciseAddItem(
+                                    name: exercise.name,
+                                    muscleGroup: exercise.muscleGroup,
+                                    onSelect: (exerciseName) {
+                                      updateSelectedExercise(exerciseName,
+                                          setState); // Call the callback when exercise is selected
+                                    },
+                                    fetchExercisesCallback: () => fetchExercises(
+                                        setState), // Pass a callback function
+                                    // Pass the setState function
+                                    key: Key(exercise.name),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ],
                         );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Text(
-                      "Favorites" + " (${favoriteExercises.length})",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: CupertinoColors.systemGrey),
-                    ),
-                  ),
-                  Container(
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: CupertinoColors.white,
-                    ),
-                  ),
-                ],
-              );
-            }
-          } else {
-            // Regular muscle group section
-            var muscleGroup = exerciseMap.keys.elementAt(index - 1);
-            var exercisesForGroup = exerciseMap[muscleGroup] ?? [];
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text(
-                    muscleGroup,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: CupertinoColors.systemGrey),
+                      }
+                    },
                   ),
                 ),
-                Container(
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: CupertinoColors.white,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Center(
-                  child: Column(
-                    children: exercisesForGroup.map((exercise) {
-                      return HomeScreenExerciseAddItem(
-                        name: exercise.name,
-                        muscleGroup: exercise.muscleGroup,
-                        onSelect: (exerciseName) {
-                          updateSelectedExercise(exerciseName,
-                              setState); // Call the callback when exercise is selected
-                        },
-
-                        fetchExercisesCallback: () => fetchExercises(
-                            setState), // Pass a callback function
-// Pass the setState function
-
-                        key: Key(exercise.name),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            );
-          }
-        },
-      )),
-    );
+            ],
+          ),
+        ));
   }
 }

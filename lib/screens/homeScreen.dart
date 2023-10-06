@@ -849,6 +849,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         valueListenable: selectedExerciseNotifier,
                         builder: (context, selectedExercise, child) {
                           return CupertinoButton(
+                            padding: EdgeInsets.symmetric(horizontal: 30),
                             color: CupertinoColors.activeOrange,
                             onPressed: () {
                               fetchExercises(setState);

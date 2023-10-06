@@ -24,14 +24,14 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
   List<Map<String, dynamic>> maxLoadList = [];
   List<Map<String, dynamic>> _exerciseduration = [];
   int maxWeightRowIndex = -1;
-
-  bool isDuration = false;
-  bool isWeight = false;
-  bool isRep = false;
+  DateTime myDate = DateTime.now();
+  String dayOfWeek = '';
 
   @override
   void initState() {
     super.initState();
+    myDate = _parseDate(widget.date);
+    dayOfWeek = getDayOfWeek(myDate);
     _initializeData();
   }
 
@@ -49,6 +49,33 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
     _setRecordsReps();
     _setRecordsDuration();
     _setRecordsLoad();
+  }
+
+  String getDayOfWeek(DateTime date) {
+    List<String> daysOfWeek = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ];
+
+    int dayIndex = date.weekday - 1;
+
+    return daysOfWeek[dayIndex];
+  }
+
+  DateTime _parseDate(String dateStr) {
+    // Split the date string into day, month, and year components
+    List<String> dateComponents = dateStr.split('.');
+    int day = int.parse(dateComponents[0]);
+    int month = int.parse(dateComponents[1]);
+    int year = int.parse(dateComponents[2]);
+
+    // Construct a DateTime object from the components
+    return DateTime(year, month, day);
   }
 
   Future<void> _getMaxWeightByExerciset() async {
@@ -285,7 +312,7 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text(widget.date),
+        middle: Text("$dayOfWeek , ${widget.date}"),
       ),
       child: SafeArea(
         child: SingleChildScrollView(
@@ -299,43 +326,40 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                     horizontal: 10), // Add horizontal padding
                 child: Container(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(children: [
                         Icon(
                           CupertinoIcons.time_solid,
-                          color: CupertinoColors.white,
+                          color: CupertinoColors.systemGrey,
                         ),
-                        SizedBox(width: 10),
+                        SizedBox(width: 5),
                         Text(
-                          _startTime!,
+                          "$_startTime h",
                           style: TextStyle(
-                            fontSize: 17,
-                          ),
+                              fontSize: 17, color: CupertinoColors.systemGrey),
                         ),
                       ]),
                       Row(children: [
                         Icon(
                           CupertinoIcons.time,
-                          color: CupertinoColors.white,
+                          color: CupertinoColors.systemGrey,
                         ),
-                        SizedBox(width: 10),
+                        SizedBox(width: 5),
                         Text(
-                          _duration,
+                          "$_duration min",
                           style: TextStyle(
-                            fontSize: 17,
-                          ),
+                              fontSize: 17, color: CupertinoColors.systemGrey),
                         ),
                       ]),
                       Row(children: [
-                        Icon(
-                          CupertinoIcons.sum,
-                          color: CupertinoColors.white,
-                        ),
-                        SizedBox(width: 10),
+                        Icon(CupertinoIcons.sum,
+                            color: CupertinoColors.systemGrey),
+                        SizedBox(width: 0),
                         Text(
                           _totalWeight.toString() + ' kg',
-                          style: TextStyle(fontSize: 17),
+                          style: TextStyle(
+                              fontSize: 17, color: CupertinoColors.systemGrey),
                         ),
                       ]),
                     ],
@@ -409,18 +433,45 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                             ),
                             if (set['isMaxWeight'])
                               Positioned(
-                                right: 90,
-                                child: Text("🏆"),
+                                right: 170,
+                                child: Row(
+                                  children: [
+                                    Text("Weight",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: CupertinoColors.systemGrey)),
+                                    SizedBox(width: 5),
+                                    Text("🏆"),
+                                  ],
+                                ),
                               ),
                             if (set['isMaxReps'])
                               Positioned(
-                                right: 0,
-                                child: Text("🏆"),
+                                right: 70,
+                                child: Row(
+                                  children: [
+                                    Text("Reps",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: CupertinoColors.systemGrey)),
+                                    SizedBox(width: 5),
+                                    Text("🏆"),
+                                  ],
+                                ),
                               ),
                             if (set['isMaxLoad'])
                               Positioned(
                                 left: 0,
-                                child: Text("🏆"),
+                                child: Row(
+                                  children: [
+                                    Text("Load",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: CupertinoColors.systemGrey)),
+                                    SizedBox(width: 5),
+                                    Text("🏆"),
+                                  ],
+                                ),
                               ),
                           ],
                         ),
@@ -464,11 +515,11 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                                   CupertinoIcons.time,
                                   color: CupertinoColors.systemGrey,
                                 ),
-                                SizedBox(width: 10),
+                                SizedBox(width: 5),
                                 Text(
                                   exercise.containsKey('duration')
-                                      ? exercise['duration']
-                                      : '00:00',
+                                      ? "${exercise['duration']} min"
+                                      : '00:00 min',
                                   style: TextStyle(
                                       fontSize: 17,
                                       color: CupertinoColors.systemGrey),
@@ -524,8 +575,16 @@ class _WorkoutDetailPageState extends State<WorkoutDetailPage> {
                         if (isMaxDurationExercise) // Check if it's a max duration exercise
                           Positioned(
                             top: 38,
-                            right: 60,
-                            child: Text("🏆"),
+                            right: 30,
+                            child: Row(
+                              children: [
+                                Text("🏆"),
+                                Text("Duration",
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: CupertinoColors.systemGrey)),
+                              ],
+                            ),
                           ),
                       ],
                     );

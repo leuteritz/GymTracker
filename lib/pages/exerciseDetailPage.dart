@@ -46,23 +46,27 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
     'December'
   ];
 
-  @override
-  void initState() {
-    super.initState();
+  Future<void> _initializeData() async {
     getCurrentWeekDateRange();
-    _getMaxWeight();
+    await _getMaxWeight();
+    await _getMinWeight();
     _getMaxReps();
     _getMaxLoad();
     _getAvgWeight();
     _getAvgReps();
     _getAvgLoad();
-    _getMinWeight();
     _getMinReps();
     _getMinLoad();
     _getMaxDuration();
     _getMinDuration();
     _getAvgDuration();
     _getDescription();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
   }
 
   void getCurrentWeekDateRange() {
@@ -375,6 +379,7 @@ class _ExerciseDetailPageState extends State<ExerciseDetailPage> {
 
     if (mounted) {
       setState(() {
+        print("duration: ${map['avg_duration']}");
         double _avgDuration = map['avg_duration'] ?? 0;
         int minutes = _avgDuration.floor();
         int seconds = ((_avgDuration - minutes) * 100).round();

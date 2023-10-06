@@ -46,9 +46,11 @@ class _HistoryScreenSetNumberState extends State<HistoryScreenSetNumber> {
         maxPR += 1;
       }
     }
-    setState(() {
-      _pr += maxPR;
-    });
+    if (mounted) {
+      setState(() {
+        _pr += maxPR;
+      });
+    }
   }
 
   Future<void> _getMaxRepsByExerciset() async {
@@ -62,9 +64,11 @@ class _HistoryScreenSetNumberState extends State<HistoryScreenSetNumber> {
         maxPR += 1;
       }
     }
-    setState(() {
-      _pr += maxPR;
-    });
+    if (mounted) {
+      setState(() {
+        _pr += maxPR;
+      });
+    }
   }
 
   Future<void> _getMaxDurationByExerciset() async {
@@ -78,9 +82,11 @@ class _HistoryScreenSetNumberState extends State<HistoryScreenSetNumber> {
         maxPR += 1;
       }
     }
-    setState(() {
-      _pr += maxPR;
-    });
+    if (mounted) {
+      setState(() {
+        _pr += maxPR;
+      });
+    }
   }
 
   Future<void> _getMaxLoadByExerciset() async {
@@ -94,9 +100,11 @@ class _HistoryScreenSetNumberState extends State<HistoryScreenSetNumber> {
         maxPR += 1;
       }
     }
-    setState(() {
-      _pr += maxPR;
-    });
+    if (mounted) {
+      setState(() {
+        _pr += maxPR;
+      });
+    }
   }
 
   @override

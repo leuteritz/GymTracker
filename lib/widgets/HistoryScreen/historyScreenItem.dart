@@ -122,9 +122,9 @@ class HistoryScreenItemState extends State<HistoryScreenItem> {
                       CupertinoIcons.time_solid,
                       color: CupertinoColors.systemGrey,
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 5),
                     Text(
-                      _startTime!,
+                      "$_startTime h",
                       style: TextStyle(
                           fontSize: 17, color: CupertinoColors.systemGrey),
                     ),
@@ -136,9 +136,9 @@ class HistoryScreenItemState extends State<HistoryScreenItem> {
                       CupertinoIcons.time,
                       color: CupertinoColors.systemGrey,
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 5),
                     Text(
-                      _duration,
+                      "$_duration min",
                       style: TextStyle(
                           fontSize: 17, color: CupertinoColors.systemGrey),
                     ),
@@ -150,7 +150,7 @@ class HistoryScreenItemState extends State<HistoryScreenItem> {
                       CupertinoIcons.sum,
                       color: CupertinoColors.systemGrey,
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 5),
                     Text(
                       _totalWeight.toString() + ' kg',
                       style: TextStyle(
