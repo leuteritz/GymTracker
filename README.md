@@ -1,6 +1,6 @@
 # Benchy
 
-Benchy ist eine mobile Anwendung, die Ihnen Werkzeuge bietet, um Ihre Fitnessreise erfolgreich zu gestalten. Mit Benchy können Sie Trainingspläne erstellen, Workouts protokollieren und Ihre Fortschritte verfolgen.
+Benchy ist eine mobile Anwendung, die Ihnen Werkzeuge bietet, um Ihre Fitnessreise erfolgreich zu gestalten. Mit Benchy können Sie Trainingspläne erstellen, Workouts protokollieren, Ihre Fortschritte verfolgen und Fitnessstudios in der Nähe anzeigen.
 
 ## Funktionen
 
