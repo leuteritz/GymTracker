@@ -1,16 +1,45 @@
-# gymtracker
+# Benchy
 
-A new Flutter project.
+Benchy ist eine mobile Anwendung, die Ihnen Werkzeuge bietet, um Ihre Fitnessreise erfolgreich zu gestalten. Mit Benchy können Sie Trainingspläne erstellen, Workouts protokollieren und Ihre Fortschritte verfolgen.
 
-## Getting Started
+## Funktionen
 
-This project is a starting point for a Flutter application.
+### Trainingspläne erstellen
+Erstellen und passen Sie individuelle Trainingspläne an, die genau auf Ihre Bedürfnisse und Ziele zugeschnitten sind.
 
-A few resources to get you started if this is your first Flutter project:
+### Workouts protokollieren
+Erfassen Sie Ihre Übungen, Sätze, Wiederholungen und Gewichte und behalten Sie den Überblick über Ihre Trainingseinheiten.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Fortschritte verfolgen
+Visualisieren Sie Ihre Fortschritte über die Zeit mit detaillierten Diagrammen und Statistiken, um Ihre Erfolge zu sehen und motiviert zu bleiben.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+
+## Installation
+
+Um Benchy lokal zu installieren und auszuführen, folgen Sie bitte diesen Schritten:
+
+1. Stellen Sie sicher, dass Flutter installiert ist. Anweisungen finden Sie [hier](https://flutter.dev/docs/get-started/install).
+
+2. Klonen Sie das Repository:
+   ```bash
+   git clone https://github.com/leutritz/GymTracker.git
+   ```
+
+3. Wechseln Sie in das Projektverzeichnis:
+   ```bash
+   cd GymTracker
+   ```
+
+4. Installieren Sie die Abhängigkeiten:
+    ```bash
+    flutter pub get
+    ```
+
+5. Starten Sie die Anwendung:
+    ```bash
+    flutter run
+    ```
+
+Dieses Projekt steht unter der MIT License. Weitere Informationen finden Sie in der Datei LICENSE.  
+  
