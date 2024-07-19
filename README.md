@@ -13,6 +13,8 @@ Erfassen Sie Ihre Übungen, Sätze, Wiederholungen und Gewichte und behalten Sie
 ### Fortschritte verfolgen
 Visualisieren Sie Ihre Fortschritte über die Zeit mit detaillierten Diagrammen und Statistiken, um Ihre Erfolge zu sehen und motiviert zu bleiben.
 
+### Anzeige von Fitnessstudios in der Nähe
+Finden Sie schnell und einfach Fitnessstudios in Ihrer Nähe und erhalten Sie detaillierte Informationen wie Adresse, Website und weitere wichtige Details.
 
 
 ## Installation
