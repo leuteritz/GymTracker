@@ -1,47 +1,79 @@
+<div align="center">
+
+<img src="docs/logo.png" width="88" alt="Benchy logo">
+
 # Benchy
 
-Benchy ist eine mobile Anwendung, die Ihnen Werkzeuge bietet, um Ihre Fitnessreise erfolgreich zu gestalten. Mit Benchy können Sie Trainingspläne erstellen, Workouts protokollieren, Ihre Fortschritte verfolgen und Fitnessstudios in der Nähe anzeigen.
+**Log every set. Watch every PR.**
+An offline-first workout tracker for iOS and Android — built with Flutter.
 
-## Funktionen
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
+[![SQLite](https://img.shields.io/badge/SQLite-local-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://pub.dev/packages/sqflite)
+[![Platform](https://img.shields.io/badge/iOS%20%C2%B7%20Android-000000?style=for-the-badge&logo=apple&logoColor=white)](#)
+[![License](https://img.shields.io/badge/License-MIT-AD0FE2?style=for-the-badge)](LICENSE)
 
-### Trainingspläne erstellen
-Erstellen und passen Sie individuelle Trainingspläne an, die genau auf Ihre Bedürfnisse und Ziele zugeschnitten sind.
+<img src="docs/hero.png" width="100%" alt="Benchy screens">
 
-### Workouts protokollieren
-Erfassen Sie Ihre Übungen, Sätze, Wiederholungen und Gewichte und behalten Sie den Überblick über Ihre Trainingseinheiten.
+</div>
 
-### Fortschritte verfolgen
-Visualisieren Sie Ihre Fortschritte über die Zeit mit detaillierten Diagrammen und Statistiken, um Ihre Erfolge zu sehen und motiviert zu bleiben.
+## Features
 
-### Anzeige von Fitnessstudios in der Nähe
-Finden Sie schnell und einfach Fitnessstudios in Ihrer Nähe und erhalten Sie detaillierte Informationen wie Adresse, Website und weitere wichtige Details.
+| | |
+|---|---|
+| **Live workout logging** | Start a session, add exercises, log weight and reps set by set. A stopwatch runs per workout, a timer per exercise, plus a configurable rest timer. |
+| **Personal records** | Max, min and average for weight, reps, load and duration — new PRs are flagged automatically and unlock badges. |
+| **Progress charts** | Load, weight, reps and duration plotted by week, month or year. |
+| **Nearby gyms** | Gyms around you on a map, with distance, address, website and one-tap navigation. |
 
+> Everything is stored locally in SQLite — no account, no sync, no tracking. Works fully offline (the gym map needs a connection).
 
-## Installation
+Planned: reusable workout templates.
 
-Um Benchy lokal zu installieren und auszuführen, folgen Sie bitte diesen Schritten:
+## Screenshots
 
-1. Stellen Sie sicher, dass Flutter installiert ist. Anweisungen finden Sie [hier](https://flutter.dev/docs/get-started/install).
+| Workout | Exercises |
+|:--:|:--:|
+| <img src="docs/screens/workout.png" width="260"> | <img src="docs/screens/exercises.png" width="260"> |
+| **Progress** | **Gyms** |
+| <img src="docs/screens/progress.png" width="260"> | <img src="docs/screens/map.png" width="260"> |
 
-2. Klonen Sie das Repository:
-   ```bash
-   git clone https://github.com/leutritz/GymTracker.git
-   ```
+<sub>Design mockups of the current build.</sub>
 
-3. Wechseln Sie in das Projektverzeichnis:
-   ```bash
-   cd GymTracker
-   ```
+## Quick start
 
-4. Installieren Sie die Abhängigkeiten:
-    ```bash
-    flutter pub get
-    ```
+```bash
+git clone https://github.com/leuteritz/GymTracker.git
+cd GymTracker
+flutter pub get
+flutter run
+```
 
-5. Starten Sie die Anwendung:
-    ```bash
-    flutter run
-    ```
+Requires the [Flutter SDK](https://flutter.dev/docs/get-started/install) (Dart >= 3.0.6).
 
-Dieses Projekt steht unter der MIT License. Weitere Informationen finden Sie in der Datei LICENSE.  
-  
+## Tech stack
+
+| Layer | Used |
+|---|---|
+| UI | Flutter · Cupertino widgets, dark theme |
+| Storage | `sqflite` — local SQLite database |
+| Charts | `fl_chart` |
+| Maps | `flutter_map` · OpenStreetMap tiles · Overpass API |
+| Location | `geolocator` · `url_launcher` |
+
+## Project structure
+
+```
+lib/
+├── main.dart          App entry and Cupertino theme
+├── screens/           Exercise · Dashboard · History · Map tabs
+├── pages/             Detail and picker pages
+├── widgets/           Reusable UI per screen
+├── charts/            fl_chart wrappers (load, weight, reps, duration)
+├── map/               Gym markers and popups
+└── data/              SQLite schema and seed exercises
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
